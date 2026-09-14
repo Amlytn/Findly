@@ -1,8 +1,8 @@
-# Findly API 接口契约（v1.1）
+# Findly API 接口契约（v1.2）
 
 > 前后端共同遵守的接口约定。改接口必须先改本文档，再动代码（PR 同步提交）。
 > 维护人：@james-wu66 ｜ 协作：@Amlytn
-> 评审状态：v1.1（@james-wu66 起草；v1.1 按协作规范第 9 节「12 屏实现范围」补 4 个接口，标"提案"的返回格式待 @Amlytn 确认）
+> 评审状态：v1.2（v1.2：tags 统一字符串数组、POST /items 增加 aiResultId 回填、DELETE 幂等语义、suggestions 规则与实现对齐、新增 M4 提案契约；v1.1 按「12 屏实现范围」补 4 接口）
 
 ## 通用约定
 
@@ -55,7 +55,7 @@ POST 请求体：
 | POST | `/api/v1/items` | 新增（拍照确认后保存走这里） |
 | GET | `/api/v1/items/:id` | 详情（含 space、tags、最近 5 次 AI 识别记录） |
 | PATCH | `/api/v1/items/:id` | 编辑 / 移动位置（改 spaceId）/ 整体替换 tags |
-| DELETE | `/api/v1/items/:id` | 软删除（deletedAt 置时间，列表不再出现） |
+| DELETE | `/api/v1/items/:id` | 软删除（deletedAt 置时间，列表不再出现）；重复删除返回 404，前端视为已成功 |
 | GET | `/api/v1/items/categories` | 分类筛选 chips（v1.1 新增，规范第 9 节）——**@Amlytn 实现** |
 | GET | `/api/v1/items/:id/related` | 同类物品（v1.1 新增，规范第 9 节）——**@Amlytn 实现** |
 
@@ -71,16 +71,22 @@ POST / PATCH 请求体：
   "quantity": 1,
   "spaceId": "sp4",
   "imageUrl": "",
-  "tags": ["鼠标", "无线", "办公"]
+  "tags": ["鼠标", "无线", "办公"],
+  "aiResultId": ""
 }
 ```
 
-GET 列表返回：
+- `aiResultId` 仅 POST 时有效（v1.2 新增）：识别结果页保存时带回 recognize 流程生成的 AIResult id，后端回填 `AIResult.itemId`，供详情页「最近 5 次 AI 识别记录」查询；传空/无效值不影响保存。
+
+GET 列表返回（v1.2：tags 统一为字符串数组，前端不再解嵌套）：
 
 ```json
 {
   "total": 3, "page": 1, "pageSize": 20,
-  "items": [ { "id": "it1", "name": "白色无线鼠标", "space": { "id": "sp4", "name": "右侧抽屉" }, "tags": [ { "tag": { "name": "鼠标" } } ] } ]
+  "items": [ { "id": "it1", "name": "白色无线鼠标", "brand": "Logitech", "model": "MX Master 3S",
+    "category": "电脑配件", "color": "白色", "tags": ["鼠标", "无线", "办公"],
+    "space": { "id": "sp4", "name": "右侧抽屉" }, "path": "我的家 → 书房 → 书桌 → 右侧抽屉",
+    "imageUrl": null, "updatedAt": "..." } ]
 }
 ```
 
@@ -143,7 +149,7 @@ GET 列表返回：
 |---|---|---|
 | GET | `/api/v1/search/suggestions` | 搜索建议词；**本地数据生成，不调 LLM** |
 
-生成规则（提案，待 @Amlytn 确认设计意图）：从当前用户物品的名称/标签/分类中提炼高频词，按出现次数倒序，最多 10 个；没有任何物品时返回空数组（前端隐藏该区域）。
+生成规则（v1.2 与实现对齐）：从当前用户物品的**标签与分类**中提炼高频词，按出现次数倒序，最多 10 个；**名称不做分词**（2026-09-14 拍板）；没有任何物品时返回空数组（前端隐藏该区域）。
 
 ```json
 { "suggestions": ["鼠标", "充电器", "HDMI"] }
@@ -177,8 +183,30 @@ GET 列表返回：
 - 约定：AI 结果只是"草稿"，用户可修改后走 POST /items 保存——**前端必须允许编辑再保存**（方案文档第五节）
 - 错误：400 格式不对 / 无法识别（提示"暂时无法准确识别这个物品，你可以手动填写名称"）；413 超限；503 AI 服务不可用
 
-## 5. 尚未提供（前端先不要调）
+## 5. M4 提案契约（v1.2 起草，评审后实现；前端先不要调）
 
-- 微信登录（M4）：`POST /api/v1/auth/login`（预留）
-- 图片上传到对象存储（M4）：当前 imageUrl 传空字符串即可
-- 以上接口在本文档补充后，前端才接入
+> 归属：M4 共同。以下为提案格式，实现前如需调整请改本节。
+
+### 5.1 微信登录 `POST /api/v1/auth/login`
+
+```json
+// 请求
+{ "code": "wx.login 返回的临时 code" }
+// 200 返回
+{ "token": "JWT", "user": { "id": "u1", "nickname": null, "avatar": null } }
+```
+
+- 后端持 AppID/AppSecret（.env，不入库）调 jscode2session 换 openid → openid 唯一 upsert User → 签发 JWT
+- 成功后前端所有请求改带 `Authorization: Bearer <token>`，替换 `x-user-id`（保留 x-user-id 演示兼容开关）
+
+### 5.2 图片上传 `POST /api/v1/upload`
+
+- multipart/form-data，字段名 `file`；仅 png/jpeg/webp；≤4MB（413）
+- 存 `server/uploads/`（已 ignore），随机文件名；返回 `{ "imageUrl": "/uploads/xxx.jpg" }`
+- 后续迁移对象存储时仅改实现，路径形态不变
+
+### 5.3 当前用户 `GET /api/v1/users/me`
+
+```json
+{ "id": "u1", "nickname": null, "avatar": null, "itemCount": 12, "spaceCount": 5 }
+```
