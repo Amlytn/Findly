@@ -1,3 +1,7 @@
+/**
+ * @author james-wu66
+ * Findly 后端 · 2026-09-14
+ */
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
