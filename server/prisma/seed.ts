@@ -1,3 +1,7 @@
+/**
+ * @author james-wu66
+ * Findly 后端 · 2026-09-14
+ */
 // 演示数据：dev 用户 + 空间树 + 3 件物品。可重复执行（已存在则跳过）。
 // 运行：npm run seed
 import { PrismaClient } from '@prisma/client';
