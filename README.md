@@ -12,15 +12,16 @@ design/           品牌资产
   findly-icon-set/  标准图标集（脚本生成，勿手改）
 docs/             协作文档（架构 / API / 数据库 / AI，随代码演进维护）
 miniprogram/      微信小程序端（原生 + TypeScript）
-  pages/            页面（index / search / camera / recognize / location / item / items / spaces / profile / settings）
-  components/       组件（item-card / search-bar / ai-result / space-picker / bottom-nav）
-  services/  utils/  types/
+  app.json 等       工程入口（project.private.config.json 不入库）
+  pages/            页面（index / items / spaces / profile / camera / add / result / location / detail / search / results / settings，对应设计稿 12 屏）
+  components/nav-bar/  +  custom-tab-bar/（自定义底部导航，中间凸起 ➕）
+  utils/data.ts     共享模拟数据层（联调时替换为 services 接口封装）
 server/           后端（NestJS + Prisma + PostgreSQL）
-  src/              模块（auth / users / items / spaces / search / ai / upload / common）
-  prisma/           schema.prisma
+  src/              已建 ai / search / common / prisma；items / spaces / auth / users / upload 待开发（见 docs/api.md「同学模块」标注）
+  prisma/           schema.prisma（六表）+ seed.ts
 ```
 
-两端目录骨架已按规划建立，当前为占位文件，随开发逐步填充。小程序工程配置与 `.env.example` 将在初始化工程时加入仓库。
+小程序端 12 屏界面已落地（当前为本地模拟数据，未接后端）；后端地基与 AI/搜索模块已实现，物品/空间接口待补。
 
 ## 设计资产维护
 
