@@ -1,0 +1,34 @@
+# 依赖
+node_modules/
+miniprogram_npm/
+package/
+
+# 构建产物
+dist/
+build/
+
+# 环境与密钥（提供 .env.example，真实值只放本地）
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+wechat_cert/
+
+# 本地运行时数据
+server/uploads/
+*.db
+*.sqlite
+*.sqlite3
+logs/
+*.log
+
+# 微信开发者工具本地配置（含个人 AppID 绑定信息时不入库）
+project.private.config.json
+
+# IDE / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

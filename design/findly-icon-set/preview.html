@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Findly 图标集 · 预览</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; background: #f2f5f6; color: #17313a; padding: 40px 5vw 80px; }
+  h1 { font-size: 26px; margin-bottom: 6px; }
+  .sub { color: #5b7480; margin-bottom: 40px; font-size: 14px; }
+  h2 { font-size: 17px; margin: 42px 0 6px; padding-left: 10px; border-left: 4px solid #1AA9AC; }
+  .desc { color: #5b7480; font-size: 13px; margin: 0 0 16px 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-end; }
+  .cell { text-align: center; }
+  .cell figcaption { font-size: 12px; color: #5b7480; margin-top: 10px; line-height: 1.5; }
+  .card { display: grid; place-items: center; border-radius: 18px; }
+  .light { background: #ffffff; box-shadow: 0 2px 14px rgba(23,49,58,.08); }
+  .mid   { background: #e4edef; }
+  .dark  { background: #0d2530; }
+  .grad  { background: linear-gradient(135deg, #0d4f5c, #06333e); }
+  .ios   { border-radius: 22.5%; overflow: hidden; }
+  .mask-wrap { position: relative; display: inline-grid; place-items: center; }
+  .safe { position: absolute; width: 80%; height: 80%; border: 2px dashed rgba(255,90,90,.75); border-radius: 50%; pointer-events: none; }
+  .strip { display: flex; gap: 26px; align-items: flex-end; }
+  .strip img { display: block; }
+  .pixel { image-rendering: auto; }
+  table { border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  td, th { border: 1px solid #d5e2e6; padding: 7px 14px; text-align: left; }
+  th { background: #e9f2f4; }
+</style>
+</head>
+<body>
+
+<h1>Findly 图标集预览</h1>
+<p class="sub">全部为矢量 SVG · 由 F-icon-transparent.svg 派生 · 原始图形路径未做任何重绘</p>
+
+<h2>1. 主图标（含阴影完整版 / 扁平简化版）</h2>
+<p class="desc">master 用于 ≥96px 的展示场景；flat 去除投影，用于 ≤64px 及禁止滤镜的渲染环境。</p>
+<div class="row">
+  <figure class="cell"><div class="card light" style="width:300px;height:300px"><img src="assets/master/icon-master.svg" width="240" alt="master"></div><figcaption>icon-master.svg<br>完整版（含柔和投影）</figcaption></figure>
+  <figure class="cell"><div class="card mid" style="width:300px;height:300px"><img src="assets/master/icon-flat.svg" width="240" alt="flat"></div><figcaption>icon-flat.svg<br>扁平版（无滤镜）</figcaption></figure>
+  <figure class="cell"><div class="card dark" style="width:300px;height:300px"><img src="assets/app/icon-dark.svg" width="240" alt="dark"></div><figcaption>icon-dark.svg<br>深色模式容器</figcaption></figure>
+</div>
+
+<h2>2. 平台 / 应用场景变体</h2>
+<p class="desc">circle 用于社交头像；maskable 为 PWA 可遮罩图标（红色虚线为安全区）；apple-touch 为全出血方形（由系统自行裁圆角）。</p>
+<div class="row">
+  <figure class="cell"><div class="card light" style="width:240px;height:240px"><img src="assets/app/icon-circle.svg" width="200" alt="circle"></div><figcaption>app/icon-circle.svg<br>圆形头像</figcaption></figure>
+  <figure class="cell"><div class="mask-wrap" style="width:240px;height:240px"><img src="assets/app/icon-maskable.svg" width="240" alt="maskable"><span class="safe"></span></div><figcaption>app/icon-maskable.svg<br>PWA maskable（含安全区示意）</figcaption></figure>
+  <figure class="cell"><div class="ios" style="width:200px;height:200px"><img src="assets/app/apple-touch-icon.svg" width="200" alt="apple-touch" style="display:block"></div><figcaption>app/apple-touch-icon.svg<br>全出血方形（iOS 裁切模拟）</figcaption></figure>
+</div>
+
+<h2>3. 无底图形 Glyph（透明底）</h2>
+<p class="desc">glyph 原配色用于深色 / 品牌色背景；glyph-teal 为浅色背景重配色版；mono 为单色剪影（印刷、刻字、水印）。</p>
+<div class="row">
+  <figure class="cell"><div class="card grad" style="width:260px;height:290px"><img src="assets/glyph/glyph.svg" width="190" alt="glyph"></div><figcaption>glyph/glyph.svg<br>原配色 · 深色底</figcaption></figure>
+  <figure class="cell"><div class="card light" style="width:260px;height:290px"><img src="assets/glyph/glyph-teal.svg" width="190" alt="glyph-teal"></div><figcaption>glyph/glyph-teal.svg<br>青绿配色 · 浅色底</figcaption></figure>
+  <figure class="cell"><div class="card mid" style="width:260px;height:290px"><img src="assets/glyph/glyph-mono-black.svg" width="190" alt="mono-black"></div><figcaption>glyph/glyph-mono-black.svg<br>单色黑</figcaption></figure>
+  <figure class="cell"><div class="card dark" style="width:260px;height:290px"><img src="assets/glyph/glyph-mono-white.svg" width="190" alt="mono-white"></div><figcaption>glyph/glyph-mono-white.svg<br>单色白</figcaption></figure>
+</div>
+
+<h2>4. 小尺寸表现（实际像素尺寸）</h2>
+<p class="desc">16–64px 使用扁平版（无投影糊成一团的问题）。</p>
+<div class="row">
+  <figure class="cell"><div class="card light strip" style="width:560px;height:110px;padding:0 24px">
+    <img class="pixel" src="assets/sizes/icon-16.svg" width="16" height="16" alt="16">
+    <img class="pixel" src="assets/sizes/icon-24.svg" width="24" height="24" alt="24">
+    <img class="pixel" src="assets/sizes/icon-32.svg" width="32" height="32" alt="32">
+    <img class="pixel" src="assets/sizes/icon-48.svg" width="48" height="48" alt="48">
+    <img class="pixel" src="assets/sizes/icon-64.svg" width="64" height="64" alt="64">
+    <img class="pixel" src="assets/favicon.svg" width="64" height="64" alt="favicon">
+  </div><figcaption>sizes/icon-16/24/32/48/64.svg + favicon.svg（浅底）</figcaption></figure>
+  <figure class="cell"><div class="card dark strip" style="width:560px;height:110px;padding:0 24px">
+    <img class="pixel" src="assets/sizes/icon-16.svg" width="16" height="16" alt="16">
+    <img class="pixel" src="assets/sizes/icon-24.svg" width="24" height="24" alt="24">
+    <img class="pixel" src="assets/sizes/icon-32.svg" width="32" height="32" alt="32">
+    <img class="pixel" src="assets/sizes/icon-48.svg" width="48" height="48" alt="48">
+    <img class="pixel" src="assets/sizes/icon-64.svg" width="64" height="64" alt="64">
+    <img class="pixel" src="assets/favicon.svg" width="64" height="64" alt="favicon">
+  </div><figcaption>同一组（深底）</figcaption></figure>
+  <figure class="cell"><div class="card light strip" style="width:560px;height:150px;padding:0 24px">
+    <img src="assets/sizes/icon-96.svg" width="96" height="96" alt="96">
+    <img src="assets/sizes/icon-128.svg" width="128" height="128" alt="128">
+  </div><figcaption>sizes/icon-96 / icon-128（完整版）</figcaption></figure>
+</div>
+
+<h2>5. SVG Sprite（网页内联复用）</h2>
+<p class="desc">sprite.svg 内含 5 个 symbol：findly-icon / findly-icon-flat / findly-glyph / findly-glyph-teal / findly-mono（mono 使用 currentColor，可随文字颜色变化）。用法：
+<code>&lt;svg width="48"&gt;&lt;use href="assets/sprite.svg#findly-glyph-teal"/&gt;&lt;/svg&gt;</code></p>
+
+<h2>6. 文件清单</h2>
+<table>
+  <tr><th>文件</th><th>用途</th></tr>
+  <tr><td>master/icon-master.svg</td><td>主图标（1254 viewBox，含投影）——大尺寸展示、引导页</td></tr>
+  <tr><td>master/icon-flat.svg</td><td>扁平主图标（无滤镜）——兼容受限渲染器</td></tr>
+  <tr><td>app/icon-dark.svg</td><td>深色模式应用图标</td></tr>
+  <tr><td>app/icon-circle.svg</td><td>圆形头像（社交平台）</td></tr>
+  <tr><td>app/icon-maskable.svg</td><td>PWA 可遮罩图标（图形缩放至安全圆内）</td></tr>
+  <tr><td>app/apple-touch-icon.svg</td><td>iOS 全出血方形（如需 PNG 请自行导出 180×180）</td></tr>
+  <tr><td>glyph/glyph.svg</td><td>无底图形·原配色（深色/品牌色底）</td></tr>
+  <tr><td>glyph/glyph-teal.svg</td><td>无底图形·青绿配色（白色/浅色底）</td></tr>
+  <tr><td>glyph/glyph-mono-black.svg / -white.svg</td><td>单色剪影（黑/白）</td></tr>
+  <tr><td>favicon.svg</td><td>网站收藏夹图标（64）</td></tr>
+  <tr><td>sizes/icon-16…512.svg</td><td>标准尺寸系列（≤64 扁平版，≥96 完整版）</td></tr>
+  <tr><td>sprite.svg</td><td>symbol 合集，网页内联复用</td></tr>
+  <tr><td>site.webmanifest</td><td>PWA 清单（引用 maskable 与 apple-touch）</td></tr>
+  <tr><td>tools/build.mjs</td><td>构建脚本：node tools/build.mjs 可重新生成全部文件</td></tr>
+</table>
+
+</body>
+</html>

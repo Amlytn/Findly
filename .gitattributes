@@ -1,0 +1,10 @@
+# 统一换行符为 LF，避免 Windows 下 CRLF/LF 互相污染 diff
+* text=auto eol=lf
+
+# 二进制与生成物不参与 diff
+*.png binary
+*.jpg binary
+*.webp binary
+*.ttf binary
+*.woff binary
+*.woff2 binary

@@ -1,0 +1,28 @@
+{
+  "name": "Findly",
+  "short_name": "Findly",
+  "description": "Findly — find anything, anywhere.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1AA9AC",
+  "theme_color": "#0F97A4",
+  "icons": [
+    {
+      "src": "app/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "app/apple-touch-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
