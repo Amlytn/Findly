@@ -10,7 +10,7 @@
   </view>
 
   <view class="vf">
-    <image class="vf-img" src="/assets/item-mouse.png" mode="aspectFill" />
+    <image class="vf-img" src="/assets/item-mouse.jpg" mode="aspectFill" />
     <view class="corner tl"></view>
     <view class="corner tr"></view>
     <view class="corner bl"></view>
@@ -19,7 +19,7 @@
 
   <view class="ctrls">
     <view class="album" bindtap="pick">
-      <image src="/assets/item-camera.png" mode="aspectFill" />
+      <image src="/assets/item-camera.jpg" mode="aspectFill" />
     </view>
     <view class="shutter" bindtap="pick">
       <view class="shutter-in"></view>
