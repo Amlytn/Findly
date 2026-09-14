@@ -1,6 +1,6 @@
 Page({
   data: {
-    img: '/assets/item-mouse.png',
+    img: '/assets/item-mouse.jpg',
     score: 92,
     info: {
       brand: 'Logitech',

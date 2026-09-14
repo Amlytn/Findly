@@ -1,9 +1,9 @@
 Page({
   data: {
     recentItems: [
-      { id: 1, name: '无线鼠标', space: '书房', count: 1, img: '/assets/item-mouse.png' },
-      { id: 2, name: '相机', space: '客厅', count: 1, img: '/assets/item-camera.png' },
-      { id: 3, name: '耳机', space: '卧室', count: 1, img: '/assets/item-headphone.png' }
+      { id: 1, name: '无线鼠标', space: '书房', count: 1, img: '/assets/item-mouse.jpg' },
+      { id: 2, name: '相机', space: '客厅', count: 1, img: '/assets/item-camera.jpg' },
+      { id: 3, name: '耳机', space: '卧室', count: 1, img: '/assets/item-headphone.jpg' }
     ],
     spaces: [
       { name: '我的家', zones: 4, count: 12, theme: 'green', icon: 'house' },
