@@ -1,0 +1,101 @@
+// Findly 数据库设计（方案文档第十三节六张表）
+// 修改本文件后执行：npm run prisma:migrate 生成迁移（迁移文件必须一起提交）
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  openid    String   @unique // 微信 openid（M4 接入微信登录后写入）
+  nickname  String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items  Item[]
+  spaces Space[]
+  tags   Tag[]
+}
+
+model Space {
+  id        String   @id @default(cuid())
+  userId    String
+  parentId  String? // 层级空间树（方案文档第十一节）
+  name      String
+  type      String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  parent   Space?   @relation("SpaceTree", fields: [parentId], references: [id])
+  children Space[]  @relation("SpaceTree")
+  items    Item[]
+
+  @@index([userId])
+}
+
+model Item {
+  id           String    @id @default(cuid())
+  userId       String
+  name         String
+  description  String?
+  category     String?
+  brand        String?
+  model        String?
+  color        String?
+  status       String    @default("normal")
+  quantity     Int       @default(1)
+  spaceId      String?
+  imageUrl     String?
+  thumbnailUrl String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime? // 软删除（方案文档第十二节）
+
+  user      User       @relation(fields: [userId], references: [id])
+  space     Space?     @relation(fields: [spaceId], references: [id])
+  tags      ItemTag[]
+  aiResults AIResult[]
+
+  @@index([userId, spaceId])
+  @@index([name])
+}
+
+model Tag {
+  id     String @id @default(cuid())
+  userId String
+  name   String
+
+  user  User      @relation(fields: [userId], references: [id])
+  items ItemTag[]
+
+  @@unique([userId, name])
+}
+
+model ItemTag {
+  itemId String
+  tagId  String
+
+  item Item @relation(fields: [itemId], references: [id])
+  tag  Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([itemId, tagId])
+}
+
+model AIResult {
+  id         String   @id @default(cuid())
+  itemId     String? // 识别阶段暂无 itemId，物品保存后可回填
+  taskType   String // recognize / parse-query
+  resultJson String
+  model      String
+  createdAt  DateTime @default(now())
+
+  item Item? @relation(fields: [itemId], references: [id])
+}
