@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
+import { pathOf } from '../common/path.util';
 
 @Injectable()
 export class SearchService {
@@ -13,20 +14,6 @@ export class SearchService {
     private prisma: PrismaService,
     private ai: AiService,
   ) {}
-
-  /** 位置路径：向上回溯 parentId 拼成 "我的家 → 书房 → 书桌 → 右侧抽屉" */
-  private pathOf(spaces: { id: string; parentId: string | null; name: string }[], id: string | null): string {
-    if (!id) return '未归位';
-    const byId = new Map(spaces.map((s) => [s.id, s]));
-    const chain: string[] = [];
-    let cur = byId.get(id);
-    let guard = 0;
-    while (cur && guard++ < 20) {
-      chain.unshift(cur.name);
-      cur = cur.parentId ? byId.get(cur.parentId) : undefined;
-    }
-    return chain.join(' → ');
-  }
 
   /** 解析搜索词：短词直查；长句走 LLM；LLM 不可用降级关键词（source 如实标注） */
   private async parseForSearch(q: string) {
@@ -102,7 +89,7 @@ export class SearchService {
         category: r.category,
         color: r.color,
         tags: r.tags.map((t) => t.tag.name),
-        path: this.pathOf(spaces, r.spaceId),
+        path: pathOf(spaces, r.spaceId),
         imageUrl: r.imageUrl,
         updatedAt: r.updatedAt,
       }));
@@ -116,7 +103,7 @@ export class SearchService {
         .map((s) => ({
           id: s.id,
           name: s.name,
-          path: this.pathOf(allSpaces, s.id),
+          path: pathOf(allSpaces, s.id),
         }));
     }
 
