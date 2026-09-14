@@ -1,0 +1,5 @@
+# server 本地补充（仓库根 .gitignore 已覆盖大部分，这里兜底）
+dist/
+.env
+*.log
+tsconfig.tsbuildinfo
