@@ -10,11 +10,17 @@
 design/           品牌资产
   brand/            图标定稿源文件（唯一构建源）
   findly-icon-set/  标准图标集（脚本生成，勿手改）
+docs/             协作文档（架构 / API / 数据库 / AI，随代码演进维护）
 miniprogram/      微信小程序端（原生 + TypeScript）
-server/           后端（NestJS + PostgreSQL）
+  pages/            页面（index / search / camera / recognize / location / item / items / spaces / profile / settings）
+  components/       组件（item-card / search-bar / ai-result / space-picker / bottom-nav）
+  services/  utils/  types/
+server/           后端（NestJS + Prisma + PostgreSQL）
+  src/              模块（auth / users / items / spaces / search / ai / upload / common）
+  prisma/           schema.prisma
 ```
 
-两端工程尚在初始化阶段，目录先以占位形式存在。
+两端目录骨架已按规划建立，当前为占位文件，随开发逐步填充。小程序工程配置与 `.env.example` 将在初始化工程时加入仓库。
 
 ## 设计资产维护
 
@@ -30,6 +36,6 @@ python tools/validate.py
 ## 协作约定
 
 - 主分支 `main` 保持稳定，功能开发走 `feature/xxx` 分支，合并前互相过目。
-- 环境与密钥只存在于本地 `.env`（仓库提供 `.env.example` 模板），任何 API Key、AppSecret 不得提交。
+- 环境与密钥只存在于本地 `.env`（`.env.example` 模板随工程初始化提供），任何 API Key、AppSecret 不得提交。
 - 换行符统一 LF、缩进统一 2 空格，由 `.gitattributes` / `.editorconfig` 约束，编辑器请安装 EditorConfig 插件。
 - 前端接口约定、数据库结构等协作文档以 PR 形式提交到仓库 `docs/`（随代码演进维护）。
