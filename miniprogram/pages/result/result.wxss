@@ -1,0 +1,99 @@
+.r-top {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 8rpx;
+}
+
+.r-img {
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 24rpx;
+  background: #EFF4F5;
+}
+
+.r-acc {
+  margin-left: auto;
+  padding: 12rpx 28rpx;
+  border-radius: 999rpx;
+  background: #DFF5EC;
+  color: #12A5A0;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.r-rows {
+  margin-top: 32rpx;
+  background: #F7FBFB;
+  border-radius: 24rpx;
+  padding: 8rpx 28rpx;
+}
+
+.r-row {
+  display: flex;
+  padding: 26rpx 0;
+  border-bottom: 2rpx solid #EAF3F4;
+}
+
+.r-row:last-child {
+  border-bottom: none;
+}
+
+.r-row .k {
+  width: 120rpx;
+  flex-shrink: 0;
+  color: #9AB0B4;
+  font-size: 28rpx;
+}
+
+.r-row .v {
+  flex: 1;
+  color: #0F4C5A;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.r-row.desc .v {
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.r-loc {
+  margin-top: 32rpx;
+  background: #F7FBFB;
+  border-radius: 24rpx;
+  padding: 28rpx;
+}
+
+.loc-head {
+  display: flex;
+  align-items: center;
+}
+
+.loc-title {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+}
+
+.loc-change {
+  font-size: 26rpx;
+  color: #12A5A0;
+  font-weight: 600;
+}
+
+.crumb {
+  margin-top: 22rpx;
+  display: flex;
+  align-items: center;
+}
+
+.crumb-txt {
+  margin-left: 12rpx;
+  font-size: 28rpx;
+  color: #124E5B;
+}
+
+.r-save {
+  margin-top: 56rpx;
+}

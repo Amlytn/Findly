@@ -1,0 +1,21 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="空间管理" />
+
+    <view class="sp-row" wx:for="{{spaces}}" wx:key="name" bindtap="goSpace" data-name="{{item.name}}">
+      <view class="sp-chip chip-{{item.icon}}">
+        <view class="ic ic-{{item.icon}}"></view>
+      </view>
+      <view class="sp-info">
+        <view class="sp-name">{{item.name}}</view>
+        <view class="sp-meta">{{item.zones}}个区域 · {{item.items}}件物品</view>
+      </view>
+      <view class="chev"></view>
+    </view>
+
+    <view class="btn-outline add-space" bindtap="addSpace">
+      <view class="ic ic-plus"></view>
+      <text>添加空间</text>
+    </view>
+  </view>
+</view>

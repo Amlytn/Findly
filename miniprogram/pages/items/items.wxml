@@ -1,0 +1,31 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="我的物品" />
+
+    <view class="s-bar" bindtap="goSearch">
+      <view class="ic ic-search"></view>
+      <text class="s-ph-txt">搜索物品名称、品牌、标签...</text>
+    </view>
+
+    <scroll-view class="chips" scroll-x>
+      <view
+        class="chip {{cat === item.key ? 'on' : ''}}"
+        wx:for="{{cats}}"
+        wx:key="key"
+        bindtap="setCat"
+        data-k="{{item.key}}"
+      >{{item.name}} {{counts[index]}}</view>
+    </scroll-view>
+
+    <view class="grid">
+      <view class="g-card" wx:for="{{shown}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+        <image src="{{item.img}}" mode="aspectFill" />
+        <view class="g-name">{{item.name}}</view>
+        <view class="g-meta">{{item.color}} · {{item.brand}}</view>
+        <view class="g-loc">{{item.space}} · {{item.count}}件</view>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{shown.length === 0}}">该分类下暂无物品</view>
+  </view>
+</view>

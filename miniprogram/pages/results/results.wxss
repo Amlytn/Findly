@@ -1,0 +1,86 @@
+.seg {
+  display: flex;
+  background: #F0F6F7;
+  border-radius: 999rpx;
+  padding: 8rpx;
+  margin-top: 8rpx;
+}
+
+.seg-item {
+  flex: 1;
+  text-align: center;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  color: #5E7A80;
+  border-radius: 999rpx;
+}
+
+.seg-item.on {
+  background: linear-gradient(135deg, #31CBBB, #04869D);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.cnt {
+  margin: 28rpx 0 8rpx;
+  font-size: 26rpx;
+  color: #9AB0B4;
+}
+
+.res-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid #EEF5F6;
+}
+
+.res-item image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 20rpx;
+  background: #EFF4F5;
+  flex-shrink: 0;
+}
+
+.sp-chip {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 20rpx;
+  background: #E1F3E4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.res-info {
+  flex: 1;
+  margin-left: 24rpx;
+  min-width: 0;
+}
+
+.res-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #0F4C5A;
+}
+
+.res-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #9AB0B4;
+}
+
+.res-loc {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #B5C4C7;
+}
+
+.empty {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #9AB0B4;
+}

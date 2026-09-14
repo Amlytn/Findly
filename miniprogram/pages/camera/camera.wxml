@@ -1,0 +1,31 @@
+<view class="cam">
+  <view class="cam-nav">
+    <view class="cam-back" bindtap="goBack">
+      <view class="cam-arrow"></view>
+    </view>
+    <view class="cam-title">
+      <view class="cam-ic"></view>
+      <text>拍照识别</text>
+    </view>
+  </view>
+
+  <view class="vf">
+    <image class="vf-img" src="/assets/item-mouse.png" mode="aspectFill" />
+    <view class="corner tl"></view>
+    <view class="corner tr"></view>
+    <view class="corner bl"></view>
+    <view class="corner br"></view>
+  </view>
+
+  <view class="ctrls">
+    <view class="album" bindtap="pick">
+      <image src="/assets/item-camera.png" mode="aspectFill" />
+    </view>
+    <view class="shutter" bindtap="pick">
+      <view class="shutter-in"></view>
+    </view>
+    <view class="flash {{flashOn ? 'on' : ''}}" bindtap="toggleFlash">
+      <view class="flash-ic"></view>
+    </view>
+  </view>
+</view>

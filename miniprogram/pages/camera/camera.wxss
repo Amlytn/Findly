@@ -1,0 +1,138 @@
+.cam {
+  min-height: 100vh;
+  background: #17191C;
+  display: flex;
+  flex-direction: column;
+  padding: calc(env(safe-area-inset-top) + 16rpx) 32rpx calc(env(safe-area-inset-bottom) + 48rpx);
+}
+
+.cam-nav {
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+}
+
+.cam-back {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cam-arrow {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #FFFFFF;
+  border-bottom: 4rpx solid #FFFFFF;
+  transform: rotate(45deg);
+  margin-left: 8rpx;
+}
+
+.cam-title {
+  margin-left: 16rpx;
+  display: flex;
+  align-items: center;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.cam-ic {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h3l2-3h6l2 3h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20.5H4A1.5 1.5 0 0 1 2.5 19v-9A1.5 1.5 0 0 1 4 8.5z'/%3E%3Ccircle cx='12' cy='14' r='4'/%3E%3C/svg%3E");
+}
+
+/* 取景框 */
+.vf {
+  flex: 1;
+  margin-top: 28rpx;
+  position: relative;
+  border-radius: 24rpx;
+  overflow: hidden;
+  min-height: 600rpx;
+}
+
+.vf-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.corner {
+  position: absolute;
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.corner.tl { top: 32rpx; left: 32rpx; border-top: 6rpx solid #FFFFFF; border-left: 6rpx solid #FFFFFF; border-top-left-radius: 14rpx; }
+.corner.tr { top: 32rpx; right: 32rpx; border-top: 6rpx solid #FFFFFF; border-right: 6rpx solid #FFFFFF; border-top-right-radius: 14rpx; }
+.corner.bl { bottom: 32rpx; left: 32rpx; border-bottom: 6rpx solid #FFFFFF; border-left: 6rpx solid #FFFFFF; border-bottom-left-radius: 14rpx; }
+.corner.br { bottom: 32rpx; right: 32rpx; border-bottom: 6rpx solid #FFFFFF; border-right: 6rpx solid #FFFFFF; border-bottom-right-radius: 14rpx; }
+
+/* 底部控制区 */
+.ctrls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56rpx 28rpx 0;
+}
+
+.album {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  border: 4rpx solid rgba(255, 255, 255, 0.65);
+}
+
+.album image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.shutter {
+  width: 144rpx;
+  height: 144rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shutter-in {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: #FFFFFF;
+}
+
+.flash {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flash-ic {
+  width: 40rpx;
+  height: 40rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2z'/%3E%3C/svg%3E");
+}
+
+.flash.on {
+  background: rgba(49, 203, 187, 0.4);
+}

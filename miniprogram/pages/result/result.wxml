@@ -1,0 +1,42 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="识别结果" />
+
+    <view class="r-top">
+      <image class="r-img" src="{{img}}" mode="aspectFill" />
+      <view class="r-acc">识别准确 {{score}}%</view>
+    </view>
+
+    <view class="r-rows">
+      <view class="r-row">
+        <text class="k">品牌</text>
+        <text class="v">{{info.brand}}</text>
+      </view>
+      <view class="r-row">
+        <text class="k">类别</text>
+        <text class="v">{{info.category}}</text>
+      </view>
+      <view class="r-row">
+        <text class="k">颜色</text>
+        <text class="v">{{info.color}}</text>
+      </view>
+      <view class="r-row desc">
+        <text class="k">描述</text>
+        <text class="v">{{info.desc}}</text>
+      </view>
+    </view>
+
+    <view class="r-loc">
+      <view class="loc-head">
+        <text class="loc-title">选择位置</text>
+        <text class="loc-change" bindtap="changeLoc">更改位置</text>
+      </view>
+      <view class="crumb">
+        <view class="ic ic-pin"></view>
+        <text class="crumb-txt">{{locText}}</text>
+      </view>
+    </view>
+
+    <view class="btn-primary r-save" bindtap="save">保存</view>
+  </view>
+</view>
