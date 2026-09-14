@@ -32,11 +32,13 @@ export class AiController {
     const result = await this.ai.recognize(dto.imageBase64);
 
     // 记录每次 AI 调用（方案文档 AIResult 表；同时是面试量化点的数据来源）
+    // 仅存关键字段控制体积：description/tags 体积大且对成本/准确率量化价值低
+    const { description, tags, ...trimmed } = result;
     await this.prisma.aIResult.create({
       data: {
         taskType: 'recognize',
         model: process.env.QWEN_VL_MODEL || 'qwen-vl-plus',
-        resultJson: JSON.stringify(result),
+        resultJson: JSON.stringify(trimmed),
       },
     });
     return result;

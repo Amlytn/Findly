@@ -11,8 +11,20 @@ export class SearchController {
   constructor(private readonly search: SearchService) {}
 
   @Get()
-  get(@Req() req, @Query('q') q?: string) {
+  get(
+    @Req() req,
+    @Query('q') q?: string,
+    @Query('type') type?: string,
+  ) {
     if (!q || !q.trim()) throw new BadRequestException('缺少搜索词 q');
-    return this.search.search(userIdFrom(req), q.trim());
+    const t = (type || 'all') as 'all' | 'item' | 'space';
+    if (!['all', 'item', 'space'].includes(t))
+      throw new BadRequestException('type 必须是 all/item/space');
+    return this.search.search(userIdFrom(req), q.trim(), t);
+  }
+
+  @Get('suggestions')
+  suggestions(@Req() req) {
+    return this.search.suggestions(userIdFrom(req));
   }
 }
