@@ -1,0 +1,25 @@
+<view class="page">
+  <view class="screen add-screen">
+    <nav-bar title="添加物品" />
+
+    <view class="add-card">
+      <view class="add-cam">
+        <view class="add-cam-ic"></view>
+      </view>
+      <view class="add-title">拍照识别</view>
+      <view class="add-sub">AI 自动识别物品信息</view>
+
+      <view class="btn-primary add-btn" bindtap="fromAlbum">
+        <view class="btn-ic btn-ic-w"></view>
+        <text>从相册选择</text>
+      </view>
+      <view class="btn-outline add-btn" bindtap="manualAdd">
+        <view class="btn-ic btn-ic-t"></view>
+        <text>手动添加</text>
+      </view>
+
+      <view class="add-leaf leaf-l"></view>
+      <view class="add-leaf leaf-r"></view>
+    </view>
+  </view>
+</view>

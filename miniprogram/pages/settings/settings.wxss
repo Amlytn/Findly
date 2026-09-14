@@ -1,0 +1,25 @@
+.g-label {
+  font-size: 26rpx;
+  color: #9AB0B4;
+  margin: 24rpx 0 16rpx;
+}
+
+.g-card {
+  background: #FFFFFF;
+  border: 2rpx solid #EEF5F6;
+  border-radius: 28rpx;
+  padding: 8rpx 28rpx;
+  margin-bottom: 28rpx;
+}
+
+.logout {
+  margin-top: 24rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  border-radius: 48rpx;
+  background: #F0F6F7;
+  color: #5E7A80;
+  font-size: 30rpx;
+  font-weight: 700;
+}

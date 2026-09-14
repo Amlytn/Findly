@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/items/items",
+    "pages/spaces/spaces",
+    "pages/profile/profile",
+    "pages/camera/camera",
+    "pages/add/add",
+    "pages/result/result",
+    "pages/location/location",
+    "pages/detail/detail",
+    "pages/search/search",
+    "pages/results/results",
+    "pages/settings/settings"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#E3F4F5",
+    "backgroundColorTop": "#E3F4F5",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#93A9AE",
+    "selectedColor": "#12A5A0",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/items/items", "text": "物品" },
+      { "pagePath": "pages/spaces/spaces", "text": "空间" },
+      { "pagePath": "pages/profile/profile", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

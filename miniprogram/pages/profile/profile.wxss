@@ -1,0 +1,40 @@
+.p-card {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #EAF8F6, #DFF3EC);
+  border-radius: 28rpx;
+  padding: 36rpx 32rpx;
+  margin-top: 8rpx;
+}
+
+.p-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.p-info {
+  margin-left: 28rpx;
+}
+
+.p-name {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+}
+
+.p-sub {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: #7A979C;
+}
+
+.p-list {
+  margin-top: 32rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #EEF5F6;
+  border-radius: 28rpx;
+  padding: 8rpx 28rpx;
+}

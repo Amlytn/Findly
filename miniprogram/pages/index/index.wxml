@@ -1,0 +1,72 @@
+<view class="page">
+  <view class="screen">
+
+    <!-- 顶部品牌栏 -->
+    <view class="header">
+      <view class="brand">
+        <image class="logo" src="/assets/logo.png" mode="aspectFit" />
+        <text class="brand-name">Findly</text>
+      </view>
+    </view>
+
+    <!-- 搜索栏（点击进入搜索页，右侧扫码入口） -->
+    <view class="search-bar" bindtap="goSearch">
+      <view class="icon-search"></view>
+      <input
+        class="search-input"
+        placeholder="搜索物品、空间、或描述..."
+        placeholder-class="search-ph"
+        disabled
+      />
+      <view class="scan-btn" catchtap="onScan"></view>
+    </view>
+
+    <!-- 拍照识别横幅 -->
+    <view class="hero" bindtap="onHeroTap">
+      <view class="hero-leaves hero-leaf-blue"></view>
+      <view class="hero-leaves hero-leaf-green"></view>
+      <view class="hero-text">
+        <view class="hero-line">拍一张照片</view>
+        <view class="hero-line">AI帮你识别物品</view>
+      </view>
+      <view class="hero-cam">
+        <view class="icon-camera"></view>
+      </view>
+    </view>
+
+    <!-- 最近添加 -->
+    <view class="section-title">最近添加</view>
+    <view class="recent">
+      <view
+        class="recent-item"
+        wx:for="{{recentItems}}"
+        wx:key="name"
+        bindtap="onItemTap"
+        data-id="{{item.id}}"
+      >
+        <image class="recent-img" src="{{item.img}}" mode="aspectFill" />
+        <view class="recent-name">{{item.name}}</view>
+        <view class="recent-meta">{{item.space}} · {{item.count}}件</view>
+      </view>
+    </view>
+
+    <!-- 我的空间 -->
+    <view class="section-title">我的空间</view>
+    <view class="spaces">
+      <view
+        class="space-card space-{{item.theme}}"
+        wx:for="{{spaces}}"
+        wx:key="name"
+        bindtap="onSpaceTap"
+        data-name="{{item.name}}"
+      >
+        <view class="space-icon icon-{{item.icon}}"></view>
+        <view class="space-info">
+          <view class="space-name">{{item.name}}</view>
+          <view class="space-meta">{{item.zones}}个区域 · {{item.count}}件</view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</view>

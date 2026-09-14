@@ -1,0 +1,40 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="搜索结果" />
+
+    <view class="seg">
+      <view class="seg-item {{tab === 'all' ? 'on' : ''}}" bindtap="setTab" data-t="all">全部</view>
+      <view class="seg-item {{tab === 'item' ? 'on' : ''}}" bindtap="setTab" data-t="item">物品</view>
+      <view class="seg-item {{tab === 'space' ? 'on' : ''}}" bindtap="setTab" data-t="space">空间</view>
+    </view>
+
+    <view class="cnt">找到 {{count}} 个相关结果</view>
+
+    <block wx:if="{{tab !== 'space'}}">
+      <view class="res-item" wx:for="{{items}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+        <image src="{{item.img}}" mode="aspectFill" />
+        <view class="res-info">
+          <view class="res-name">{{item.name}}</view>
+          <view class="res-meta">{{item.color}} · {{item.brand}} · {{item.count}}件</view>
+          <view class="res-loc">{{item.space}} · {{item.zone}}</view>
+        </view>
+        <view class="chev"></view>
+      </view>
+    </block>
+
+    <block wx:if="{{tab !== 'item'}}">
+      <view class="res-item" wx:for="{{spaces}}" wx:key="name" bindtap="goSpaces">
+        <view class="sp-chip">
+          <view class="ic ic-house"></view>
+        </view>
+        <view class="res-info">
+          <view class="res-name">{{item.name}}</view>
+          <view class="res-meta">{{item.zones}}个区域 · {{item.items}}件</view>
+        </view>
+        <view class="chev"></view>
+      </view>
+    </block>
+
+    <view class="empty" wx:if="{{count === 0}}">没有找到相关结果，换个关键词试试～</view>
+  </view>
+</view>

@@ -1,0 +1,100 @@
+.ai-label {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+  margin: 8rpx 0 24rpx;
+}
+
+.s-bar {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  background: #F0F6F7;
+  border-radius: 44rpx;
+  padding: 0 28rpx;
+}
+
+.s-bar .ic {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.s-input {
+  flex: 1;
+  margin-left: 16rpx;
+  font-size: 28rpx;
+  color: #124E5B;
+}
+
+.s-ph {
+  color: #9AB0B4;
+}
+
+.sec-title {
+  margin: 40rpx 0 24rpx;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+}
+
+.rel-card {
+  display: flex;
+  align-items: center;
+  background: #F7FBFB;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.rel-card image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 20rpx;
+  background: #EFF4F5;
+  flex-shrink: 0;
+}
+
+.rel-info {
+  flex: 1;
+  margin-left: 24rpx;
+  min-width: 0;
+}
+
+.rel-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #0F4C5A;
+}
+
+.rel-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #9AB0B4;
+}
+
+.rel-loc {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #B5C4C7;
+}
+
+.sug {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 24rpx;
+  background: #F7FBFB;
+  border-radius: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.sug .ic {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.sug-txt {
+  flex: 1;
+  margin-left: 16rpx;
+  font-size: 28rpx;
+  color: #124E5B;
+}
