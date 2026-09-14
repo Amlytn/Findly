@@ -1,7 +1,8 @@
 # Findly API 接口契约（v1.1）
 
 > 前后端共同遵守的接口约定。改接口必须先改本文档，再动代码（PR 同步提交）。
-> 评审状态：v1.1（jameswu 起草；v1.1 按协作规范第 9 节「12 屏实现范围」补 4 个接口，标"提案"的返回格式待同学确认）
+> 维护人：@james-wu66 ｜ 协作：@Amlytn
+> 评审状态：v1.1（@james-wu66 起草；v1.1 按协作规范第 9 节「12 屏实现范围」补 4 个接口，标"提案"的返回格式待 @Amlytn 确认）
 
 ## 通用约定
 
@@ -19,6 +20,8 @@
 ---
 
 ## 1. 空间 `/api/v1/spaces`
+
+> 归属：@Amlytn（物品/空间模块，契约已定待实现）
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
@@ -44,6 +47,8 @@ POST 请求体：
 
 ## 2. 物品 `/api/v1/items`
 
+> 归属：@Amlytn（物品模块，契约已定待实现）
+
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `/api/v1/items?page=1&pageSize=20&spaceId=&keyword=` | 分页列表；keyword 模糊匹配 name/brand/model/category/description |
@@ -51,8 +56,8 @@ POST 请求体：
 | GET | `/api/v1/items/:id` | 详情（含 space、tags、最近 5 次 AI 识别记录） |
 | PATCH | `/api/v1/items/:id` | 编辑 / 移动位置（改 spaceId）/ 整体替换 tags |
 | DELETE | `/api/v1/items/:id` | 软删除（deletedAt 置时间，列表不再出现） |
-| GET | `/api/v1/items/categories` | 分类筛选 chips（v1.1 新增，规范第 9 节）——**同学模块** |
-| GET | `/api/v1/items/:id/related` | 同类物品（v1.1 新增，规范第 9 节）——**同学模块** |
+| GET | `/api/v1/items/categories` | 分类筛选 chips（v1.1 新增，规范第 9 节）——**@Amlytn 实现** |
+| GET | `/api/v1/items/:id/related` | 同类物品（v1.1 新增，规范第 9 节）——**@Amlytn 实现** |
 
 POST / PATCH 请求体：
 
@@ -97,6 +102,8 @@ GET 列表返回：
 
 ## 3. 搜索 `/api/v1/search`
 
+> 归属：@james-wu66（搜索模块）
+
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `/api/v1/search?q=我的白色无线鼠标在哪里&type=all` | 简单词直查数据库；复杂句走 LLM 解析后查询；LLM 不可用自动降级 |
@@ -136,13 +143,15 @@ GET 列表返回：
 |---|---|---|
 | GET | `/api/v1/search/suggestions` | 搜索建议词；**本地数据生成，不调 LLM** |
 
-生成规则（提案，待同学确认设计意图）：从当前用户物品的名称/标签/分类中提炼高频词，按出现次数倒序，最多 10 个；没有任何物品时返回空数组（前端隐藏该区域）。
+生成规则（提案，待 @Amlytn 确认设计意图）：从当前用户物品的名称/标签/分类中提炼高频词，按出现次数倒序，最多 10 个；没有任何物品时返回空数组（前端隐藏该区域）。
 
 ```json
 { "suggestions": ["鼠标", "充电器", "HDMI"] }
 ```
 
 ## 4. AI 识别 `/api/v1/ai/recognize`
+
+> 归属：@james-wu66（AI 模块）
 
 | 方法 | 路径 | 说明 |
 |---|---|---|

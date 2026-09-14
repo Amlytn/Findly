@@ -1,3 +1,7 @@
+/**
+ * @author james-wu66
+ * Findly 后端 · 2026-09-14
+ */
 import { BadRequestException, Controller, Get, Query, Req } from '@nestjs/common';
 import { SearchService } from './search.service';
 import { userIdFrom } from '../common/user.util';
