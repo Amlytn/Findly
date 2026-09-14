@@ -32,14 +32,15 @@ export class SearchService {
         },
       });
       return { ...parsed, source: 'LLM Query Parser' };
-    } catch {
-      // 降级路径也必须落库才能统计降级比例；但绝不能被日志失败阻断降级搜索（多层防线）
+    } catch (e) {
+      // 降级路径也必须落库才能统计降级比例；根因（HTTP 401/网络错误等）写入 reason 供排障
+      const reason = e?.message || '未知错误';
       try {
         await this.prisma.aIResult.create({
           data: {
             taskType: 'parse-query',
             model: process.env.QWEN_TEXT_MODEL || 'qwen-turbo',
-            resultJson: JSON.stringify({ keyword: q, source: 'LLM 不可用，降级关键词直查' }),
+            resultJson: JSON.stringify({ keyword: q, source: 'LLM 不可用，降级关键词直查', reason }),
           },
         });
       } catch {

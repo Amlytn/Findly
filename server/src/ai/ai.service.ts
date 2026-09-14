@@ -36,22 +36,26 @@ export class AiService {
       return res.data?.choices?.[0]?.message?.content ?? '';
     } catch (e) {
       if (e instanceof ServiceUnavailableException) throw e;
-      throw new ServiceUnavailableException('AI 服务暂时不可用，请稍后重试');
+      // 根因随 503 暴露（HTTP 状态码/网络错误码），供降级路径写入 AIResult 排障；不泄露 key
+      const detail = e?.response?.status
+        ? `HTTP ${e.response.status}`
+        : (e?.code || e?.message || '未知错误');
+      throw new ServiceUnavailableException(`AI 服务暂时不可用（${detail}）`);
     }
   }
 
   /** 剥掉可能的 markdown 代码块并截取 JSON，解析失败给友好文案（方案文档第二十一节） */
-  private extractJson(text: string): any {
+  private extractJson(text: string, friendlyMessage = '暂时无法准确识别这个物品，你可以手动填写名称。'): any {
     const cleaned = text.replace(/```json|```/g, '').trim();
     const start = cleaned.indexOf('{');
     const end = cleaned.lastIndexOf('}');
     if (start === -1 || end === -1) {
-      throw new BadRequestException('暂时无法准确识别这个物品，你可以手动填写名称。');
+      throw new BadRequestException(friendlyMessage);
     }
     try {
       return JSON.parse(cleaned.slice(start, end + 1));
     } catch {
-      throw new BadRequestException('暂时无法准确识别这个物品，你可以手动填写名称。');
+      throw new BadRequestException(friendlyMessage);
     }
   }
 
@@ -78,7 +82,7 @@ export class AiService {
     const content = await this.chat(process.env.QWEN_TEXT_MODEL || 'qwen-turbo', [
       { role: 'user', content: `${PARSE_PROMPT}\n用户搜索：${q}` },
     ], 200);
-    const json = this.extractJson(content);
+    const json = this.extractJson(content, '搜索词解析失败，已降级关键词直查。');
     return {
       keyword: String(json.keyword || q),
       color: json.color || null,
