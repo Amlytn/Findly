@@ -1,0 +1,6 @@
+<view class="nav">
+  <view class="nav-back" bindtap="onBack">
+    <view class="nav-arrow"></view>
+  </view>
+  <view class="nav-title">{{title}}</view>
+</view>

@@ -1,0 +1,73 @@
+.root-row {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 0 20rpx;
+}
+
+.root-row .name {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+  margin-left: 16rpx;
+}
+
+.root-row .meta {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: #9AB0B4;
+  flex: 1;
+}
+
+/* 树形分组 */
+.group {
+  margin-left: 44rpx;
+  border-left: 2rpx solid #E4EFF0;
+  padding-left: 28rpx;
+}
+
+.g-head {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+}
+
+.g-head .name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #0F4C5A;
+  margin-left: 16rpx;
+}
+
+.g-head .meta {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: #9AB0B4;
+  flex: 1;
+}
+
+.g-body {
+  padding-left: 64rpx;
+  padding-bottom: 8rpx;
+}
+
+.leaf {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 20rpx;
+  border-radius: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.leaf.sel {
+  background: #E4F6F3;
+}
+
+.leaf-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #124E5B;
+}
+
+.l-confirm {
+  margin-top: 56rpx;
+}

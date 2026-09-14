@@ -1,0 +1,150 @@
+.d-top {
+  display: flex;
+  margin-top: 8rpx;
+}
+
+.d-img {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 24rpx;
+  background: #EFF4F5;
+  flex-shrink: 0;
+}
+
+.d-info {
+  flex: 1;
+  margin-left: 28rpx;
+  min-width: 0;
+}
+
+.d-name {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+}
+
+.d-tags {
+  margin-top: 20rpx;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 8rpx 24rpx;
+  border-radius: 999rpx;
+  background: #F0F6F7;
+  color: #5E7A80;
+  font-size: 24rpx;
+  margin-right: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.d-loc {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+}
+
+.d-loc .ic {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.d-loc-txt {
+  margin-left: 8rpx;
+  font-size: 26rpx;
+  color: #9AB0B4;
+}
+
+.sec-title {
+  margin: 40rpx 0 24rpx;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+}
+
+/* 相关物品横滑 */
+.rel {
+  white-space: nowrap;
+  width: 100%;
+}
+
+.rel-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 150rpx;
+  margin-right: 24rpx;
+}
+
+.rel-card image {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 20rpx;
+  background: #EFF4F5;
+}
+
+.rel-name {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #5E7A80;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 猜你想搜 */
+.sug {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 24rpx;
+  background: #F7FBFB;
+  border-radius: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.sug .ic {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.sug-txt {
+  flex: 1;
+  margin-left: 16rpx;
+  font-size: 28rpx;
+  color: #124E5B;
+}
+
+/* 底部操作 */
+.d-actions {
+  display: flex;
+  margin-top: 48rpx;
+}
+
+.act {
+  flex: 1;
+  height: 92rpx;
+  border-radius: 46rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  background: #FFFFFF;
+}
+
+.act .ic {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+}
+
+.act.edit {
+  border: 3rpx solid #12A5A0;
+  color: #12A5A0;
+  margin-right: 24rpx;
+}
+
+.act.del {
+  border: 3rpx solid #F0C4C4;
+  color: #E06B6B;
+}

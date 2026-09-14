@@ -1,0 +1,27 @@
+<view class="bar">
+  <view class="tab" bindtap="goTab" data-index="0" data-path="/pages/index/index">
+    <view class="tab-icon {{selected === 0 ? 'icon-home-a' : 'icon-home'}}"></view>
+    <text class="tab-label {{selected === 0 ? 'on' : ''}}">首页</text>
+  </view>
+
+  <view class="tab" bindtap="goTab" data-index="1" data-path="/pages/items/items">
+    <view class="tab-icon icon-items"></view>
+    <text class="tab-label {{selected === 1 ? 'on' : ''}}">物品</text>
+  </view>
+
+  <view class="tab tab-add" bindtap="goAdd">
+    <view class="add-btn">
+      <view class="icon-plus"></view>
+    </view>
+  </view>
+
+  <view class="tab" bindtap="goTab" data-index="2" data-path="/pages/spaces/spaces">
+    <view class="tab-icon icon-space"></view>
+    <text class="tab-label {{selected === 2 ? 'on' : ''}}">空间</text>
+  </view>
+
+  <view class="tab" bindtap="goTab" data-index="3" data-path="/pages/profile/profile">
+    <view class="tab-icon icon-me"></view>
+    <text class="tab-label {{selected === 3 ? 'on' : ''}}">我的</text>
+  </view>
+</view>

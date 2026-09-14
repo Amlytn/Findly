@@ -1,0 +1,57 @@
+.sp-row {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 0;
+  border-bottom: 2rpx solid #EEF5F6;
+}
+
+.sp-chip {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sp-chip .ic {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.chip-house { background: #E1F3E4; }
+.chip-book  { background: #DFEDFB; }
+.chip-sofa  { background: #FCEFD9; }
+.chip-bed   { background: #E8E7F8; }
+.chip-box   { background: #DFF5F2; }
+
+.sp-info {
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.sp-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0F4C5A;
+}
+
+.sp-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #9AB0B4;
+}
+
+.add-space {
+  margin-top: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-space .ic {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+}

@@ -1,0 +1,31 @@
+.nav {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  margin-bottom: 12rpx;
+}
+
+.nav-back {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-arrow {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #124E5B;
+  border-bottom: 4rpx solid #124E5B;
+  transform: rotate(45deg);
+  margin-left: 8rpx;
+}
+
+.nav-title {
+  margin-left: 12rpx;
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+}

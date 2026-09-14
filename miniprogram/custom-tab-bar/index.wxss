@@ -1,0 +1,90 @@
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 136rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  border-radius: 40rpx 40rpx 0 0;
+  box-shadow: 0 -8rpx 30rpx rgba(4, 134, 157, 0.10);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-icon {
+  width: 46rpx;
+  height: 46rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.tab-label {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #93A9AE;
+}
+
+.tab-label.on {
+  color: #12A5A0;
+  font-weight: 600;
+}
+
+/* 首页 - 房子（灰色描边 / 选中绿色实心） */
+.icon-home {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11 12 3.5 21 11'/%3E%3Cpath d='M5.5 9.5V20h13V9.5'/%3E%3Cpath d='M10 20v-5h4v5'/%3E%3C/svg%3E");
+}
+
+.icon-home-a {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2312A5A0'%3E%3Cpath d='M12 3 3 10.5h2.5V20h5v-5.5h3V20h5V10.5H21L12 3z'/%3E%3C/svg%3E");
+}
+
+/* 物品 - 放大镜 */
+.icon-items {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M16.7 16.7 21 21'/%3E%3C/svg%3E");
+}
+
+/* 空间 - 指南针 */
+.icon-space {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2z'/%3E%3C/svg%3E");
+}
+
+/* 我的 - 人像 */
+.icon-me {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E");
+}
+
+/* 中间凸起的 + 按钮 */
+.tab-add {
+  justify-content: flex-start;
+}
+
+.add-btn {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #31CBBB, #04869D);
+  box-shadow: 0 10rpx 24rpx rgba(4, 134, 157, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -60rpx;
+}
+
+.icon-plus {
+  width: 48rpx;
+  height: 48rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+}
