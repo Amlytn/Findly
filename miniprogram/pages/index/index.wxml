@@ -30,7 +30,7 @@
       <view class="hero-cam"></view>
     </view>
 
-    <!-- 快捷入口(拍照识别使用 3D 相机图标,其余为内联 SVG 徽章) -->
+    <!-- 快捷入口（四个均为 3D 图标） -->
     <view class="section-title">快捷入口</view>
     <view class="quick">
       <view class="quick-card" bindtap="goCamera">
@@ -38,15 +38,15 @@
         <text class="quick-name">拍照识别</text>
       </view>
       <view class="quick-card" bindtap="goItems">
-        <view class="quick-ico ico-items"></view>
+        <image class="quick-ico" src="/assets/icon-items-3d.png" mode="aspectFit" />
         <text class="quick-name">我的物品</text>
       </view>
       <view class="quick-card" bindtap="goSpaces">
-        <view class="quick-ico ico-space"></view>
+        <image class="quick-ico" src="/assets/icon-space-3d.png" mode="aspectFit" />
         <text class="quick-name">空间管理</text>
       </view>
       <view class="quick-card" bindtap="goRecent">
-        <view class="quick-ico ico-recent"></view>
+        <image class="quick-ico" src="/assets/icon-recent-3d.png" mode="aspectFit" />
         <text class="quick-name">最近查看</text>
       </view>
     </view>

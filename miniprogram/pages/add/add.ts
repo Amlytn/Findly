@@ -1,12 +1,17 @@
 import { cropToSquare } from '../../utils/crop'
 
 Page({
-  /** 从相册/相机选择 → 居中裁 1:1 → 识别结果 */
+  /** AI 拍摄识别 → 进入内置相机取景页（深色取景 + 快门） */
+  goCamera() {
+    wx.navigateTo({ url: '/pages/camera/camera' })
+  },
+
+  /** 从相册选择 → 居中裁 1:1 → 识别结果 */
   fromAlbum() {
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
-      sourceType: ['camera', 'album'],
+      sourceType: ['album'],
       success: (res: any) => {
         const raw = res.tempFiles[0].tempFilePath
         const app = getApp() as any

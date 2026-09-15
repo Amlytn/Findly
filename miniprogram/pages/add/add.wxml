@@ -9,8 +9,12 @@
       <view class="add-title">拍照识别</view>
       <view class="add-sub">AI 自动识别物品信息</view>
 
-      <view class="btn-primary add-btn" bindtap="fromAlbum">
+      <view class="btn-primary add-btn" bindtap="goCamera">
         <view class="btn-ic btn-ic-w"></view>
+        <text>AI 拍摄识别</text>
+      </view>
+      <view class="btn-outline add-btn" bindtap="fromAlbum">
+        <view class="btn-ic btn-ic-album"></view>
         <text>从相册选择</text>
       </view>
       <view class="btn-outline add-btn" bindtap="manualAdd">
