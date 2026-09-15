@@ -26,7 +26,8 @@
 ├── app.ts / app.json / app.wxss      # 全局入口；app.wxss 含共享骨架样式与全部内联 SVG 图标
 ├── typings.d.ts                      # wx/App/Page 等全局 API 的轻量类型声明
 ├── project.config.json / tsconfig.json
-├── utils/data.ts                     # 共享模拟数据（物品/空间/建议）与搜索匹配逻辑
+├── types/api.ts                      # 后端接口响应的 TypeScript 类型（对齐 docs/api.md）
+├── services/                         # 请求层：request 封装 + items/spaces/search/ai 业务函数
 ├── components/nav-bar/               # 通用顶部导航栏（返回 + 标题，Tab 页无上级时回首页）
 ├── custom-tab-bar/                   # 自定义 TabBar（首页/物品/➕/空间/我的）
 ├── favicon.svg                       # 品牌图标源文件
@@ -39,6 +40,12 @@
 1. 打开 **微信开发者工具** → 导入项目 → 选择本目录（`代码/`）。
 2. AppID 填自己的，或直接用测试号预览。
 3. 已开启 TS 编译插件（`useCompilerPlugins: ["typescript"]`），保存即编译。
+
+## 本地联调（M3 接真实后端）
+
+1. 后端在仓库 `server/` 目录启动：`npm run build && node dist/src/main.js`（需本地 PostgreSQL 与 `server/.env` 配置，详见仓库 docs）。后端监听 `http://localhost:3000`。
+2. **必做**：微信开发者工具「详情 → 本地设置」勾选 **「不校验合法域名、web-view以及HTTPS证书」**，否则 `http://localhost:3000` 的请求会被拦截。上线前需在小程序后台配置 HTTPS 合法域名并把 `services/request.ts` 的 `API_BASE` 换成正式域名。
+3. 演示用户：请求头固定 `x-user-id: dev`（`services/request.ts` 的 `USER_ID`），与后端 seed 数据同一用户；M4 接入微信登录后替换为 token。
 
 ## 已打通的交互链路
 
@@ -54,11 +61,11 @@
 - **自定义导航栏**：`navigationStyle: "custom"` + `env(safe-area-inset-top)` 避让状态栏；首页扫描入口通过 `wx.getMenuButtonBoundingClientRect()` 实测避让胶囊按钮。
 - **页面间数据传递**：识别照片与所选位置经 `app.globalData` 中转（临时文件路径不适合放 URL）。
 - **图标零依赖**：全部内联 SVG data URI 定义在 `app.wxss`（`.ic-*` 系列），新页面直接复用。
-- **数据层**：`utils/data.ts` 集中管理物品/空间/搜索逻辑，替换为云开发或后端接口时只需改这一个文件。
+- **数据层**：已切换为真实后端接口——`types/api.ts`（契约类型）+ `services/`（请求层，页面不直接调 wx.request）。原 `utils/data.ts` 模拟数据层已删除。
 
 ## 与设计稿的差异说明
 
 - 状态栏由手机系统绘制，无法复刻，真机显示用户实际状态栏。
 - 配色策略：品牌主体对齐 `favicon.svg` 青绿系（主渐变 `#31CBBB → #04869D`、强调色 `#12A5A0`）；"我的空间"四色卡片、植物装饰保留设计稿多彩粉彩风格。
-- 物品照片为 AI 生成占位图，可替换为真实照片（路径见 `utils/data.ts`）。
+- 物品照片为 AI 生成占位图，可替换为真实照片（`assets/` 目录）。
 - 编辑物品、手动添加表单、空间详情、家庭共享等未在设计稿中出现的界面以 toast 占位。

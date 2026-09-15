@@ -2,8 +2,11 @@
   <view class="screen">
     <nav-bar title="物品详情" />
 
-    <view class="d-top">
-      <image class="d-img" src="{{obj.img}}" mode="aspectFill" />
+    <view class="empty" wx:if="{{loading}}">加载中…</view>
+    <view class="empty" wx:elif="{{error}}" bindtap="retry">{{error}}，点击重试</view>
+
+    <view class="d-top" wx:if="{{!loading && !error}}">
+      <image class="d-img" src="{{obj.imageUrl || '/assets/item-mouse.jpg'}}" mode="aspectFill" />
       <view class="d-info">
         <view class="d-name">{{obj.name}}</view>
         <view class="d-tags">
@@ -11,20 +14,20 @@
         </view>
         <view class="d-loc">
           <view class="ic ic-pin"></view>
-          <text class="d-loc-txt">{{obj.space}} · {{obj.zone}}</text>
+          <text class="d-loc-txt">{{obj.space.name}}</text>
         </view>
       </view>
     </view>
 
-    <view class="sec-title">相关物品（同类物品）</view>
-    <scroll-view class="rel" scroll-x>
+    <view class="sec-title" wx:if="{{related.length}}">相关物品（同类物品）</view>
+    <scroll-view class="rel" scroll-x wx:if="{{related.length}}">
       <view class="rel-card" wx:for="{{related}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-        <image src="{{item.img}}" mode="aspectFill" />
+        <image src="{{item.imageUrl || '/assets/item-mouse.jpg'}}" mode="aspectFill" />
         <view class="rel-name">{{item.name}}</view>
       </view>
     </scroll-view>
 
-    <view class="sec-title">你可能还想找</view>
+    <view class="sec-title" wx:if="{{suggestions.length}}">你可能还想找</view>
     <view class="sug" wx:for="{{suggestions}}" wx:key="*this" bindtap="goSearch" data-kw="{{item}}">
       <view class="ic ic-search"></view>
       <text class="sug-txt">{{item}}</text>
