@@ -1,3 +1,5 @@
+import { ensureLogin } from './services/auth'
+
 interface GlobalData {
   version: string
   statusBarHeight: number
@@ -13,6 +15,10 @@ interface GlobalData {
 
 App({
   onLaunch() {
+    // 静默登录（契约 v1.3）：换取 JWT 供后续请求使用；失败不阻塞启动，
+    // 请求层仍带 x-user-id 兜底，下次进入或触发 401 时重试
+    ensureLogin().catch(function () { /* 联调环境后端未启动等场景静默 */ })
+
     // 异形屏适配：实测状态栏高度 + 胶囊按钮位置反推导航栏高度
     // 不依赖 CSS env(safe-area-inset-top)（工具/部分安卓机型返回 0）
     try {

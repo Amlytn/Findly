@@ -169,3 +169,28 @@ export interface ApiError {
   message: string | string[]
   error: string
 }
+
+/** POST /auth/login 响应（契约 v1.3 §5.1） */
+export interface LoginResponse {
+  token: string
+  user: { id: string; nickname: string | null; avatar: string | null }
+}
+
+/** GET /auth/dev-token 响应（联调通道，M5 移除） */
+export interface DevTokenResponse {
+  token: string
+}
+
+/** POST /upload 响应（契约 v1.3 §5.2） */
+export interface UploadResponse {
+  imageUrl: string
+}
+
+/** GET /users/me 响应（契约 v1.3 §5.3） */
+export interface UsersMe {
+  id: string
+  nickname: string | null
+  avatar: string | null
+  itemCount: number
+  spaceCount: number
+}

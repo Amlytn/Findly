@@ -18,13 +18,13 @@
       <view class="list-row" bindtap="goItems">
         <view class="ic ic-bag"></view>
         <text class="row-name">我的物品</text>
-        <text class="row-extra">12件</text>
+        <text class="row-extra">{{itemCount}}件</text>
         <view class="chev"></view>
       </view>
       <view class="list-row" bindtap="goSpaces">
         <view class="ic ic-home2"></view>
         <text class="row-name">我的空间</text>
-        <text class="row-extra">4个</text>
+        <text class="row-extra">{{spaceCount}}个</text>
         <view class="chev"></view>
       </view>
       <view class="list-row" bindtap="goFamily">

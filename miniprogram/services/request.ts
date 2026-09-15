@@ -1,14 +1,15 @@
 /**
  * wx.request 统一封装：base URL、认证头、超时、错误规整。
  * 页面不得直接调 wx.request，一律经 services 业务函数。
+ *
+ * 认证（契约 v1.3）：优先 Authorization: Bearer <JWT>；
+ * 无 token 时保留 x-user-id: dev 兜底（后端过渡期兼容，M5 移除）。
  */
 import { ApiError } from '../types/api'
+import { getToken } from './token'
 
 // 联调期本地后端；上线后换 HTTPS 正式域名（并配小程序后台合法域名）
 export const API_BASE = 'http://localhost:3000/api/v1'
-
-// 演示阶段用户标识（契约 api.md 通用约定：x-user-id，缺省 dev；M4 换 token）
-export const USER_ID = 'dev'
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
@@ -20,15 +21,20 @@ export interface RequestOptions {
 function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', data, silent = false } = options
   return new Promise<T>(function (resolve, reject) {
+    const token = getToken()
+    const header: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (token) {
+      header.Authorization = 'Bearer ' + token
+    } else {
+      // 过渡期兜底（契约 v1.3）：无 token 时后端仍接受 x-user-id，缺省 dev
+      header['x-user-id'] = 'dev'
+    }
     wx.request({
       url: API_BASE + path,
       method,
       data: data as any,
       timeout: 15000,
-      header: {
-        'Content-Type': 'application/json',
-        'x-user-id': USER_ID
-      },
+      header,
       success(res) {
         const code = res.statusCode
         if (code >= 200 && code < 300) {
@@ -40,6 +46,7 @@ function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
         if (body && body.message) {
           message = Array.isArray(body.message) ? body.message.join('；') : String(body.message)
         }
+        if (code === 429) message = '操作太频繁，请稍后再试'
         const err = { statusCode: code, message } as { statusCode: number; message: string }
         if (silent) {
           resolve(err as unknown as T & { __error: true })
