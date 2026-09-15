@@ -1,18 +1,64 @@
 .cam {
-  min-height: 100vh;
+  position: relative;
+  height: 100vh;
+  background: #17191C;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 32rpx calc(env(safe-area-inset-bottom) + 48rpx);
+  box-sizing: border-box;
+}
+
+/* 真实取景：camera 铺满底层（基础库 3.x 同层渲染，覆盖层可直接叠加） */
+.cam-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 相机不可用兜底 */
+.cam-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: #17191C;
   display: flex;
   flex-direction: column;
-  /* 顶部安全区由 cam-nav 实测注入，底部仍用 env（底部 inset 各端可靠） */
-  padding: 0 32rpx calc(env(safe-area-inset-bottom) + 48rpx);
+  align-items: center;
+  justify-content: center;
 }
 
+.fb-ic {
+  width: 96rpx;
+  height: 96rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C6B70' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h3l2-3h6l2 3h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20.5H4A1.5 1.5 0 0 1 2.5 19v-9A1.5 1.5 0 0 1 4 8.5z'/%3E%3Ccircle cx='12' cy='14' r='4'/%3E%3C/svg%3E");
+}
+
+.fb-tx {
+  margin-top: 20rpx;
+  color: #5C6B70;
+  font-size: 26rpx;
+}
+
+/* 顶部导航：叠在取景画面上，加渐变暗底保证白字可读 */
 .cam-nav {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   height: 72rpx;
   box-sizing: border-box;
   flex-shrink: 0;
+  margin: 0 -32rpx;
+  padding: 0 32rpx;
+  background: linear-gradient(180deg, rgba(10, 14, 16, 0.55), rgba(10, 14, 16, 0));
 }
 
 .cam-back {
@@ -51,20 +97,23 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h3l2-3h6l2 3h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20.5H4A1.5 1.5 0 0 1 2.5 19v-9A1.5 1.5 0 0 1 4 8.5z'/%3E%3Ccircle cx='12' cy='14' r='4'/%3E%3C/svg%3E");
 }
 
-/* 取景框 */
+/* 1:1 取景框：宽度撑满内容区，高度等宽（与识别方图比例一致） */
 .vf {
-  flex: 1;
-  margin-top: 28rpx;
   position: relative;
-  border-radius: 24rpx;
-  overflow: hidden;
-  min-height: 600rpx;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  margin-top: 28rpx;
 }
 
-.vf-img {
+.vf-box {
+  position: relative;
   width: 100%;
-  height: 100%;
-  display: block;
+  height: 686rpx;
+  max-height: 100%;
 }
 
 .corner {
@@ -73,17 +122,20 @@
   height: 48rpx;
 }
 
-.corner.tl { top: 32rpx; left: 32rpx; border-top: 6rpx solid #FFFFFF; border-left: 6rpx solid #FFFFFF; border-top-left-radius: 14rpx; }
-.corner.tr { top: 32rpx; right: 32rpx; border-top: 6rpx solid #FFFFFF; border-right: 6rpx solid #FFFFFF; border-top-right-radius: 14rpx; }
-.corner.bl { bottom: 32rpx; left: 32rpx; border-bottom: 6rpx solid #FFFFFF; border-left: 6rpx solid #FFFFFF; border-bottom-left-radius: 14rpx; }
-.corner.br { bottom: 32rpx; right: 32rpx; border-bottom: 6rpx solid #FFFFFF; border-right: 6rpx solid #FFFFFF; border-bottom-right-radius: 14rpx; }
+.corner.tl { top: 0; left: 0; border-top: 6rpx solid #FFFFFF; border-left: 6rpx solid #FFFFFF; border-top-left-radius: 14rpx; }
+.corner.tr { top: 0; right: 0; border-top: 6rpx solid #FFFFFF; border-right: 6rpx solid #FFFFFF; border-top-right-radius: 14rpx; }
+.corner.bl { bottom: 0; left: 0; border-bottom: 6rpx solid #FFFFFF; border-left: 6rpx solid #FFFFFF; border-bottom-left-radius: 14rpx; }
+.corner.br { bottom: 0; right: 0; border-bottom: 6rpx solid #FFFFFF; border-right: 6rpx solid #FFFFFF; border-bottom-right-radius: 14rpx; }
 
 /* 底部控制区 */
 .ctrls {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 56rpx 28rpx 0;
+  flex-shrink: 0;
 }
 
 .album {
@@ -92,12 +144,18 @@
   border-radius: 20rpx;
   overflow: hidden;
   border: 4rpx solid rgba(255, 255, 255, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.album image {
-  width: 100%;
-  height: 100%;
-  display: block;
+.album-ic {
+  width: 44rpx;
+  height: 44rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6' y='4' width='15' height='12' rx='2'/%3E%3Ccircle cx='10.5' cy='8.5' r='1.6'/%3E%3Cpath d='M6 13.5l3.5-3 4 3.5 3-2.5 4.5 4'/%3E%3Cpath d='M3 7.5v11A2.5 2.5 0 0 0 5.5 21h11'/%3E%3C/svg%3E");
 }
 
 .shutter {
@@ -108,6 +166,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.12s ease;
+}
+
+.shutter.busy {
+  opacity: 0.5;
+  transform: scale(0.92);
 }
 
 .shutter-in {

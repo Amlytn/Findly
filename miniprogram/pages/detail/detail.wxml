@@ -3,7 +3,7 @@
     <nav-bar title="物品详情" />
 
     <view class="d-top">
-      <image class="d-img" src="{{obj.img}}" mode="aspectFit" />
+      <image class="d-img" src="{{obj.img}}" mode="aspectFit" bindtap="previewImg" />
       <view class="d-info">
         <view class="d-name">{{obj.name}}</view>
         <view class="d-tags">
