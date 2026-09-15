@@ -23,12 +23,12 @@ Page({
     const that = this
     this.setData({ kw, tab, loading: true, error: '' })
     getSearch(kw, tab as SearchType).then(function (res) {
-      const items = tab === 'space' ? [] : res.results
-      const spaces = tab === 'item' ? [] : res.spaces
+      const items = tab === 'space' ? [] : (res.results || [])
+      const spaces = tab === 'item' ? [] : (res.spaces || [])
       that.setData({
         items,
         spaces,
-        parsed: res.parsed,
+        parsed: res.parsed || null,
         count: items.length + spaces.length,
         loading: false
       })

@@ -1,16 +1,21 @@
+import { getItems } from '../../services/items'
+import { getSpaces } from '../../services/spaces'
+import { ItemListItem, SpaceTree } from '../../types/api'
+
+/** 子树物品合计（首页空间卡片展示用） */
+function subtreeCount(node: SpaceTree): number {
+  let sum = node.itemCount || 0
+  for (const c of node.children || []) sum += subtreeCount(c)
+  return sum
+}
+
+const THEMES = ['green', 'blue', 'orange', 'purple']
+const ICONS = ['house', 'book', 'sofa', 'bed']
+
 Page({
   data: {
-    recentItems: [
-      { id: 1, name: '无线鼠标', space: '书房', count: 1, img: '/assets/item-mouse.jpg' },
-      { id: 2, name: '相机', space: '客厅', count: 1, img: '/assets/item-camera.jpg' },
-      { id: 3, name: '耳机', space: '卧室', count: 1, img: '/assets/item-headphone.jpg' }
-    ],
-    spaces: [
-      { name: '我的家', zones: 4, count: 12, theme: 'green', icon: 'house' },
-      { name: '书房', zones: 2, count: 3, theme: 'blue', icon: 'book' },
-      { name: '客厅', zones: 2, count: 4, theme: 'orange', icon: 'sofa' },
-      { name: '卧室', zones: 1, count: 2, theme: 'purple', icon: 'bed' }
-    ]
+    recentItems: [] as (ItemListItem & { img: string })[],
+    spaces: [] as { id: string; name: string; zones: number; count: number; theme: string; icon: string }[]
   },
 
   onShow() {
@@ -19,6 +24,33 @@ Page({
     if (bar) {
       bar.setData({ selected: 0 })
     }
+    // 每次回首页刷新（保存物品后回到首页即可看到），失败静默不打扰
+    this.fetch()
+  },
+
+  fetch() {
+    const that = this
+    getItems({ page: 1, pageSize: 3 }).then(function (res) {
+      const recentItems = res.items.map(function (it: ItemListItem) {
+        // seed/真实物品暂无图，用 logo 占位；M4 上传图片后即显示真图
+        return Object.assign({}, it, { img: it.imageUrl || '/assets/logo.png' })
+      })
+      that.setData({ recentItems: recentItems })
+    }).catch(function () { /* 后端未启动时首页保持空白，不阻塞浏览 */ })
+
+    getSpaces().then(function (res) {
+      const spaces = (res.tree || []).slice(0, 4).map(function (s: SpaceTree, i: number) {
+        return {
+          id: s.id,
+          name: s.name,
+          zones: (s.children || []).length,
+          count: subtreeCount(s),
+          theme: THEMES[i % THEMES.length],
+          icon: ICONS[i % ICONS.length]
+        }
+      })
+      that.setData({ spaces: spaces })
+    }).catch(function () { /* 同上 */ })
   },
 
   onScan() {
@@ -28,7 +60,7 @@ Page({
   onSearch(e: any) {
     const kw = (e.detail.value || '').trim()
     if (kw) {
-      wx.showToast({ title: '搜索：' + kw, icon: 'none' })
+      wx.navigateTo({ url: '/pages/results/results?kw=' + encodeURIComponent(kw) })
     }
   },
 
@@ -44,7 +76,7 @@ Page({
     wx.navigateTo({ url: '/pages/detail/detail?id=' + e.currentTarget.dataset.id })
   },
 
-  onSpaceTap(e: any) {
-    wx.showToast({ title: '空间详情：' + e.currentTarget.dataset.name, icon: 'none' })
+  onSpaceTap() {
+    wx.switchTab({ url: '/pages/spaces/spaces' })
   }
 })
