@@ -1,3 +1,4 @@
+import { fullUrl } from '../../services/request'
 import { getItems } from '../../services/items'
 import { ItemListItem } from '../../types/api'
 
@@ -38,7 +39,9 @@ Page({
       const recentItems = res.items.map(function (it: ItemListItem) {
         return Object.assign({}, it, {
           time: timeAgo(it.updatedAt),
-          img: it.imageUrl || '/assets/logo.png'
+          img: fullUrl(it.imageUrl) || '/assets/logo.png',
+          // space 是 {id,name} 对象，取短名展示
+          space: it.space ? it.space.name : '未归位'
         })
       })
       that.setData({ recentItems: recentItems })

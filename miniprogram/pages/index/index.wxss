@@ -155,7 +155,7 @@
   font-weight: 700;
 }
 
-/* ================= 最近添加（白卡细边框，与参考图一致） ================= */
+/* ================= 最近添加（对齐物品列表网格卡片：1:1 浅底圆角图块） ================= */
 .recent {
   display: flex;
 }
@@ -164,12 +164,6 @@
   flex: 1;
   margin-right: 24rpx;
   min-width: 0;
-  background: #FFFFFF;
-  border-radius: 28rpx;
-  overflow: hidden;
-  box-sizing: border-box;
-  /* 参考图效果：周围一圈淡淡的暗色底 + 落影，让卡片从页面浮起来 */
-  box-shadow: 0 10rpx 30rpx rgba(15, 76, 90, 0.10), 0 2rpx 8rpx rgba(15, 76, 90, 0.05);
 }
 
 .recent-item:last-child {
@@ -178,27 +172,27 @@
 
 .recent-img {
   width: 100%;
-  /* 正方形：高度 = 卡片内宽 ≈ 213rpx，与 1:1 商品图完全适配 */
+  /* 1:1 图块：无图时 logo 占位同样居中裁切，风格与 .g-card image 一致 */
   height: 212rpx;
+  border-radius: 24rpx;
+  background: #F5F7F8;
   display: block;
 }
 
 .recent-name {
-  margin-top: 16rpx;
-  padding: 0 20rpx;
+  margin-top: 14rpx;
   font-size: 28rpx;
-  font-weight: 600;
-  color: #000000;
+  font-weight: 700;
+  color: #124E5B;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .recent-meta {
-  margin-top: 10rpx;
-  padding: 0 20rpx 22rpx;
+  margin-top: 6rpx;
   font-size: 24rpx;
-  color: #666666;
+  color: #9AB0B4;
 }
 
 /* ================= 快捷入口（高保真还原参考图） ================= */

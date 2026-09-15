@@ -1,3 +1,4 @@
+import { fullUrl } from '../../services/request'
 import { getItems } from '../../services/items'
 import { getSuggestions } from '../../services/search'
 import { ItemListItem } from '../../types/api'
@@ -17,7 +18,7 @@ Page({
       // 热门物品卡：适配本页字段（无图用 logo 占位）
       that.setData({
         hot: [Object.assign({}, first, {
-          img: first.imageUrl || '/assets/logo.png',
+          img: fullUrl(first.imageUrl) || '/assets/logo.png',
           space: first.space ? first.space.name : '未归位',
           zone: first.path || '',
           count: 1

@@ -1,4 +1,18 @@
 <view class="cam">
+  <!-- 真实取景；授权失败等异常时降级为相册入口 -->
+  <camera
+    wx:if="{{cameraOk}}"
+    class="cam-view"
+    device-position="back"
+    flash="{{flash}}"
+    resolution="high"
+    binderror="onCameraError"
+  />
+  <view wx:else class="cam-fallback" bindtap="pickFromAlbum">
+    <view class="fb-ic"></view>
+    <view class="fb-tx">相机不可用，点击从相册选择物品照片</view>
+  </view>
+
   <view class="cam-nav" style="padding-top: {{statusBarHeight}}px; height: {{navTotal}}px;">
     <view class="cam-back" bindtap="goBack">
       <view class="cam-arrow"></view>
@@ -9,22 +23,24 @@
     </view>
   </view>
 
+  <!-- 1:1 取景框（与识别用方图比例一致） -->
   <view class="vf">
-    <image class="vf-img" src="/assets/item-mouse.jpg" mode="aspectFill" />
-    <view class="corner tl"></view>
-    <view class="corner tr"></view>
-    <view class="corner bl"></view>
-    <view class="corner br"></view>
+    <view class="vf-box">
+      <view class="corner tl"></view>
+      <view class="corner tr"></view>
+      <view class="corner bl"></view>
+      <view class="corner br"></view>
+    </view>
   </view>
 
   <view class="ctrls">
-    <view class="album" bindtap="pick">
-      <image src="/assets/item-camera.jpg" mode="aspectFill" />
+    <view class="album" bindtap="pickFromAlbum">
+      <view class="album-ic"></view>
     </view>
-    <view class="shutter" bindtap="pick">
+    <view class="shutter {{shooting ? 'busy' : ''}}" bindtap="shoot">
       <view class="shutter-in"></view>
     </view>
-    <view class="flash {{flashOn ? 'on' : ''}}" bindtap="toggleFlash">
+    <view class="flash {{flash === 'on' ? 'on' : ''}}" bindtap="toggleFlash">
       <view class="flash-ic"></view>
     </view>
   </view>

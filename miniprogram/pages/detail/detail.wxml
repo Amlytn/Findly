@@ -2,44 +2,50 @@
   <view class="screen">
     <nav-bar title="物品详情" />
 
-    <view class="d-top">
-      <image class="d-img" src="{{obj.img}}" mode="aspectFit" />
-      <view class="d-info">
-        <view class="d-name">{{obj.name}}</view>
-        <view class="d-tags">
-          <view class="tag" wx:for="{{tags}}" wx:for-item="t" wx:key="*this">{{t}}</view>
+    <!-- 加载 / 错误态：避免请求失败或缓慢时整页空白 -->
+    <view class="empty" wx:if="{{loading}}">加载中…</view>
+    <view class="empty" wx:elif="{{error}}" bindtap="retry">{{error}}，点击重试</view>
+
+    <block wx:if="{{!loading && !error}}">
+      <view class="d-top">
+        <image class="d-img" src="{{obj.img}}" mode="aspectFit" bindtap="previewImg" />
+        <view class="d-info">
+          <view class="d-name">{{obj.name}}</view>
+          <view class="d-tags">
+            <view class="tag" wx:for="{{tags}}" wx:for-item="t" wx:key="*this">{{t}}</view>
+          </view>
+          <view class="d-loc">
+            <view class="ic ic-pin"></view>
+            <text class="d-loc-txt">{{obj.space}} · {{obj.zone}}</text>
+          </view>
         </view>
-        <view class="d-loc">
-          <view class="ic ic-pin"></view>
-          <text class="d-loc-txt">{{obj.space}} · {{obj.zone}}</text>
+      </view>
+
+      <view class="sec-title">相关物品（同类物品）</view>
+      <scroll-view class="rel" scroll-x>
+        <view class="rel-card" wx:for="{{related}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+          <image src="{{item.img}}" mode="aspectFit" />
+          <view class="rel-name">{{item.name}}</view>
+        </view>
+      </scroll-view>
+
+      <view class="sec-title">你可能还想找</view>
+      <view class="sug" wx:for="{{suggestions}}" wx:key="*this" bindtap="goSearch" data-kw="{{item}}">
+        <view class="ic ic-search"></view>
+        <text class="sug-txt">{{item}}</text>
+        <view class="chev"></view>
+      </view>
+
+      <view class="d-actions">
+        <view class="act edit" bindtap="edit">
+          <view class="ic ic-edit"></view>
+          <text>编辑</text>
+        </view>
+        <view class="act del" bindtap="del">
+          <view class="ic ic-del"></view>
+          <text>删除</text>
         </view>
       </view>
-    </view>
-
-    <view class="sec-title">相关物品（同类物品）</view>
-    <scroll-view class="rel" scroll-x>
-      <view class="rel-card" wx:for="{{related}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-        <image src="{{item.img}}" mode="aspectFit" />
-        <view class="rel-name">{{item.name}}</view>
-      </view>
-    </scroll-view>
-
-    <view class="sec-title">你可能还想找</view>
-    <view class="sug" wx:for="{{suggestions}}" wx:key="*this" bindtap="goSearch" data-kw="{{item}}">
-      <view class="ic ic-search"></view>
-      <text class="sug-txt">{{item}}</text>
-      <view class="chev"></view>
-    </view>
-
-    <view class="d-actions">
-      <view class="act edit" bindtap="edit">
-        <view class="ic ic-edit"></view>
-        <text>编辑</text>
-      </view>
-      <view class="act del" bindtap="del">
-        <view class="ic ic-del"></view>
-        <text>删除</text>
-      </view>
-    </view>
+    </block>
   </view>
 </view>
