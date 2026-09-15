@@ -1,5 +1,5 @@
 import { cropToSquare } from '../../utils/crop'
-import { PROFILE_KEY, DEFAULT_ID } from '../../utils/data'
+import { DEFAULT_ID, loadProfile, saveProfile } from '../../utils/profile'
 
 Page({
   data: {
@@ -12,7 +12,7 @@ Page({
   },
 
   reload() {
-    const profile = wx.getStorageSync(PROFILE_KEY) || {}
+    const profile = loadProfile()
     this.setData({
       id: profile.id || DEFAULT_ID,
       avatar: profile.avatar || ''
@@ -52,7 +52,7 @@ Page({
       wx.showToast({ title: 'ID 不能为空', icon: 'none' })
       return
     }
-    wx.setStorageSync(PROFILE_KEY, { id: id, avatar: this.data.avatar })
+    saveProfile({ id: id, avatar: this.data.avatar })
     wx.showToast({ title: '已保存', icon: 'success' })
     setTimeout(function () {
       wx.navigateBack({ delta: 1 })

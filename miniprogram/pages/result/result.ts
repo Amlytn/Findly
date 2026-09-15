@@ -1,6 +1,7 @@
 import { recognize } from '../../services/ai'
 import { createItem } from '../../services/items'
 import { isApiError } from '../../services/request'
+import { uploadImage } from '../../services/upload'
 import { RecognizeResult } from '../../types/api'
 
 /** 读临时文件转 dataURL；先压缩一次（quality 80）控制体积 */
@@ -171,18 +172,29 @@ Page({
       tags: tags
     }
     if (this.data.aiResultId) body.aiResultId = this.data.aiResultId
-    createItem(body).then(function () {
-      app.globalData.recognizeImg = ''
-      app.globalData.recognizeImgFull = ''
-      app.globalData.locationPath = []
-      app.globalData.locationId = ''
-      that.setData({ saving: false })
-      wx.showToast({ title: '已保存', icon: 'success' })
-      setTimeout(function () {
-        wx.switchTab({ url: '/pages/items/items' })
-      }, 800)
-    }).catch(function () {
-      that.setData({ saving: false })
-    })
+    // 物品照片走 /upload（契约 v1.3 §5.2）入库；上传失败不阻塞保存（imageUrl 可空）
+    const finishSave = function (imageUrl: string) {
+      if (imageUrl) body.imageUrl = imageUrl
+      createItem(body).then(function () {
+        app.globalData.recognizeImg = ''
+        app.globalData.recognizeImgFull = ''
+        app.globalData.locationPath = []
+        app.globalData.locationId = ''
+        that.setData({ saving: false })
+        wx.showToast({ title: '已保存', icon: 'success' })
+        setTimeout(function () {
+          wx.switchTab({ url: '/pages/items/items' })
+        }, 800)
+      }).catch(function () {
+        that.setData({ saving: false })
+      })
+    }
+    if (this.data.img) {
+      uploadImage(this.data.img)
+        .then(function (up) { finishSave(up.imageUrl) })
+        .catch(function () { finishSave('') })
+    } else {
+      finishSave('')
+    }
   }
 })
