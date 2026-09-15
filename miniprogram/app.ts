@@ -5,6 +5,10 @@ interface GlobalData {
   recognizeImg: string
   recognizeImgFull: string
   locationPath: string[]
+  /** 位置选择回填的真实空间 id（保存物品 spaceId 用，M4 前以选中叶子为准） */
+  locationId: string
+  /** 本次识图是否待发起（result 页消费后清除，防 onShow 重复调 AI） */
+  recognizePending: boolean
 }
 
 App({
@@ -33,6 +37,8 @@ App({
     // 用户原始照片（详情页完整展示用）
     recognizeImgFull: '',
     // 位置选择 → 识别结果 回填的位置路径
-    locationPath: ['我的家', '书房', '书桌']
+    locationPath: ['我的家', '书房', '书桌'],
+    locationId: '',
+    recognizePending: false
   } as GlobalData
 })

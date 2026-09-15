@@ -55,3 +55,111 @@
   height: 36rpx;
   margin-right: 12rpx;
 }
+
+/* 平铺全深度空间列表 + 物品面板（接入真实接口后新增） */
+.sp-row2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  margin: 16rpx 32rpx 0;
+}
+
+.sp-row2.sel {
+  background: #EAF6F5;
+}
+
+.sp-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sp-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sp-name2 {
+  font-size: 30rpx;
+  color: #124E5B;
+  font-weight: 500;
+}
+
+.sp-count {
+  margin-left: 24rpx;
+  font-size: 24rpx;
+  color: #93A9AE;
+}
+
+.sp-sub {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #93A9AE;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ic-radio {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  border: 3rpx solid #C7D6D9;
+}
+
+.ic-check {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: #12A5A0;
+}
+
+.items-panel {
+  margin: 24rpx 32rpx 0;
+  background: #F7FBFA;
+  border-radius: 20rpx;
+  padding: 24rpx;
+}
+
+.panel-title {
+  font-size: 26rpx;
+  color: #02505C;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+
+.item-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #E3EFF0;
+}
+
+.item-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 28rpx;
+  color: #124E5B;
+}
+
+.item-path {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #93A9AE;
+}
+
+.sp-hint {
+  margin: 16rpx 40rpx 0;
+  font-size: 22rpx;
+  color: #93A9AE;
+  text-align: center;
+}

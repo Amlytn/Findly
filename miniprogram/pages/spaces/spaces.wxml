@@ -2,20 +2,49 @@
   <view class="screen">
     <nav-bar title="空间管理" />
 
-    <view class="sp-row" wx:for="{{spaces}}" wx:key="name" bindtap="goSpace" data-name="{{item.name}}">
-      <view class="sp-chip chip-{{item.icon}}">
-        <view class="ic ic-{{item.icon}}"></view>
-      </view>
-      <view class="sp-info">
-        <view class="sp-name">{{item.name}}</view>
-        <view class="sp-meta">{{item.zones}}个区域 · {{item.items}}件物品</view>
-      </view>
-      <view class="chev"></view>
-    </view>
+    <view class="empty" wx:if="{{loading}}">加载中…</view>
+    <view class="empty" wx:elif="{{error}}" bindtap="retry">{{error}}，点击重试</view>
 
-    <view class="btn-outline add-space" bindtap="addSpace">
-      <view class="ic ic-plus"></view>
-      <text>添加空间</text>
-    </view>
+    <block wx:else>
+      <!-- 全部空间（任意深度，长按可管理） -->
+      <view
+        class="sp-row2 {{selIndex === index ? 'sel' : ''}}"
+        wx:for="{{rows}}"
+        wx:key="id"
+        style="padding-left: {{item.pad}}rpx;"
+        bindtap="tapRow"
+        bindlongpress="rowLongPress"
+        data-i="{{index}}"
+      >
+        <view class="sp-main">
+          <view class="sp-line">
+            <text class="sp-name2">{{item.name}}</text>
+            <text class="sp-count">{{item.total}}件</text>
+          </view>
+          <text class="sp-sub" wx:if="{{item.depth > 0}}">{{item.pathText}}</text>
+        </view>
+        <view class="ic {{selIndex === index ? 'ic-check' : 'ic-radio'}}"></view>
+      </view>
+
+      <!-- 选中空间的物品 -->
+      <view class="items-panel" wx:if="{{selRow}}">
+        <view class="panel-title">「{{selRow.name}}」里的物品</view>
+        <view class="empty" wx:if="{{itemsLoading}}">加载中…</view>
+        <view class="empty" wx:elif="{{!items.length}}">{{selRow.total > 0 ? '物品在子区域里，点选子空间查看' : '该空间下没有直接存放的物品'}}</view>
+        <view class="item-line" wx:for="{{items}}" wx:key="id" bindtap="goItem" data-id="{{item.id}}">
+          <view class="item-main">
+            <text class="item-name">{{item.name}}</text>
+            <text class="item-path">{{item.path}}</text>
+          </view>
+          <view class="chev"></view>
+        </view>
+      </view>
+
+      <view class="btn-outline add-space" bindtap="addSpace">
+        <view class="ic ic-plus"></view>
+        <text>{{selRow ? '在「' + selRow.name + '」下添加子空间' : '添加空间'}}</text>
+      </view>
+      <view class="sp-hint">提示：长按空间可 重命名 / 添加子空间 / 删除</view>
+    </block>
   </view>
 </view>

@@ -2,35 +2,22 @@
   <view class="screen">
     <nav-bar title="选择位置" />
 
-    <view class="root-row">
-      <view class="ic ic-house"></view>
-      <text class="name">我的家</text>
-      <text class="meta">4个区域</text>
-      <view class="chev up"></view>
-    </view>
+    <view class="empty" wx:if="{{loading}}">空间加载中…</view>
+    <view class="empty" wx:elif="{{error}}">{{error}}</view>
 
-    <view class="group" wx:for="{{groups}}" wx:key="name">
-      <view class="g-head" bindtap="toggle" data-i="{{index}}">
-        <view class="ic ic-{{item.icon}}"></view>
-        <text class="name">{{item.name}}</text>
-        <text class="meta">{{item.zones}}个区域</text>
-        <view class="chev {{item.open ? 'up' : ''}}"></view>
+    <view
+      class="loc-row {{selIndex === index ? 'sel' : ''}}"
+      wx:for="{{rows}}"
+      wx:key="id"
+      style="padding-left: {{item.pad}}rpx;"
+      bindtap="select"
+      data-i="{{index}}"
+    >
+      <view class="loc-main">
+        <text class="loc-name">{{item.name}}</text>
+        <text class="loc-sub">{{item.pathText}}</text>
       </view>
-      <view class="g-body" wx:if="{{item.open}}">
-        <view
-          class="leaf {{selGroup === index && selItem === j ? 'sel' : ''}}"
-          wx:for="{{item.children}}"
-          wx:for-item="child"
-          wx:for-index="j"
-          wx:key="*this"
-          bindtap="select"
-          data-i="{{index}}"
-          data-j="{{j}}"
-        >
-          <text class="leaf-name">{{child}}</text>
-          <view class="ic {{selGroup === index && selItem === j ? 'ic-check' : 'ic-radio'}}"></view>
-        </view>
-      </view>
+      <view class="ic {{selIndex === index ? 'ic-check' : 'ic-radio'}}"></view>
     </view>
 
     <view class="btn-primary l-confirm" bindtap="confirm">确定</view>

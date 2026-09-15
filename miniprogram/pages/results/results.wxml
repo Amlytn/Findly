@@ -15,8 +15,8 @@
         <image src="{{item.img}}" mode="aspectFit" />
         <view class="res-info">
           <view class="res-name">{{item.name}}</view>
-          <view class="res-meta">{{item.color}} · {{item.brand}} · {{item.count}}件</view>
-          <view class="res-loc">{{item.space}} · {{item.zone}}</view>
+          <view class="res-meta">{{item.meta}}</view>
+          <view class="res-loc">{{item.zone}}</view>
         </view>
         <view class="chev"></view>
       </view>
@@ -29,7 +29,7 @@
         </view>
         <view class="res-info">
           <view class="res-name">{{item.name}}</view>
-          <view class="res-meta">{{item.zones}}个区域 · {{item.items}}件</view>
+          <view class="res-meta">{{item.pathText}}</view>
         </view>
         <view class="chev"></view>
       </view>

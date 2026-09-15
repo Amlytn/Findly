@@ -71,3 +71,53 @@
 .l-confirm {
   margin-top: 56rpx;
 }
+
+/* 平铺全深度选择列表（任意层级空间均可选） */
+.loc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  margin: 16rpx 32rpx 0;
+}
+
+.loc-row.sel {
+  background: #EAF6F5;
+}
+
+.loc-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.loc-name {
+  font-size: 30rpx;
+  color: #124E5B;
+  font-weight: 500;
+}
+
+.loc-sub {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #93A9AE;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ic-radio {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  border: 3rpx solid #C7D6D9;
+}
+
+.ic-check {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: #12A5A0;
+}
