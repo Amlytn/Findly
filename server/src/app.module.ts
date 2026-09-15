@@ -6,8 +6,10 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
 import { AiModule } from './ai/ai.module';
 import { SearchModule } from './search/search.module';
-// @Amlytn TODO: items/spaces 模块待实现后在此追加 import。
+import { ItemsModule } from './items/items.module';
+import { SpacesModule } from './spaces/spaces.module';
+// @Amlytn TODO: auth/users/upload 模块待实现后在此追加 import（M4）。
 @Module({
-  imports: [PrismaModule, AiModule, SearchModule],
+  imports: [PrismaModule, AiModule, SearchModule, ItemsModule, SpacesModule],
 })
 export class AppModule {}
