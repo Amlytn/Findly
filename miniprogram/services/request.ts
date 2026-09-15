@@ -9,7 +9,14 @@ import { ApiError } from '../types/api'
 import { getToken } from './token'
 
 // 联调期本地后端；上线后换 HTTPS 正式域名（并配小程序后台合法域名）
-export const API_BASE = 'http://localhost:3000/api/v1'
+export const SERVER_ROOT = 'http://localhost:3000'
+export const API_BASE = SERVER_ROOT + '/api/v1'
+
+/** 上传/图片类接口返回的是相对路径（/uploads/...），<image> 需要完整 URL */
+export function fullUrl(path: string | null | undefined): string {
+  if (!path) return ''
+  return /^https?:\/\//.test(path) ? path : SERVER_ROOT + path
+}
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'

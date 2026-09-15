@@ -1,3 +1,4 @@
+import { fullUrl } from '../../services/request'
 import { getSearch, SearchType } from '../../services/search'
 import { ItemListItem, SearchSpaceItem, ParsedQuery } from '../../types/api'
 
@@ -27,7 +28,7 @@ Page({
       const items = tab === 'space' ? [] : (res.results || []).map(function (it: ItemListItem) {
         const meta = [it.color, it.brand].filter(function (x) { return !!x }).join(' · ')
         return Object.assign({}, it, {
-          img: it.imageUrl || '/assets/logo.png',
+          img: fullUrl(it.imageUrl) || '/assets/logo.png',
           meta: meta || '—',
           space: it.space ? it.space.name : '未归位',
           zone: it.path || '',

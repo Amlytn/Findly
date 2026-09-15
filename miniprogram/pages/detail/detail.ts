@@ -1,3 +1,4 @@
+import { fullUrl } from '../../services/request'
 import { getItem, deleteItem, updateItem, getRelated } from '../../services/items'
 import { getSpaces } from '../../services/spaces'
 import { getSuggestions } from '../../services/search'
@@ -27,7 +28,7 @@ Page({
       // 展示字段映射：img 无图用 logo 占位；space=叶子空间名；zone=完整位置路径
       // previewUrl 仅在真实照片存在时可用于全屏预览
       const obj = Object.assign({}, res, {
-        img: res.imageUrl || '/assets/logo.png',
+        img: fullUrl(res.imageUrl) || '/assets/logo.png',
         previewUrl: res.imageUrl || '',
         space: res.space ? res.space.name : '未归位',
         zone: res.path || ''
@@ -38,7 +39,7 @@ Page({
     })
     getRelated(this.data.id).then(function (res) {
       const related = res.items.slice(0, 4).map(function (r) {
-        return Object.assign({}, r, { img: r.imageUrl || '/assets/logo.png' })
+        return Object.assign({}, r, { img: fullUrl(r.imageUrl) || '/assets/logo.png' })
       })
       that.setData({ related: related })
     }).catch(function () { /* 同类为空则隐藏 */ })
