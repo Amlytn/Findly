@@ -21,6 +21,15 @@
   font-weight: 700;
 }
 
+.r-note {
+  margin-top: 20rpx;
+  padding: 14rpx 24rpx;
+  border-radius: 16rpx;
+  background: #FFF3E3;
+  color: #B26A00;
+  font-size: 24rpx;
+}
+
 .r-rows {
   margin-top: 32rpx;
   background: #F7FBFB;

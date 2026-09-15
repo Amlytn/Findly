@@ -2,9 +2,12 @@
   <view class="screen">
     <nav-bar title="空间管理" />
 
-    <view class="sp-row" wx:for="{{spaces}}" wx:key="name" bindtap="goSpace" data-name="{{item.name}}">
-      <view class="sp-chip chip-{{item.icon}}">
-        <view class="ic ic-{{item.icon}}"></view>
+    <view class="empty" wx:if="{{loading}}">加载中…</view>
+    <view class="empty" wx:elif="{{error}}" bindtap="retry">{{error}}，点击重试</view>
+
+    <view class="sp-row" wx:for="{{spaces}}" wx:key="id" bindtap="goSpace" data-name="{{item.name}}">
+      <view class="sp-chip chip-house">
+        <view class="ic ic-house"></view>
       </view>
       <view class="sp-info">
         <view class="sp-name">{{item.name}}</view>

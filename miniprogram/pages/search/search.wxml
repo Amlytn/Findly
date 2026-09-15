@@ -16,18 +16,18 @@
       />
     </view>
 
-    <view class="sec-title">相关物品</view>
+    <view class="sec-title" wx:if="{{hot.length}}">相关物品</view>
     <view class="rel-card" wx:for="{{hot}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-      <image src="{{item.img}}" mode="aspectFill" />
+      <image src="{{item.imageUrl || '/assets/item-mouse.jpg'}}" mode="aspectFill" />
       <view class="rel-info">
         <view class="rel-name">{{item.name}}</view>
-        <view class="rel-meta">{{item.color}} · {{item.brand}} · {{item.count}}件</view>
-        <view class="rel-loc">{{item.space}} · {{item.zone}}</view>
+        <view class="rel-meta">{{item.color}} · {{item.brand}}</view>
+        <view class="rel-loc">{{item.path}}</view>
       </view>
       <view class="chev"></view>
     </view>
 
-    <view class="sec-title">你可能还想找</view>
+    <view class="sec-title" wx:if="{{suggestions.length}}">你可能还想找</view>
     <view class="sug" wx:for="{{suggestions}}" wx:key="*this" bindtap="goSug" data-kw="{{item}}">
       <view class="ic ic-search"></view>
       <text class="sug-txt">{{item}}</text>
