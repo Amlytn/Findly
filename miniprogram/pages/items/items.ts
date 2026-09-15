@@ -51,7 +51,12 @@ Page({
     getItems(query).then(function (res) {
       const items = res.items.map(function (it: ItemListItem) {
         // quantity 列表接口未返回，默认 1；无图用 logo 占位（M4 上传后显示真图）
-        return Object.assign({}, it, { count: 1, img: it.imageUrl || '/assets/logo.png' })
+        // space 是 {id,name} 对象，取短名展示（修复卡片显示 [object Object]）
+        return Object.assign({}, it, {
+          count: 1,
+          img: it.imageUrl || '/assets/logo.png',
+          space: it.space ? it.space.name : '未归位'
+        })
       })
       const shown = reset ? items : that.data.shown.concat(items)
       that.setData({

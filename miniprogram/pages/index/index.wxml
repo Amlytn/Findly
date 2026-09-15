@@ -60,7 +60,7 @@
       <view
         class="recent-item"
         wx:for="{{recentItems}}"
-        wx:key="name"
+        wx:key="id"
         bindtap="onItemTap"
         data-id="{{item.id}}"
       >
