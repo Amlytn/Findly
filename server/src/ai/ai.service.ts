@@ -23,7 +23,8 @@ export class AiService {
     return process.env.DASHSCOPE_API_KEY || '';
   }
 
-  private async chat(model: string, messages: any[], maxTokens = 500): Promise<string> {
+  /** 返回模型输出与 DashScope 的 token 用量（usage 存入 AIResult，作为单次成本量化数据源） */
+  private async chat(model: string, messages: any[], maxTokens = 500): Promise<{ content: string; usage: any }> {
     if (!this.apiKey) {
       throw new ServiceUnavailableException('未配置 DASHSCOPE_API_KEY，AI 功能不可用');
     }
@@ -33,7 +34,10 @@ export class AiService {
         { model, messages, max_tokens: maxTokens },
         { headers: { Authorization: `Bearer ${this.apiKey}` }, timeout: 30000 },
       );
-      return res.data?.choices?.[0]?.message?.content ?? '';
+      return {
+        content: res.data?.choices?.[0]?.message?.content ?? '',
+        usage: res.data?.usage || null,
+      };
     } catch (e) {
       if (e instanceof ServiceUnavailableException) throw e;
       // 根因随 503 暴露（HTTP 状态码/网络错误码），供降级路径写入 AIResult 排障；不泄露 key
@@ -59,9 +63,9 @@ export class AiService {
     }
   }
 
-  /** Vision 识图 → 结构化物品信息 */
+  /** Vision 识图 → 结构化物品信息（usage 仅供落库统计，不返回给前端） */
   async recognize(imageDataUrl: string) {
-    const content = await this.chat(process.env.QWEN_VL_MODEL || 'qwen-vl-plus', [
+    const { content, usage } = await this.chat(process.env.QWEN_VL_MODEL || 'qwen-vl-plus', [
       {
         role: 'user',
         content: [
@@ -72,21 +76,27 @@ export class AiService {
     ]);
     const json = this.extractJson(content);
     return {
-      ...json,
-      confidence: typeof json.confidence === 'number' ? json.confidence : 0.5,
+      result: {
+        ...json,
+        confidence: typeof json.confidence === 'number' ? json.confidence : 0.5,
+      },
+      usage,
     };
   }
 
   /** 自然语言搜索句 → 结构化查询条件（方案文档第九节 Query Parser） */
   async parseQuery(q: string) {
-    const content = await this.chat(process.env.QWEN_TEXT_MODEL || 'qwen-turbo', [
+    const { content, usage } = await this.chat(process.env.QWEN_TEXT_MODEL || 'qwen-turbo', [
       { role: 'user', content: `${PARSE_PROMPT}\n用户搜索：${q}` },
     ], 200);
     const json = this.extractJson(content, '搜索词解析失败，已降级关键词直查。');
     return {
-      keyword: String(json.keyword || q),
-      color: json.color || null,
-      features: Array.isArray(json.features) ? json.features : [],
+      parsed: {
+        keyword: String(json.keyword || q),
+        color: json.color || null,
+        features: Array.isArray(json.features) ? json.features : [],
+      },
+      usage,
     };
   }
 }

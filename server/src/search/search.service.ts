@@ -22,13 +22,14 @@ export class SearchService {
       return { keyword: q, color: null, features: [], source: '关键词直查数据库' };
     }
     try {
-      const parsed = await this.ai.parseQuery(q);
+      const { parsed, usage } = await this.ai.parseQuery(q);
       // 查询解析落库 AIResult（与 recognize 一致）；source 写入 JSON 便于统计降级比例
+      // usage（token 用量）随记录落库，单次成本可直接从本表计算
       await this.prisma.aIResult.create({
         data: {
           taskType: 'parse-query',
           model: process.env.QWEN_TEXT_MODEL || 'qwen-turbo',
-          resultJson: JSON.stringify({ ...parsed, source: 'LLM Query Parser' }),
+          resultJson: JSON.stringify({ ...parsed, source: 'LLM Query Parser', usage }),
         },
       });
       return { ...parsed, source: 'LLM Query Parser' };
