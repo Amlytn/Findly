@@ -48,12 +48,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 覆盖 .btn-outline 的白底描边：主色调 #12A5A0 往深一档 #04869D 品牌渐变填充 */
+  background: linear-gradient(135deg, #12A5A0, #04869D);
+  border: none;
+  color: #FFFFFF;
+  box-shadow: 0 10rpx 24rpx rgba(4, 134, 157, 0.28);
 }
 
 .add-space .ic {
   width: 36rpx;
   height: 36rpx;
   margin-right: 12rpx;
+}
+
+/* 加号改白色，适配渐变底 */
+.add-space .ic-plus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
 }
 
 /* 平铺全深度空间列表 + 物品面板（接入真实接口后新增） */
