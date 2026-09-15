@@ -31,10 +31,12 @@ Page({
     const that = this
     getCategories().then(function (res) {
       const cats: CatChip[] = [{ key: 'all', name: '全部' }]
+      const counts: number[] = [0]
       res.categories.forEach(function (c) {
         cats.push({ key: c.name, name: c.name })
+        counts.push(c.count)
       })
-      that.setData({ cats: cats })
+      that.setData({ cats: cats, counts: counts })
     }).catch(function () { /* chips 拉取失败不阻塞列表 */ })
   },
 
