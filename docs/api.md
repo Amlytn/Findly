@@ -1,13 +1,13 @@
-# Findly API 接口契约（v1.2）
+# Findly API 接口契约（v1.3）
 
 > 前后端共同遵守的接口约定。改接口必须先改本文档，再动代码（PR 同步提交）。
 > 维护人：@james-wu66 ｜ 协作：@Amlytn
-> 评审状态：v1.2（v1.2：tags 统一字符串数组、POST /items 增加 aiResultId 回填、DELETE 幂等语义、suggestions 规则与实现对齐、新增 M4 提案契约；v1.1 按「12 屏实现范围」补 4 接口）
+> 评审状态：v1.3（M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义、M4 提案契约）
 
 ## 通用约定
 
 - Base URL：`http://localhost:3000`（联调期；上线后换 HTTPS 域名）
-- 认证：请求头 `x-user-id: <用户id>`（演示阶段，缺省 `dev`；M4 接入微信登录后替换为 token）
+- 认证：请求头 `Authorization: Bearer <token>`（v1.3 起支持，token 来自 `POST /auth/login`，7 天有效；未携带 token 时**过渡期**仍接受 `x-user-id`，缺省 `dev`，M5 移除该兜底）
 - 时间格式：ISO 8601（如 `2026-09-14T09:00:00.000Z`）
 - 错误响应统一为 NestJS 默认格式：
 
@@ -15,7 +15,8 @@
 { "statusCode": 400, "message": "具体原因", "error": "Bad Request" }
 ```
 
-- 常用状态码：200 成功 / 400 参数错误 / 404 不存在 / 403 无权访问 / 413 文件过大 / 503 AI 服务不可用
+- 常用状态码：200 成功 / 400 参数错误 / 404 不存在 / 403 无权访问 / 413 文件过大 / 429 触发限流 / 503 AI 服务不可用
+- 限流：全局 120 次/分钟；`/ai/*` 10 次/分钟（超出返回 429）
 
 ---
 
@@ -183,9 +184,9 @@ GET 列表返回（v1.2：tags 统一为字符串数组，前端不再解嵌套�
 - 约定：AI 结果只是"草稿"，用户可修改后走 POST /items 保存——**前端必须允许编辑再保存**（方案文档第五节）
 - 错误：400 格式不对 / 无法识别（提示"暂时无法准确识别这个物品，你可以手动填写名称"）；413 超限；503 AI 服务不可用
 
-## 5. M4 提案契约（v1.2 起草，评审后实现；前端先不要调）
+## 5. 认证 / 上传 / 用户（v1.3 转正式）
 
-> 归属：M4 共同。以下为提案格式，实现前如需调整请改本节。
+> 归属：M4 共同，已实现。联调通道 `/auth/dev-token` 为开发设施，不入对外契约（M5 移除）。
 
 ### 5.1 微信登录 `POST /api/v1/auth/login`
 
@@ -196,14 +197,16 @@ GET 列表返回（v1.2：tags 统一为字符串数组，前端不再解嵌套�
 { "token": "JWT", "user": { "id": "u1", "nickname": null, "avatar": null } }
 ```
 
-- 后端持 AppID/AppSecret（.env，不入库）调 jscode2session 换 openid → openid 唯一 upsert User → 签发 JWT
-- 成功后前端所有请求改带 `Authorization: Bearer <token>`，替换 `x-user-id`（保留 x-user-id 演示兼容开关）
+- 后端持 AppID/AppSecret（.env，不入库）调 jscode2session 换 openid → openid 唯一 upsert User → 签发 JWT（7 天）
+- 成功后前端所有请求改带 `Authorization: Bearer <token>`，替换 `x-user-id`（过渡期 x-user-id 仍被接受，M5 移除）
+- 错误：400（code 无效 / 服务端未配置 WX_APPID/WX_APPSECRET）
 
 ### 5.2 图片上传 `POST /api/v1/upload`
 
 - multipart/form-data，字段名 `file`；仅 png/jpeg/webp；≤4MB（413）
-- 存 `server/uploads/`（已 ignore），随机文件名；返回 `{ "imageUrl": "/uploads/xxx.jpg" }`
+- 存 `server/uploads/`（已 ignore），随机文件名；返回 `{ "imageUrl": "/uploads/xxx.jpg" }`，可通过 `GET /uploads/文件名` 直接访问
 - 后续迁移对象存储时仅改实现，路径形态不变
+- 错误：400（格式不对）/ 413（超 4MB）
 
 ### 5.3 当前用户 `GET /api/v1/users/me`
 

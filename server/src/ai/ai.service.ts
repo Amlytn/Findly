@@ -4,6 +4,7 @@
  */
 import { Injectable, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 import axios from 'axios';
+import { createHash } from 'crypto';
 
 // 阿里云百炼 DashScope 的 OpenAI 兼容模式（换模型只改 .env，不动代码）
 const DASHSCOPE_BASE = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
@@ -19,6 +20,10 @@ const PARSE_PROMPT =
 
 @Injectable()
 export class AiService {
+  /** 识别结果缓存：key=sha256(完整 base64)，TTL 24h；同图重复识别零模型调用（成本防线） */
+  private cache = new Map<string, { result: any; usage: any; expires: number }>();
+  private static CACHE_TTL = 24 * 60 * 60 * 1000;
+
   private get apiKey() {
     return process.env.DASHSCOPE_API_KEY || '';
   }
@@ -65,6 +70,12 @@ export class AiService {
 
   /** Vision 识图 → 结构化物品信息（usage 仅供落库统计，不返回给前端） */
   async recognize(imageDataUrl: string) {
+    // 缓存命中：不调模型；result 带 cached 标记，usage 沿用原值（成本防线：同图零调用）
+    const key = createHash('sha256').update(imageDataUrl).digest('hex');
+    const hit = this.cache.get(key);
+    if (hit && hit.expires > Date.now()) {
+      return { result: { ...hit.result, cached: true }, usage: hit.usage };
+    }
     const { content, usage } = await this.chat(process.env.QWEN_VL_MODEL || 'qwen-vl-plus', [
       {
         role: 'user',
@@ -75,13 +86,15 @@ export class AiService {
       },
     ]);
     const json = this.extractJson(content);
-    return {
-      result: {
-        ...json,
-        confidence: typeof json.confidence === 'number' ? json.confidence : 0.5,
-      },
-      usage,
+    const result = {
+      ...json,
+      confidence: typeof json.confidence === 'number' ? json.confidence : 0.5,
     };
+    this.cache.set(key, { result, usage, expires: Date.now() + AiService.CACHE_TTL });
+    if (this.cache.size > 200) {
+      for (const [k, v] of this.cache) if (v.expires <= Date.now()) this.cache.delete(k);
+    }
+    return { result, usage };
   }
 
   /** 自然语言搜索句 → 结构化查询条件（方案文档第九节 Query Parser） */
