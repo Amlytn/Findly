@@ -32,6 +32,15 @@
         <text class="k">描述</text>
         <text class="v">{{draft.desc}}</text>
       </view>
+      <view class="r-row tags-row">
+        <text class="k">标签</text>
+        <view class="tags">
+          <view class="tag-chip" wx:for="{{draft.tags}}" wx:key="*this" bindtap="removeTag" data-t="{{item}}">
+            {{item}}<text class="x">×</text>
+          </view>
+          <view class="tag-chip add" bindtap="addTag">＋ 标签</view>
+        </view>
+      </view>
     </view>
 
     <view class="r-loc">

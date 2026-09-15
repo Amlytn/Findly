@@ -106,3 +106,33 @@
 .r-save {
   margin-top: 56rpx;
 }
+
+/* 标签 chips（缺陷修复：AI 标签可展示/删改，随物品入库） */
+.tags-row {
+  align-items: flex-start;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  flex: 1;
+}
+
+.tag-chip {
+  padding: 6rpx 18rpx;
+  background: #EAF6F5;
+  color: #0B7A75;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+}
+
+.tag-chip .x {
+  margin-left: 8rpx;
+  color: #93A9AE;
+}
+
+.tag-chip.add {
+  color: #12A5A0;
+  background: #F2FAF9;
+}
