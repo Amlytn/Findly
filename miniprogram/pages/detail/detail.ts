@@ -1,4 +1,5 @@
 import { getItem, deleteItem, updateItem, getRelated } from '../../services/items'
+import { getSpaces } from '../../services/spaces'
 import { getSuggestions } from '../../services/search'
 import { isApiError } from '../../services/request'
 import { ItemDetail } from '../../types/api'
