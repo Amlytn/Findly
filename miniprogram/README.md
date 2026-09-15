@@ -6,7 +6,7 @@
 
 | # | 页面 | 路径 | 说明 |
 |---|---|---|---|
-| 1 | 首页 | `pages/index/index` | TabBar 首页，搜索入口、拍照横幅、最近添加、我的空间 |
+| 1 | 首页 | `pages/index/index` | TabBar 首页，搜索入口、拍照横幅、快捷入口、最近添加 |
 | 2 | 拍照识别 | `pages/camera/camera` | 深色取景界面，快门/相册选图后进入识别结果 |
 | 3 | 识别结果 | `pages/result/result` | 识别信息 + 位置面包屑 + 保存 |
 | 4 | 位置选择 | `pages/location/location` | 树形空间选择器，确定后回填结果页 |
@@ -16,8 +16,9 @@
 | 8 | 添加物品 | `pages/add/add` | TabBar ➕ 入口，相册识别 / 手动添加 |
 | 9 | 我的物品 | `pages/items/items` | TabBar 物品页，分类 chips + 双列网格 |
 | 10 | 空间管理 | `pages/spaces/spaces` | TabBar 空间页，空间列表 + 添加空间 |
-| 11 | 个人中心 | `pages/profile/profile` | TabBar 我的页，资料卡 + 功能列表 |
+| 11 | 个人中心 | `pages/profile/profile` | TabBar 我的页，资料卡（点头像进编辑）+ 功能列表 |
 | 12 | 设置 | `pages/settings/settings` | 关于、缓存、退出登录 |
+| 13 | 资料编辑 | `pages/profile-edit/profile-edit` | 编辑头像（裁 1:1 转持久文件）与 ID，存本地缓存 |
 
 ## 目录结构
 
@@ -26,26 +27,33 @@
 ├── app.ts / app.json / app.wxss      # 全局入口；app.wxss 含共享骨架样式与全部内联 SVG 图标
 ├── typings.d.ts                      # wx/App/Page 等全局 API 的轻量类型声明
 ├── project.config.json / tsconfig.json
-├── types/api.ts                      # 后端接口响应的 TypeScript 类型（对齐 docs/api.md）
-├── services/                         # 请求层：request 封装 + items/spaces/search/ai 业务函数
+├── utils/data.ts                     # 共享模拟数据（物品/空间/建议）与搜索匹配逻辑
 ├── components/nav-bar/               # 通用顶部导航栏（返回 + 标题，Tab 页无上级时回首页）
 ├── custom-tab-bar/                   # 自定义 TabBar（首页/物品/➕/空间/我的）
 ├── favicon.svg                       # 品牌图标源文件
-├── assets/                           # logo + 9 张物品照片（AI 生成占位，可换实拍图）
+├── assets/                           # logo + 9 张物品照片 + 首页横幅背景（AI 生成占位，可换实拍图）
+│   ├── hero-bg.jpg                   # 首页横幅背景：3D 渐变场景（蓝绿渐变 + 底部体块 + 右侧同心圆），
+│   │                                 # 原图 1455x736 直接使用（未调色），容器 aspectFill 适配 686x354rpx
+│   └── icon-camera-3d.png            # 快捷入口"拍照识别"3D 相机图标（240x240 透明底，源文件见
+│                                     # Desktop/findly-icon-set/3d icon/Carmen.png，1254x1254）
 └── pages/                            # 12 个页面
 ```
+
+## 横幅背景图提示词（hero-bg.jpg）
+
+> 当前版本：宽幅 3D 渲染风横幅背景，浅蓝到浅青绿渐变，左下角淡蓝色 3D 书本/方块组合，
+> 中下部青绿色柔和曲面体，右侧大同心圆环装饰，右下角小星芒点缀，顶部大面积留白供文字排版，
+> 柔焦虚化、极简、无文字。原图直接使用，不做调色与裁切。
+
+> 旧版水彩山水提示词（已弃用，备份见 hero-bg-watercolor-旧图备份.jpg）：
+>
+> 宽幅App横幅背景插画，横构图。背景：从左到右极其柔和的浅蓝色到浅绿色水彩渐变，画面上方80%完全空旷干净，只有渐变，没有任何元素。所有装饰集中在画面最底部12%的窄带里，非常小巧低调：① 左侧0-18%处一座矮胖的淡蓝色水彩小山丘，高度不超过画面高度的22%；② 三棵迷你水彩树，横向约20%、68%、85%处，最高的一棵不超过画面高度的16%，树冠为一两个交叠的小圆色块，嫩绿/青绿/蓝绿深浅不一，树干细短；③ 山丘上一片极小的淡蓝叶子，约52%处一片嫩绿小叶子。元素稀疏分散、大小不一，绝不均匀排列，没有草地，没有成排植物。水彩质感，边缘柔化，颜色极淡。无文字，无图标，无边框，极简大留白
 
 ## 运行方式
 
 1. 打开 **微信开发者工具** → 导入项目 → 选择本目录（`代码/`）。
 2. AppID 填自己的，或直接用测试号预览。
 3. 已开启 TS 编译插件（`useCompilerPlugins: ["typescript"]`），保存即编译。
-
-## 本地联调（M3 接真实后端）
-
-1. 后端在仓库 `server/` 目录启动：`npm run build && node dist/src/main.js`（需本地 PostgreSQL 与 `server/.env` 配置，详见仓库 docs）。后端监听 `http://localhost:3000`。
-2. **必做**：微信开发者工具「详情 → 本地设置」勾选 **「不校验合法域名、web-view以及HTTPS证书」**，否则 `http://localhost:3000` 的请求会被拦截。上线前需在小程序后台配置 HTTPS 合法域名并把 `services/request.ts` 的 `API_BASE` 换成正式域名。
-3. 演示用户：请求头固定 `x-user-id: dev`（`services/request.ts` 的 `USER_ID`），与后端 seed 数据同一用户；M4 接入微信登录后替换为 token。
 
 ## 已打通的交互链路
 
@@ -61,11 +69,11 @@
 - **自定义导航栏**：`navigationStyle: "custom"` + `env(safe-area-inset-top)` 避让状态栏；首页扫描入口通过 `wx.getMenuButtonBoundingClientRect()` 实测避让胶囊按钮。
 - **页面间数据传递**：识别照片与所选位置经 `app.globalData` 中转（临时文件路径不适合放 URL）。
 - **图标零依赖**：全部内联 SVG data URI 定义在 `app.wxss`（`.ic-*` 系列），新页面直接复用。
-- **数据层**：已切换为真实后端接口——`types/api.ts`（契约类型）+ `services/`（请求层，页面不直接调 wx.request）。原 `utils/data.ts` 模拟数据层已删除。
+- **数据层**：`utils/data.ts` 集中管理物品/空间/搜索逻辑，替换为云开发或后端接口时只需改这一个文件。
 
 ## 与设计稿的差异说明
 
 - 状态栏由手机系统绘制，无法复刻，真机显示用户实际状态栏。
 - 配色策略：品牌主体对齐 `favicon.svg` 青绿系（主渐变 `#31CBBB → #04869D`、强调色 `#12A5A0`）；"我的空间"四色卡片、植物装饰保留设计稿多彩粉彩风格。
-- 物品照片为 AI 生成占位图，可替换为真实照片（`assets/` 目录）。
+- 物品照片为 AI 生成占位图，可替换为真实照片（路径见 `utils/data.ts`）。
 - 编辑物品、手动添加表单、空间详情、家庭共享等未在设计稿中出现的界面以 toast 占位。

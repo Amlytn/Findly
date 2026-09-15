@@ -1,0 +1,32 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="个人资料" />
+
+    <view class="g-card">
+      <!-- 头像行:点击整行更换 -->
+      <view class="list-row" bindtap="chooseAvatar">
+        <text class="e-label">头像</text>
+        <image wx:if="{{avatar}}" class="e-avatar" src="{{avatar}}" mode="aspectFill" />
+        <view wx:else class="e-avatar avatar"></view>
+        <text class="e-hint">点击更换</text>
+        <view class="chev"></view>
+      </view>
+
+      <!-- ID 行:输入框编辑 -->
+      <view class="list-row">
+        <text class="e-label">ID</text>
+        <input
+          class="e-input"
+          value="{{id}}"
+          maxlength="20"
+          placeholder="设置你的 ID"
+          placeholder-class="e-ph"
+          bindinput="onId"
+        />
+      </view>
+    </view>
+
+    <view class="e-tip">头像与 ID 将展示在个人中心</view>
+    <view class="btn-primary e-save" bindtap="save">保存</view>
+  </view>
+</view>

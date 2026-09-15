@@ -3,7 +3,8 @@
   align-items: center;
   height: 80rpx;
   background: #F0F6F7;
-  border-radius: 40rpx;
+  /* 与首页搜索栏一致：设计稿圆角比 ≈ 0.29 × 栏高 */
+  border-radius: 24rpx;
   padding: 0 28rpx;
   margin-top: 8rpx;
 }
@@ -55,9 +56,10 @@
 
 .g-card image {
   width: 100%;
-  height: 220rpx;
+  /* 1:1 容器：(686 - 24) / 2 = 331rpx */
+  height: 331rpx;
   border-radius: 24rpx;
-  background: #EFF4F5;
+  background: #F5F7F8;
   display: block;
 }
 

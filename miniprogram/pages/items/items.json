@@ -1,7 +1,5 @@
 {
   "usingComponents": {
     "nav-bar": "/components/nav-bar/index"
-  },
-  "enablePullDownRefresh": true,
-  "onReachBottomDistance": 80
+  }
 }

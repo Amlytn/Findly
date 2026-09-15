@@ -3,13 +3,16 @@
   background: #17191C;
   display: flex;
   flex-direction: column;
-  padding: calc(env(safe-area-inset-top) + 16rpx) 32rpx calc(env(safe-area-inset-bottom) + 48rpx);
+  /* 顶部安全区由 cam-nav 实测注入，底部仍用 env（底部 inset 各端可靠） */
+  padding: 0 32rpx calc(env(safe-area-inset-bottom) + 48rpx);
 }
 
 .cam-nav {
   display: flex;
   align-items: center;
   height: 72rpx;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .cam-back {
