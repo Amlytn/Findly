@@ -97,3 +97,42 @@
 .r-save {
   margin-top: 56rpx;
 }
+
+/* AI 识别状态提示 + 标签 chips（接入真实 recognize 后新增） */
+.r-note {
+  margin: 12rpx 32rpx 0;
+  padding: 12rpx 20rpx;
+  background: #FFF7E8;
+  color: #B8860B;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+}
+
+.tags-row {
+  align-items: flex-start;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  flex: 1;
+}
+
+.tag-chip {
+  padding: 6rpx 18rpx;
+  background: #EAF6F5;
+  color: #0B7A75;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+}
+
+.tag-chip .x {
+  margin-left: 8rpx;
+  color: #93A9AE;
+}
+
+.tag-chip.add {
+  color: #12A5A0;
+  background: #F2FAF9;
+}
