@@ -1,16 +1,38 @@
+interface GlobalData {
+  version: string
+  statusBarHeight: number
+  navBarHeight: number
+  recognizeImg: string
+  recognizeImgFull: string
+  locationPath: string[]
+}
+
 App({
   onLaunch() {
-    // 小程序启动逻辑（后续可在此拉取用户数据 / 登录）
+    // 异形屏适配：实测状态栏高度 + 胶囊按钮位置反推导航栏高度
+    // 不依赖 CSS env(safe-area-inset-top)（工具/部分安卓机型返回 0）
+    try {
+      const win = typeof wx.getWindowInfo === 'function' ? wx.getWindowInfo() : wx.getSystemInfoSync()
+      const capsule = wx.getMenuButtonBoundingClientRect()
+      const sbh = win.statusBarHeight || 20
+      // 胶囊与状态栏的间距上下各留一份，得到与胶囊垂直居中的导航栏高度
+      const gap = capsule.top - sbh
+      ;(this as any).globalData.statusBarHeight = sbh
+      ;(this as any).globalData.navBarHeight = gap * 2 + capsule.height
+    } catch (e) {
+      ;(this as any).globalData.statusBarHeight = 20
+      ;(this as any).globalData.navBarHeight = 44
+    }
   },
   globalData: {
     version: '1.0.0',
-    // 拍照识别 → 识别结果 传递的照片临时路径
+    statusBarHeight: 20,
+    navBarHeight: 44,
+    // 拍照识别 → 识别结果 传递的照片：裁好的 1:1 方图（供列表/缩略使用）
     recognizeImg: '',
-    // 位置选择 → 识别结果 回填的位置路径（名称数组，用于展示）
-    locationPath: [] as string[],
-    // 位置选择回填的真实空间 id（保存物品用；M4 前以选中叶子为准）
-    locationId: '',
-    // 本次识图是否待发起（result 页消费后清除，防 onShow 重复调 AI）
-    recognizePending: false
-  }
+    // 用户原始照片（详情页完整展示用）
+    recognizeImgFull: '',
+    // 位置选择 → 识别结果 回填的位置路径
+    locationPath: ['我的家', '书房', '书桌']
+  } as GlobalData
 })

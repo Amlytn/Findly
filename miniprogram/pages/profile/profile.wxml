@@ -3,10 +3,14 @@
     <nav-bar title="个人中心" />
 
     <view class="p-card">
-      <view class="p-avatar avatar"></view>
+      <!-- 点击头像进入个人资料编辑 -->
+      <view class="p-avatar-hit" bindtap="goProfileEdit">
+        <image wx:if="{{avatar}}" class="p-avatar" src="{{avatar}}" mode="aspectFill" />
+        <view wx:else class="p-avatar avatar"></view>
+      </view>
       <view class="p-info">
         <view class="p-name">小明同学</view>
-        <view class="p-sub">开心生活 · Findly</view>
+        <view class="p-sub">ID:{{id}}</view>
       </view>
     </view>
 

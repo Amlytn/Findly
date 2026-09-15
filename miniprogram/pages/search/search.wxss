@@ -50,7 +50,7 @@
   width: 120rpx;
   height: 120rpx;
   border-radius: 20rpx;
-  background: #EFF4F5;
+  background: #F5F7F8;
   flex-shrink: 0;
 }
 

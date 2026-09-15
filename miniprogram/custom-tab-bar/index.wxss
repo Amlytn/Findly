@@ -1,15 +1,17 @@
+/* 固定通栏底栏（对齐首页设计稿：白色全宽、贴底、上缘浅阴影） */
 .bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 136rpx;
-  padding-bottom: env(safe-area-inset-bottom);
+  /* 内容区 100rpx + 底部留白（安全区优先，无安全区机型保底 24rpx，防止下移的文字贴边被裁） */
+  height: calc(100rpx + max(24rpx, env(safe-area-inset-bottom)));
   background: #FFFFFF;
   display: flex;
-  align-items: center;
-  border-radius: 40rpx 40rpx 0 0;
-  box-shadow: 0 -8rpx 30rpx rgba(4, 134, 157, 0.10);
+  align-items: stretch;
+  padding: 0 12rpx max(24rpx, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  box-shadow: 0 -6rpx 24rpx rgba(4, 134, 157, 0.08);
 }
 
 .tab {
@@ -17,74 +19,97 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  /* 图标与文字整体下移：图标盒顶距栏顶 22rpx，文字顺势探入底部留白区 */
+  padding-top: 22rpx;
 }
 
+/* 选中态：仅图标与文字变色，无背景高亮 */
+
 .tab-icon {
-  width: 46rpx;
-  height: 46rpx;
+  width: 72rpx;
+  height: 72rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .tab-label {
-  margin-top: 6rpx;
-  font-size: 22rpx;
+  margin-top: 0;
+  font-size: 24rpx;
+  font-weight: 300;
+  line-height: 1.3;
   color: #93A9AE;
 }
 
 .tab-label.on {
   color: #12A5A0;
-  font-weight: 600;
 }
 
-/* 首页 - 房子（灰色描边 / 选中绿色实心） */
+/* 首页 - 房子（灰描边 / 选中青实心） */
 .icon-home {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11 12 3.5 21 11'/%3E%3Cpath d='M5.5 9.5V20h13V9.5'/%3E%3Cpath d='M10 20v-5h4v5'/%3E%3C/svg%3E");
+  /* 极简实心·灰色未选中态（与 icon-home-a 同形，仅换色） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M30 105 120 30 210 105H185V188Q185 200 173 200H138V158Q138 144 124 144H116Q102 144 102 158V200H67Q55 200 55 188V105Z' fill='%2393A9AE'/%3E%3C/svg%3E");
 }
 
 .icon-home-a {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2312A5A0'%3E%3Cpath d='M12 3 3 10.5h2.5V20h5v-5.5h3V20h5V10.5H21L12 3z'/%3E%3C/svg%3E");
+  /* 极简实心（demo/house-03-solid-rounded.svg）：单色剪影 + 底部镂空圆拱门 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M30 105 120 30 210 105H185V188Q185 200 173 200H138V158Q138 144 124 144H116Q102 144 102 158V200H67Q55 200 55 188V105Z' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
-/* 物品 - 放大镜 */
+/* 物品 - 放大镜（demo/items-01-ring.svg，灰 / 青） */
 .icon-items {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M16.7 16.7 21 21'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M100 28 A72 72 0 1 0 100 172 A72 72 0 1 0 100 28 Z M100 56 A44 44 0 1 0 100 144 A44 44 0 1 0 100 56 Z' fill='%2393A9AE'/%3E%3Cpath d='M150.9 131.1 L201.9 182.1 A14 14 0 0 1 182.1 201.9 L131.1 150.9 Z' fill='%2393A9AE'/%3E%3C/svg%3E");
 }
 
-/* 空间 - 指南针 */
+.icon-items-a {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M100 28 A72 72 0 1 0 100 172 A72 72 0 1 0 100 28 Z M100 56 A44 44 0 1 0 100 144 A44 44 0 1 0 100 56 Z' fill='%2312A5A0'/%3E%3Cpath d='M150.9 131.1 L201.9 182.1 A14 14 0 0 1 182.1 201.9 L131.1 150.9 Z' fill='%2312A5A0'/%3E%3C/svg%3E");
+}
+
+/* 空间 - 等距立方体（demo/space-02-cube.svg，灰 / 青） */
 .icon-space {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='%2393A9AE' stroke='%2393A9AE' stroke-width='10' stroke-linejoin='round'%3E%3Cpath d='M120 46.4L181.9 82L120 117.6L58.1 82Z'/%3E%3Cpath d='M49 97.6L111 133.2V204.4L49 168.8Z'/%3E%3Cpath d='M191 97.6V168.8L129 204.4V133.2Z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* 我的 - 人像 */
+.icon-space-a {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='%2312A5A0' stroke='%2312A5A0' stroke-width='10' stroke-linejoin='round'%3E%3Cpath d='M120 46.4L181.9 82L120 117.6L58.1 82Z'/%3E%3Cpath d='M49 97.6L111 133.2V204.4L49 168.8Z'/%3E%3Cpath d='M191 97.6V168.8L129 204.4V133.2Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* 我的 - 人像（demo/me-01-person.svg，灰 / 青） */
 .icon-me {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393A9AE' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Ccircle cx='120' cy='80' r='40' fill='%2393A9AE'/%3E%3Cpath d='M62 200 Q50 200 50 189 C50 160 82 136 120 136 C158 136 190 160 190 189 Q190 200 178 200 Z' fill='%2393A9AE'/%3E%3C/svg%3E");
 }
 
-/* 中间凸起的 + 按钮 */
+.icon-me-a {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Ccircle cx='120' cy='80' r='40' fill='%2312A5A0'/%3E%3Cpath d='M62 200 Q50 200 50 189 C50 160 82 136 120 136 C158 136 190 160 190 189 Q190 200 178 200 Z' fill='%2312A5A0'/%3E%3C/svg%3E");
+}
+
+/* 中间横向胶囊：拍照识别 */
 .tab-add {
-  justify-content: flex-start;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .add-btn {
-  width: 104rpx;
-  height: 104rpx;
+  /* 圆形按钮，直径 96rpx（对齐设计稿青色圆）；随 Tab 内容同步下移 */
+  margin-top: 8rpx;
+  width: 96rpx;
+  height: 96rpx;
   border-radius: 50%;
   background: linear-gradient(135deg, #31CBBB, #04869D);
   box-shadow: 0 10rpx 24rpx rgba(4, 134, 157, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -60rpx;
 }
 
-.icon-plus {
-  width: 48rpx;
-  height: 48rpx;
+.icon-cam {
+  width: 42rpx;
+  height: 42rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 5.5v13M5.5 12h13'/%3E%3C/svg%3E");
 }

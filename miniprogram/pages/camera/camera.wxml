@@ -1,5 +1,5 @@
 <view class="cam">
-  <view class="cam-nav">
+  <view class="cam-nav" style="padding-top: {{statusBarHeight}}px; height: {{navTotal}}px;">
     <view class="cam-back" bindtap="goBack">
       <view class="cam-arrow"></view>
     </view>

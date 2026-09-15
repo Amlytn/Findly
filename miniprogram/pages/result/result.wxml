@@ -3,43 +3,26 @@
     <nav-bar title="识别结果" />
 
     <view class="r-top">
-      <image class="r-img" src="{{img}}" mode="aspectFill" />
-      <view class="r-acc" wx:if="{{recognizing}}">AI 识别中…</view>
-      <view class="r-acc" wx:elif="{{aiFailed}}">识别不可用</view>
-      <view class="r-acc" wx:else>识别准确 {{score}}%</view>
+      <image class="r-img" src="{{img}}" mode="aspectFit" />
+      <view class="r-acc">识别准确 {{score}}%</view>
     </view>
 
-    <view class="r-note" wx:if="{{aiNote}}">{{aiNote}}</view>
-
     <view class="r-rows">
-      <view class="r-row" bindtap="editName">
-        <text class="k">名称</text>
-        <text class="v">{{draft.name || '点击填写（必填）'}}</text>
-      </view>
       <view class="r-row">
         <text class="k">品牌</text>
-        <text class="v">{{draft.brand}}</text>
+        <text class="v">{{info.brand}}</text>
       </view>
       <view class="r-row">
         <text class="k">类别</text>
-        <text class="v">{{draft.category}}</text>
+        <text class="v">{{info.category}}</text>
       </view>
       <view class="r-row">
         <text class="k">颜色</text>
-        <text class="v">{{draft.color}}</text>
+        <text class="v">{{info.color}}</text>
       </view>
       <view class="r-row desc">
         <text class="k">描述</text>
-        <text class="v">{{draft.desc}}</text>
-      </view>
-      <view class="r-row tags-row">
-        <text class="k">标签</text>
-        <view class="tags">
-          <view class="tag-chip" wx:for="{{draft.tags}}" wx:key="*this" bindtap="removeTag" data-t="{{item}}">
-            {{item}}<text class="x">×</text>
-          </view>
-          <view class="tag-chip add" bindtap="addTag">＋ 标签</view>
-        </view>
+        <text class="v">{{info.desc}}</text>
       </view>
     </view>
 

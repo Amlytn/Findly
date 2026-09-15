@@ -1,6 +1,6 @@
 /* 全局样式 */
 page {
-  background: #E3F4F5;
+  background: #FFFFFF;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
   color: #124E5B;
   font-size: 28rpx;
@@ -12,18 +12,16 @@ view, text {
 }
 
 /* ================= 通用页面骨架（带导航栏的页面共用） ================= */
+/* 全出血：内容通铺到屏幕边缘；顶部安全区由 nav-bar 组件实测注入（见 app.ts onLaunch） */
 .page {
   min-height: 100vh;
-  background: #E3F4F5;
-  padding: calc(env(safe-area-inset-top) + 28rpx) 24rpx 0;
+  background: #FFFFFF;
+  padding: 0 0 0;
 }
 
 .screen {
   background: #FFFFFF;
-  border-radius: 56rpx 56rpx 0 0;
-  padding: 24rpx 32rpx 180rpx;
-  min-height: calc(100vh - env(safe-area-inset-top) - 28rpx);
-  box-shadow: 0 -10rpx 60rpx rgba(4, 134, 157, 0.10);
+  padding: 12rpx 32rpx 200rpx;
 }
 
 /* ================= 通用右箭头 ================= */
@@ -42,8 +40,8 @@ view, text {
 
 /* ================= 共享图标（内联 SVG，零依赖） ================= */
 .ic {
-  width: 44rpx;
-  height: 44rpx;
+  width: 54rpx;
+  height: 54rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -106,41 +104,47 @@ view, text {
 }
 
 .ic-del {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E06B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16'/%3E%3Cpath d='M9 7V4h6v3'/%3E%3Cpath d='M6 7l1 13h10l1-13'/%3E%3Cpath d='M10 11v6M14 11v6'/%3E%3C/svg%3E");
+  /* 删除/清除缓存 · 实心垃圾桶（demo/setting-trash.svg，同时用于详情页删除） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Crect x='105' y='44' width='30' height='14' rx='7' fill='%23E06B6B'/%3E%3Crect x='58' y='58' width='124' height='18' rx='9' fill='%23E06B6B'/%3E%3Cpath fill-rule='evenodd' d='M80 86 H160 A18 18 0 0 1 178 104 V182 A18 18 0 0 1 160 200 H80 A18 18 0 0 1 62 182 V104 A18 18 0 0 1 80 86 Z M96 124 A7 7 0 0 1 110 124 L110 174 A7 7 0 0 1 96 174 Z M130 124 A7 7 0 0 1 144 124 L144 174 A7 7 0 0 1 130 174 Z' fill='%23E06B6B'/%3E%3C/svg%3E");
 }
 
 /* 设置页图标（灰） */
 .ic-info {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238FA8AD' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v6'/%3E%3Cpath d='M12 7.5v.5'/%3E%3C/svg%3E");
+  /* 版本信息 · 实心信息圆牌（demo/setting-info.svg） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M120 40 A80 80 0 1 0 120 200 A80 80 0 1 0 120 40 Z M120 65 A10 10 0 1 0 120 85 A10 10 0 1 0 120 65 Z M110 112 Q110 102 120 102 Q130 102 130 112 L130 153 Q130 163 120 163 Q110 163 110 153 Z' fill='%238FA8AD'/%3E%3C/svg%3E");
 }
 
 .ic-doc {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238FA8AD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h9l4 4v16H6z'/%3E%3Cpath d='M15 2v4h4'/%3E%3Cpath d='M9 12h7M9 16h7'/%3E%3C/svg%3E");
+  /* 用户协议 · 实心文档（demo/setting-doc.svg） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M78 40 H162 A16 16 0 0 1 178 56 V184 A16 16 0 0 1 162 200 H78 A16 16 0 0 1 62 184 V56 A16 16 0 0 1 78 40 Z M95 79.5 H145 A7 7 0 0 1 145 93.5 H95 A7 7 0 0 1 95 79.5 Z M95 107 H145 A7 7 0 0 1 145 121 H95 A7 7 0 0 1 95 107 Z M95 134.5 H118 A7 7 0 0 1 118 148.5 H95 A7 7 0 0 1 95 134.5 Z' fill='%238FA8AD'/%3E%3C/svg%3E");
 }
 
 .ic-shield {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238FA8AD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z'/%3E%3C/svg%3E");
+  /* 隐私政策 · 实心锁（demo/setting-lock.svg） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M92 98 V78 A28 28 0 0 1 148 78 V98' stroke='%238FA8AD' stroke-width='22' stroke-linecap='round' fill='none'/%3E%3Cpath fill-rule='evenodd' d='M86 96 H154 A22 22 0 0 1 176 118 V180 A22 22 0 0 1 154 202 H86 A22 22 0 0 1 64 180 V118 A22 22 0 0 1 86 96 Z M110 128 A10 10 0 0 1 130 128 L130 162 A10 10 0 0 1 110 162 Z' fill='%238FA8AD'/%3E%3C/svg%3E");
 }
 
 .ic-help {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238FA8AD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.8.3-.9 1-.9 1.7'/%3E%3Cpath d='M12 17v.5'/%3E%3C/svg%3E");
+  /* 常见问题 · 粗壮问号（demo/setting-help.svg） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M85 92 C85 68 102 56 122 56 C144 56 157 71 157 90 C157 107 144 115 131 126 C122 132 120 138 120 146' stroke='%238FA8AD' stroke-width='33' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='120' cy='183' r='16' fill='%238FA8AD'/%3E%3C/svg%3E");
 }
 
 .ic-gear {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238FA8AD' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='3.2'/%3E%3Cpath d='M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1'/%3E%3C/svg%3E");
+  /* 设置 · 六边形 + 环形镂空（demo/setting-gear.svg，青色与其他行统一） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M129.5 50.5 L175.5 77 Q185 82.5 185 93.5 L185 146.5 Q185 157.5 175.5 163 L129.5 189.5 Q120 195 110.5 189.5 L64.5 163 Q55 157.5 55 146.5 L55 93.5 Q55 82.5 64.5 77 L110.5 50.5 Q120 45 129.5 50.5 Z M120 92 A28 28 0 1 0 120 148 A28 28 0 1 0 120 92 Z M120 108 A12 12 0 1 0 120 132 A12 12 0 1 0 120 108 Z' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
-/* 我的物品（青）/ 我的家庭（灰） */
+/* 我的物品（实心袋）/ 我的空间（立方体）/ 我的家庭（双人） */
 .ic-bag {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2312A5A0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8h14l-1 12H6L5 8z'/%3E%3Cpath d='M9 8V6a3 3 0 0 1 6 0v2'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M96 90 V78 A24 24 0 0 1 144 78 V90' stroke='%2312A5A0' stroke-width='18' stroke-linecap='round' fill='none'/%3E%3Crect x='58' y='90' width='124' height='110' rx='20' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
 .ic-home2 {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238FA8AD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11 12 3.5 21 11'/%3E%3Cpath d='M5.5 9.5V20h13V9.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='%2312A5A0' stroke='%2312A5A0' stroke-width='10' stroke-linejoin='round'%3E%3Cpath d='M120 46.4L181.9 82L120 117.6L58.1 82Z'/%3E%3Cpath d='M49 97.6L111 133.2V204.4L49 168.8Z'/%3E%3Cpath d='M191 97.6V168.8L129 204.4V133.2Z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .ic-people {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238FA8AD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.2'/%3E%3Cpath d='M3.5 20a5.5 5.5 0 0 1 11 0'/%3E%3Ccircle cx='16.5' cy='9' r='2.6'/%3E%3Cpath d='M15 14.6a5 5 0 0 1 5.5 5.4'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Ccircle cx='88' cy='74' r='36' fill='%2312A5A0'/%3E%3Cpath d='M46 196 C46 158 64 132 88 132 C112 132 130 158 130 196 Z' fill='%2312A5A0'/%3E%3Ccircle cx='160' cy='94' r='27' fill='%2312A5A0'/%3E%3Cpath d='M126 196 C126 168 140 148 160 148 C180 148 194 168 194 196 Z' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
 /* 选中勾选（青实心圆+白勾） */

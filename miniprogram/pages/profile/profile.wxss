@@ -15,6 +15,11 @@
   flex-shrink: 0;
 }
 
+/* 头像点击热区（进入资料编辑），尺寸与头像一致 */
+.p-avatar-hit {
+  flex-shrink: 0;
+}
+
 .p-info {
   margin-left: 28rpx;
 }

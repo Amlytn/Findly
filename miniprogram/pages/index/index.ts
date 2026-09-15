@@ -1,28 +1,26 @@
 Page({
   data: {
+    statusBarHeight: 20,
+    navBarHeight: 44,
     recentItems: [
-      { id: 1, name: '无线鼠标', space: '书房', count: 1, img: '/assets/item-mouse.jpg' },
-      { id: 2, name: '相机', space: '客厅', count: 1, img: '/assets/item-camera.jpg' },
-      { id: 3, name: '耳机', space: '卧室', count: 1, img: '/assets/item-headphone.jpg' }
-    ],
-    spaces: [
-      { name: '我的家', zones: 4, count: 12, theme: 'green', icon: 'house' },
-      { name: '书房', zones: 2, count: 3, theme: 'blue', icon: 'book' },
-      { name: '客厅', zones: 2, count: 4, theme: 'orange', icon: 'sofa' },
-      { name: '卧室', zones: 1, count: 2, theme: 'purple', icon: 'bed' }
+      { id: 1, name: '无线鼠标', space: '书房', time: '3天前', img: '/assets/item-mouse.jpg' },
+      { id: 2, name: '相机', space: '客厅', time: '5天前', img: '/assets/item-camera.jpg' },
+      { id: 3, name: '耳机', space: '主卧', time: '7天前', img: '/assets/item-headphone.jpg' }
     ]
   },
 
   onShow() {
+    // 异形屏适配：实测状态栏/导航栏高度
+    const app = getApp() as any
+    this.setData({
+      statusBarHeight: app.globalData.statusBarHeight,
+      navBarHeight: app.globalData.navBarHeight
+    })
     // 同步自定义 tabBar 的选中态
     const bar = typeof (this as any).getTabBar === 'function' && (this as any).getTabBar()
     if (bar) {
       bar.setData({ selected: 0 })
     }
-  },
-
-  onScan() {
-    wx.showToast({ title: '扫一扫（待接入）', icon: 'none' })
   },
 
   onSearch(e: any) {
@@ -44,7 +42,19 @@ Page({
     wx.navigateTo({ url: '/pages/detail/detail?id=' + e.currentTarget.dataset.id })
   },
 
-  onSpaceTap(e: any) {
-    wx.showToast({ title: '空间详情：' + e.currentTarget.dataset.name, icon: 'none' })
+  goCamera() {
+    wx.navigateTo({ url: '/pages/camera/camera' })
+  },
+
+  goSpaces() {
+    wx.switchTab({ url: '/pages/spaces/spaces' })
+  },
+
+  goRecent() {
+    wx.switchTab({ url: '/pages/items/items' })
+  },
+
+  goItems() {
+    wx.switchTab({ url: '/pages/items/items' })
   }
 })

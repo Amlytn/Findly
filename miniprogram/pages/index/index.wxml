@@ -1,15 +1,15 @@
-<view class="page">
+<view class="page" style="padding-top: {{statusBarHeight}}px;">
   <view class="screen">
 
-    <!-- 顶部品牌栏 -->
-    <view class="header">
+    <!-- 顶部品牌栏（与胶囊按钮垂直对齐） -->
+    <view class="header" style="height: {{navBarHeight}}px;">
       <view class="brand">
         <image class="logo" src="/assets/logo.png" mode="aspectFit" />
         <text class="brand-name">Findly</text>
       </view>
     </view>
 
-    <!-- 搜索栏（点击进入搜索页，右侧扫码入口） -->
+    <!-- 搜索栏（点击进入搜索页） -->
     <view class="search-bar" bindtap="goSearch">
       <view class="icon-search"></view>
       <input
@@ -18,24 +18,44 @@
         placeholder-class="search-ph"
         disabled
       />
-      <view class="scan-btn" catchtap="onScan"></view>
     </view>
 
-    <!-- 拍照识别横幅 -->
+    <!-- 拍照识别横幅（3D 渐变场景背景图 + 真实文字/徽章叠加，比例对齐设计稿 686x354rpx） -->
     <view class="hero" bindtap="onHeroTap">
-      <view class="hero-leaves hero-leaf-blue"></view>
-      <view class="hero-leaves hero-leaf-green"></view>
+      <image class="hero-bg" src="/assets/hero-bg.jpg" mode="aspectFill" />
       <view class="hero-text">
         <view class="hero-line">拍一张照片</view>
         <view class="hero-line">AI帮你识别物品</view>
       </view>
-      <view class="hero-cam">
-        <view class="icon-camera"></view>
+      <view class="hero-cam"></view>
+    </view>
+
+    <!-- 快捷入口(拍照识别使用 3D 相机图标,其余为内联 SVG 徽章) -->
+    <view class="section-title">快捷入口</view>
+    <view class="quick">
+      <view class="quick-card" bindtap="goCamera">
+        <image class="quick-ico" src="/assets/icon-camera-3d.png" mode="aspectFit" />
+        <text class="quick-name">拍照识别</text>
+      </view>
+      <view class="quick-card" bindtap="goItems">
+        <view class="quick-ico ico-items"></view>
+        <text class="quick-name">我的物品</text>
+      </view>
+      <view class="quick-card" bindtap="goSpaces">
+        <view class="quick-ico ico-space"></view>
+        <text class="quick-name">空间管理</text>
+      </view>
+      <view class="quick-card" bindtap="goRecent">
+        <view class="quick-ico ico-recent"></view>
+        <text class="quick-name">最近查看</text>
       </view>
     </view>
 
     <!-- 最近添加 -->
-    <view class="section-title">最近添加</view>
+    <view class="section-head">
+      <view class="section-title">最近添加</view>
+      <text class="see-all" bindtap="goItems">查看全部</text>
+    </view>
     <view class="recent">
       <view
         class="recent-item"
@@ -46,25 +66,7 @@
       >
         <image class="recent-img" src="{{item.img}}" mode="aspectFill" />
         <view class="recent-name">{{item.name}}</view>
-        <view class="recent-meta">{{item.space}} · {{item.count}}件</view>
-      </view>
-    </view>
-
-    <!-- 我的空间 -->
-    <view class="section-title">我的空间</view>
-    <view class="spaces">
-      <view
-        class="space-card space-{{item.theme}}"
-        wx:for="{{spaces}}"
-        wx:key="name"
-        bindtap="onSpaceTap"
-        data-name="{{item.name}}"
-      >
-        <view class="space-icon icon-{{item.icon}}"></view>
-        <view class="space-info">
-          <view class="space-name">{{item.name}}</view>
-          <view class="space-meta">{{item.zones}}个区域 · {{item.count}}件</view>
-        </view>
+        <view class="recent-meta">{{item.space}} · {{item.time}}</view>
       </view>
     </view>
 

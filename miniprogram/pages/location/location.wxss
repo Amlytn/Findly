@@ -71,25 +71,3 @@
 .l-confirm {
   margin-top: 56rpx;
 }
-
-/* 平铺全深度选择列表（缺陷修复：任意层级空间均可选） */
-.loc-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.loc-main {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.leaf-sub {
-  margin-top: 4rpx;
-  font-size: 22rpx;
-  color: #93A9AE;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
