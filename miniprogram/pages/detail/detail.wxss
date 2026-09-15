@@ -148,3 +148,11 @@
   border: 3rpx solid #F0C4C4;
   color: #E06B6B;
 }
+
+/* 加载 / 错误空态（与 results 页一致） */
+.empty {
+  padding: 120rpx 32rpx;
+  text-align: center;
+  color: #7C8B92;
+  font-size: 26rpx;
+}
