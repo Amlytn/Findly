@@ -29,7 +29,7 @@ Page({
     score: 0,
     aiFailed: false,
     aiNote: '',
-    draft: { name: '', brand: '', category: '', color: '', desc: '' },
+    draft: { name: '', brand: '', category: '', color: '', desc: '', tags: [] as string[] },
     locText: '未选择位置',
     locId: '',
     aiResultId: '',
@@ -78,7 +78,8 @@ Page({
             brand: r.brand || '',
             category: r.category || '',
             color: r.color || '',
-            desc: r.description || ''
+            desc: r.description || '',
+            tags: Array.isArray(r.tags) ? r.tags.slice(0, 10) : []
           }
         })
       })
@@ -106,6 +107,30 @@ Page({
     })
   },
 
+  /** 移除单个标签（标签影响「同类物品」与「你可能还想找」，允许删改） */
+  removeTag(e: any) {
+    const t = e.currentTarget.dataset.t
+    const tags = ((this.data as any).draft.tags || []).filter(function (x: string) { return x !== t })
+    this.setData({ 'draft.tags': tags })
+  },
+
+  addTag() {
+    const that = this
+    wx.showModal({
+      title: '添加标签',
+      editable: true,
+      placeholderText: '如：无线、办公',
+      success(res: any) {
+        if (!res.confirm) return
+        const t = (res.content || '').trim()
+        if (!t) return
+        const tags = ((that.data as any).draft.tags || []).slice()
+        if (tags.indexOf(t) < 0) tags.push(t)
+        that.setData({ 'draft.tags': tags })
+      }
+    })
+  },
+
   changeLoc() {
     wx.navigateTo({ url: '/pages/location/location' })
   },
@@ -123,6 +148,11 @@ Page({
     if (this.data.saving) return
     const that = this
     this.setData({ saving: true })
+    // 标签：去空格/去重/截断 10 个（缺陷修复：AI 标签必须随物品入库，否则 related/suggestions 命中不了）
+    const tags = (d.tags || [])
+      .map(function (t: string) { return (t || '').trim() })
+      .filter(function (t: string, i: number, arr: string[]) { return t && arr.indexOf(t) === i })
+      .slice(0, 10)
     const body: any = {
       name: d.name.trim(),
       category: d.category || '未分类',
@@ -130,7 +160,7 @@ Page({
       color: d.color || null,
       description: d.desc || null,
       spaceId: this.data.locId,
-      tags: []
+      tags: tags
     }
     if (this.data.aiResultId) body.aiResultId = this.data.aiResultId
     createItem(body).then(function () {
