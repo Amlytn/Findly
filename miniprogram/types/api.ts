@@ -73,6 +73,8 @@ export interface ItemDetail {
   status: string
   tags: string[]
   space: ItemSpaceRef | null
+  /** 完整位置路径（如「书房 → 书桌 → 右侧抽屉」），后端 items.service 返回 */
+  path: string
   imageUrl: string | null
   updatedAt: string
   aiResults: AiResultBrief[]
