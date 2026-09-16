@@ -150,7 +150,7 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 白色圆钮：直径 56rpx，带微阴影 */
+/* 白色圆钮：直径 56rpx，带微阴影；恢复事件接收 */
 .hero-go {
   width: 56rpx;
   height: 56rpx;
@@ -160,6 +160,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  user-select: none;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.hero-go-active {
+  opacity: 0.85;
+  transform: scale(0.92);
 }
 
 /* > 箭头：SVG 描边复刻（实测墨迹 10.4x18.8rpx，色 #014156，圆头描边） */

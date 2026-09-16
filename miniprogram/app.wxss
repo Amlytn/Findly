@@ -5,10 +5,12 @@ page {
   color: #124E5B;
   font-size: 28rpx;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-view, text {
+view, text, image {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ================= 通用页面骨架（带导航栏的页面共用） ================= */

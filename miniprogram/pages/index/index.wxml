@@ -21,7 +21,7 @@
     </view>
 
     <!-- 拍照识别横幅：使用 banner_background.jpg 原图，叠加复刻设计稿文案、排版、pill 与白色圆钮 -->
-    <view class="hero" bindtap="onHeroTap">
+    <view class="hero">
       <image class="hero-bg" src="/assets/banner_background.jpg" mode="aspectFill" />
       <view class="hero-content">
         <view class="hero-pill">AI 智能识别</view>
@@ -30,7 +30,7 @@
           <view class="hero-line">你的物品</view>
         </view>
         <view class="hero-sub">识别物品 · 记录位置 · 建立空间</view>
-        <view class="hero-go">
+        <view class="hero-go" bindtap="onHeroTap" hover-class="hero-go-active">
           <view class="hero-arrow"></view>
         </view>
       </view>

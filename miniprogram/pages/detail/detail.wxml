@@ -14,7 +14,7 @@
           <view class="d-tags">
             <view class="tag" wx:for="{{tags}}" wx:for-item="t" wx:key="*this">{{t}}</view>
           </view>
-          <view class="d-loc">
+          <view class="d-loc" bindtap="move">
             <view class="ic ic-pin"></view>
             <text class="d-loc-txt">{{obj.space}} · {{obj.zone}}</text>
           </view>

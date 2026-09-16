@@ -65,6 +65,10 @@ Page({
       wx.showToast({ title: '请先选择位置', icon: 'none' })
       return
     }
+    const channel = typeof (this as any).getOpenerEventChannel === 'function' ? (this as any).getOpenerEventChannel() : null
+    if (channel && typeof channel.emit === 'function') {
+      channel.emit('selectLocation', { id: row.id, name: row.name, path: row.path })
+    }
     const app = getApp() as any
     app.globalData.locationPath = row.path
     app.globalData.locationId = row.id

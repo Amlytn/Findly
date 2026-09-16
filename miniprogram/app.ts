@@ -43,7 +43,7 @@ App({
     // 用户原始照片（详情页完整展示用）
     recognizeImgFull: '',
     // 位置选择 → 识别结果 回填的位置路径
-    locationPath: ['我的家', '书房', '书桌'],
+    locationPath: [],
     locationId: '',
     recognizePending: false
   } as GlobalData
