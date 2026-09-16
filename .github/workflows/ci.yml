@@ -1,0 +1,76 @@
+# Findly 持续集成
+#
+# 触发：每次 push 与 PR（含合并到 main 的 PR）
+# 内容：后端构建 + 单元测试 + 全仓库密钥扫描
+#
+# 说明：单元测试全部 mock 掉 Prisma，不连真实数据库，
+#       因此 CI 无需起 Postgres；下方 DATABASE_URL 只是占位，
+#       供 prisma generate 与 schema 校验通过使用。
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# 最小权限：整个流水线只需要读代码。
+# 注意 gitleaks 用的是官方镜像（不走 GitHub API），所以这里不需要 pull_requests 权限；
+# 早先误以为需要，实测官方 action 在 PR 场景会以 403 失败，故改为命令行方式。
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: 构建与单元测试
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    env:
+      # 占位值，不是真实凭据：单元测试全部 mock 掉 Prisma，无需连库，
+      # 这里只是为了让 prisma generate / schema 校验能通过。
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/findly_ci  # gitleaks:allow
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: 安装依赖（严格按 lock 文件）
+        run: npm ci
+
+      - name: 生成 Prisma Client
+        run: npx prisma generate
+
+      - name: 构建
+        run: npm run build
+
+      - name: 单元测试
+        run: npm test
+
+  secret-scan:
+    name: 密钥扫描
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码（含完整历史）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 用 gitleaks 官方镜像直接扫描，不用 gitleaks-action。
+      # 原因：官方 action 在 pull_request 场景会调 GitHub API 读取 PR 的提交列表，
+      # 而仓库默认的 GITHUB_TOKEN 权限受限，会以 403「Resource not accessible by
+      # integration」失败。命令行模式不依赖任何 token 权限，也不受 action 的 Node 版本影响。
+      # --exit-code 1：发现可疑密钥就让 job 失败；--redact：日志里打码，不二次暴露。
+      - name: gitleaks 扫描
+        run: |
+          docker run --rm -v "$PWD:/repo" \
+            zricethezav/gitleaks:latest detect \
+            --source=/repo --verbose --redact --exit-code 1
