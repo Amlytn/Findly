@@ -1,0 +1,64 @@
+# Findly 持续集成
+#
+# 触发：每次 push 与 PR（含合并到 main 的 PR）
+# 内容：后端构建 + 单元测试 + 全仓库密钥扫描
+#
+# 说明：单元测试全部 mock 掉 Prisma，不连真实数据库，
+#       因此 CI 无需起 Postgres；下方 DATABASE_URL 只是占位，
+#       供 prisma generate 与 schema 校验通过使用。
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: 构建与单元测试
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    env:
+      # 占位值，不是真实凭据：单元测试全部 mock 掉 Prisma，无需连库，
+      # 这里只是为了让 prisma generate / schema 校验能通过。
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/findly_ci  # gitleaks:allow
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: 安装依赖（严格按 lock 文件）
+        run: npm ci
+
+      - name: 生成 Prisma Client
+        run: npx prisma generate
+
+      - name: 构建
+        run: npm run build
+
+      - name: 单元测试
+        run: npm test
+
+  secret-scan:
+    name: 密钥扫描
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码（含完整历史）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: gitleaks 扫描
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
