@@ -12,6 +12,12 @@ on:
   push:
   pull_request:
 
+# 最小权限：整个流水线只需要读代码。
+# 注意 gitleaks 用的是官方镜像（不走 GitHub API），所以这里不需要 pull_requests 权限；
+# 早先误以为需要，实测官方 action 在 PR 场景会以 403 失败，故改为命令行方式。
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     name: 构建与单元测试
@@ -58,7 +64,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 用 gitleaks 官方镜像直接扫描，不用 gitleaks-action。
+      # 原因：官方 action 在 pull_request 场景会调 GitHub API 读取 PR 的提交列表，
+      # 而仓库默认的 GITHUB_TOKEN 权限受限，会以 403「Resource not accessible by
+      # integration」失败。命令行模式不依赖任何 token 权限，也不受 action 的 Node 版本影响。
+      # --exit-code 1：发现可疑密钥就让 job 失败；--redact：日志里打码，不二次暴露。
       - name: gitleaks 扫描
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker run --rm -v "$PWD:/repo" \
+            zricethezav/gitleaks:latest detect \
+            --source=/repo --verbose --redact --exit-code 1
