@@ -30,7 +30,7 @@ Page({
         return Object.assign({}, it, {
           img: fullUrl(it.imageUrl) || '/assets/logo.png',
           meta: meta || '—',
-          space: it.space ? it.space.name : '未归位',
+          space: it.space ? it.space.name : (it.path ? it.path.split(' → ').pop() : '未归位'),
           zone: it.path || '',
           count: 1
         })

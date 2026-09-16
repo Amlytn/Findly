@@ -27,7 +27,7 @@
 ├── app.ts / app.json / app.wxss      # 全局入口；app.wxss 含共享骨架样式与全部内联 SVG 图标
 ├── typings.d.ts                      # wx/App/Page 等全局 API 的轻量类型声明
 ├── project.config.json / tsconfig.json
-├── utils/data.ts                     # 共享模拟数据（物品/空间/建议）与搜索匹配逻辑
+├── services/                         # 统一接口服务层（request / items / spaces / ai / search / auth / upload / users）
 ├── components/nav-bar/               # 通用顶部导航栏（返回 + 标题，Tab 页无上级时回首页）
 ├── custom-tab-bar/                   # 自定义 TabBar（首页/物品/➕/空间/我的）
 ├── favicon.svg                       # 品牌图标源文件
@@ -42,7 +42,7 @@
 │   │                                 # 源文件见 新建文件夹/3d icon/Space.png，1254x1254）
 │   └── icon-recent-3d.png            # 快捷入口"最近查看"3D 图标（240x240 透明底，
 │                                     # 源文件见 新建文件夹/3d icon/Recently viewed.png，1254x1254）
-└── pages/                            # 12 个页面
+└── pages/                            # 13 个页面
 ```
 
 ## 运行方式
@@ -65,11 +65,11 @@
 - **自定义导航栏**：`navigationStyle: "custom"` + `env(safe-area-inset-top)` 避让状态栏；首页扫描入口通过 `wx.getMenuButtonBoundingClientRect()` 实测避让胶囊按钮。
 - **页面间数据传递**：识别照片与所选位置经 `app.globalData` 中转（临时文件路径不适合放 URL）。
 - **图标零依赖**：全部内联 SVG data URI 定义在 `app.wxss`（`.ic-*` 系列），新页面直接复用。
-- **数据层**：`utils/data.ts` 集中管理物品/空间/搜索逻辑，替换为云开发或后端接口时只需改这一个文件。
+- **服务层**：`services/` 统一封装底层 API 请求（自动注入 JWT 认证头与统一错误处理），各业务页面直接通过对应领域函数调用。
 
 ## 与设计稿的差异说明
 
 - 状态栏由手机系统绘制，无法复刻，真机显示用户实际状态栏。
 - 配色策略：品牌主体对齐 `favicon.svg` 青绿系（主渐变 `#31CBBB → #04869D`、强调色 `#12A5A0`）；"我的空间"四色卡片、植物装饰保留设计稿多彩粉彩风格。
-- 物品照片为 AI 生成占位图，可替换为真实照片（路径见 `utils/data.ts`）。
-- 编辑物品、手动添加表单、空间详情、家庭共享等未在设计稿中出现的界面以 toast 占位。
+- 物品照片支持拍照/相册上传（`/upload` 接口），未上传前以 logo 占位。
+- 详情页编辑物品弹层、树形空间管理、个人资料编辑已完整实现；家庭共享置灰敬请期待。

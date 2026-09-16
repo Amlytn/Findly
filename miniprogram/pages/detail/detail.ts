@@ -1,6 +1,5 @@
 import { fullUrl } from '../../services/request'
 import { getItem, deleteItem, updateItem, getRelated } from '../../services/items'
-import { getSpaces } from '../../services/spaces'
 import { getSuggestions } from '../../services/search'
 import { isApiError } from '../../services/request'
 import { ItemDetail } from '../../types/api'
@@ -39,10 +38,10 @@ Page({
     this.setData({ loading: true, error: '' })
     getItem(this.data.id).then(function (res) {
       // 展示字段映射：img 无图用 logo 占位；space=叶子空间名；zone=完整位置路径
-      // previewUrl 仅在真实照片存在时可用于全屏预览
+      // previewUrl 仅在真实照片存在时可用于全屏预览（走 fullUrl 补齐完整域名协议）
       const obj = Object.assign({}, res, {
         img: fullUrl(res.imageUrl) || '/assets/logo.png',
-        previewUrl: res.imageUrl || '',
+        previewUrl: res.imageUrl ? fullUrl(res.imageUrl) : '',
         space: res.space ? res.space.name : '未归位',
         zone: res.path || ''
       })
@@ -198,38 +197,21 @@ Page({
     })
   },
 
-  /** 移动位置：真实空间树叶子列表 → PATCH spaceId（ActionSheet 上限 6 项） */
+  /** 移动位置：打开树形空间选择页（支持全量空间与任意深度，解决 ActionSheet 6 项限制） */
   move() {
     const that = this
-    getSpaces().then(function (res) {
-      const leaves: { id: string; name: string; path: string[] }[] = []
-      const walk = function (nodes: any[], prefix: string[]) {
-        for (const n of nodes) {
-          const path = prefix.concat(n.name)
-          if (n.children && n.children.length) {
-            walk(n.children, path)
-          } else {
-            leaves.push({ id: n.id, name: n.name, path: path })
-          }
-        }
-      }
-      walk(res.tree || [], [])
-      const items = leaves.map(function (l) { return l.path.join(' › ') })
-      if (!items.length) {
-        wx.showToast({ title: '暂无可选空间', icon: 'none' })
-        return
-      }
-      wx.showActionSheet({
-        itemList: items.slice(0, 6),
-        success(r: any) {
-          const target = leaves[r.tapIndex]
+    wx.navigateTo({
+      url: '/pages/location/location',
+      events: {
+        selectLocation(target: { id: string; name: string; path: string[] }) {
+          if (!target || !target.id) return
           updateItem(that.data.id, { spaceId: target.id }).then(function () {
-            wx.showToast({ title: '已移动到' + target.name, icon: 'success' })
+            wx.showToast({ title: '已移动到 ' + target.name, icon: 'success' })
             that.fetch()
           }).catch(function () { /* request 层已 toast */ })
         }
-      })
-    }).catch(function () { /* request 层已 toast */ })
+      }
+    })
   },
 
   del() {
