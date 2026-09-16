@@ -13,7 +13,20 @@ Page({
     related: [] as any[],
     suggestions: [] as string[],
     loading: true,
-    error: ''
+    error: '',
+    /** 编辑弹层开关 / 提交中标记 / 表单值（字段与 PATCH /items/:id 契约一一对应） */
+    editing: false,
+    saving: false,
+    form: {
+      name: '',
+      category: '',
+      brand: '',
+      model: '',
+      color: '',
+      quantity: '',
+      description: '',
+      tags: [] as string[]
+    }
   },
 
   onLoad(query: any) {
@@ -67,36 +80,121 @@ Page({
     wx.previewImage({ urls: [url] })
   },
 
-  /** 编辑入口：选择「改名称 / 移动位置」 */
+  /** 编辑入口：选择「编辑资料 / 移动位置」（删除在页面底部有独立按钮，不重复放这里） */
   edit() {
     const that = this
-    const obj = (this.data as any).obj
-    if (!obj) return
+    if (!(this.data as any).obj) return
     wx.showActionSheet({
-      itemList: ['改名称', '移动位置'],
+      itemList: ['编辑资料', '移动位置'],
       success(r: any) {
         if (r.tapIndex === 1) {
           that.move()
           return
         }
-        wx.showModal({
-          title: '编辑名称',
-          editable: true,
-          placeholderText: obj.name,
-          success(res: any) {
-            if (!res.confirm) return
-            const name = (res.content || '').trim()
-            if (!name) {
-              wx.showToast({ title: '名称不能为空', icon: 'none' })
-              return
-            }
-            updateItem(that.data.id, { name: name }).then(function () {
-              wx.showToast({ title: '已保存', icon: 'success' })
-              that.fetch()
-            }).catch(function () { /* request 层已 toast */ })
-          }
-        })
+        that.openEdit()
       }
+    })
+  },
+
+  /** 打开编辑弹层：用当前详情预填表单 */
+  openEdit() {
+    const o = (this.data as any).obj
+    if (!o) return
+    this.setData({
+      editing: true,
+      form: {
+        name: o.name || '',
+        category: o.category || '',
+        brand: o.brand || '',
+        model: o.model || '',
+        color: o.color || '',
+        quantity: o.quantity != null ? String(o.quantity) : '',
+        description: o.description || '',
+        tags: (o.tags || []).slice()
+      }
+    })
+  },
+
+  closeEdit() {
+    // 保存中不允许关闭，避免请求回来时表单已被清掉
+    if ((this.data as any).saving) return
+    this.setData({ editing: false })
+  },
+
+  /** 弹层内所有 input/textarea 共用：靠 data-k 区分写到 form 的哪个字段 */
+  onInput(e: any) {
+    const k = e.currentTarget.dataset.k
+    if (!k) return
+    const patch: any = {}
+    patch['form.' + k] = e.detail.value
+    this.setData(patch)
+  },
+
+  addTag() {
+    const that = this
+    wx.showModal({
+      title: '添加标签',
+      editable: true,
+      placeholderText: '如：无线、办公',
+      success(res: any) {
+        if (!res.confirm) return
+        const t = (res.content || '').trim()
+        if (!t) return
+        const tags = ((that.data as any).form.tags || []).slice()
+        if (tags.indexOf(t) < 0) tags.push(t)
+        that.setData({ 'form.tags': tags })
+      }
+    })
+  },
+
+  removeTag(e: any) {
+    const t = e.currentTarget.dataset.t
+    const tags = ((this.data as any).form.tags || []).filter(function (x: string) { return x !== t })
+    this.setData({ 'form.tags': tags })
+  },
+
+  /** 提交 PATCH：字段与 UpdateItemDto 对齐；空串转 null 表示清空该字段（契约允许 null） */
+  saveEdit() {
+    const f = (this.data as any).form || {}
+    const name = (f.name || '').trim()
+    if (!name) {
+      wx.showToast({ title: '名称不能为空', icon: 'none' })
+      return
+    }
+    const qty = parseInt(f.quantity, 10)
+    if (isNaN(qty) || qty < 1) {
+      wx.showToast({ title: '数量需为大于 0 的整数', icon: 'none' })
+      return
+    }
+    if ((this.data as any).saving) return
+    const that = this
+    this.setData({ saving: true })
+    // 标签：去空格 / 去重 / 截断 10 个（与 result 页保存规则保持一致）
+    const tags = (f.tags || [])
+      .map(function (t: string) { return (t || '').trim() })
+      .filter(function (t: string, i: number, arr: string[]) { return t && arr.indexOf(t) === i })
+      .slice(0, 10)
+    const trimOrNull = function (v: string) {
+      const s = (v || '').trim()
+      return s ? s : null
+    }
+    updateItem(that.data.id, {
+      name: name,
+      category: (f.category || '').trim() || '未分类',
+      brand: trimOrNull(f.brand),
+      model: trimOrNull(f.model),
+      color: trimOrNull(f.color),
+      description: trimOrNull(f.description),
+      quantity: qty,
+      tags: tags
+    }).then(function () {
+      that.setData({ saving: false, editing: false })
+      wx.showToast({ title: '已保存', icon: 'success' })
+      // 重新拉取：详情字段、同类物品、位置路径都跟着刷新
+      that.fetch()
+    }).catch(function () {
+      // 失败原因由 request 层统一 toast
+      that.setData({ saving: false })
     })
   },
 

@@ -156,3 +156,182 @@
   color: #7C8B92;
   font-size: 26rpx;
 }
+
+/* ================= 物品信息（展示区，样式与 result 页表单行一致） ================= */
+.d-rows {
+  margin-top: 8rpx;
+  background: #F7FBFB;
+  border-radius: 24rpx;
+  padding: 8rpx 28rpx;
+}
+
+.d-row {
+  display: flex;
+  padding: 26rpx 0;
+  border-bottom: 2rpx solid #EAF3F4;
+}
+
+.d-row:last-child {
+  border-bottom: none;
+}
+
+.d-row .k {
+  width: 120rpx;
+  flex-shrink: 0;
+  color: #9AB0B4;
+  font-size: 28rpx;
+}
+
+.d-row .v {
+  flex: 1;
+  color: #0F4C5A;
+  font-size: 28rpx;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.d-row.desc .v {
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ================= 编辑弹层 ================= */
+.mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 76, 90, 0.45);
+  z-index: 900;
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  z-index: 901;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.sheet-hd {
+  display: flex;
+  align-items: center;
+  padding: 32rpx 32rpx 20rpx;
+  border-bottom: 2rpx solid #EEF5F6;
+}
+
+.sheet-title {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #0F4C5A;
+}
+
+.sheet-close {
+  font-size: 28rpx;
+  color: #9AB0B4;
+}
+
+/* min-height:0 是必需的：否则 flex 子项不会收缩，scroll-view 滚不动 */
+.sheet-bd {
+  flex: 1;
+  min-height: 0;
+  padding: 8rpx 32rpx;
+}
+
+.f-row {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid #EEF5F6;
+}
+
+.f-row:last-child {
+  border-bottom: none;
+}
+
+.f-row.f-col {
+  display: block;
+}
+
+.f-k {
+  width: 140rpx;
+  flex-shrink: 0;
+  font-size: 28rpx;
+  color: #9AB0B4;
+}
+
+.f-row.f-col .f-k {
+  display: block;
+  width: auto;
+  margin-bottom: 16rpx;
+}
+
+.req {
+  color: #E06B6B;
+}
+
+.f-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #0F4C5A;
+}
+
+.f-area {
+  width: 100%;
+  height: 140rpx;
+  font-size: 28rpx;
+  color: #0F4C5A;
+  line-height: 1.6;
+}
+
+.f-ph {
+  color: #C2CFD2;
+}
+
+.sheet-ft {
+  display: flex;
+  padding: 20rpx 32rpx 28rpx;
+  border-top: 2rpx solid #EEF5F6;
+}
+
+.f-btn {
+  flex: 1;
+}
+
+.f-btn:first-child {
+  margin-right: 24rpx;
+}
+
+/* 标签 chips（与 result 页视觉一致） */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.tag-chip {
+  padding: 6rpx 18rpx;
+  background: #EAF6F5;
+  color: #0B7A75;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+}
+
+.tag-chip .x {
+  margin-left: 8rpx;
+  color: #93A9AE;
+}
+
+.tag-chip.add {
+  color: #12A5A0;
+  background: #F2FAF9;
+}

@@ -21,6 +21,38 @@
         </view>
       </view>
 
+      <view class="sec-title">物品信息</view>
+      <view class="d-rows">
+        <view class="d-row">
+          <text class="k">名称</text>
+          <text class="v">{{obj.name}}</text>
+        </view>
+        <view class="d-row">
+          <text class="k">类别</text>
+          <text class="v">{{obj.category || '未分类'}}</text>
+        </view>
+        <view class="d-row">
+          <text class="k">品牌</text>
+          <text class="v">{{obj.brand || '—'}}</text>
+        </view>
+        <view class="d-row">
+          <text class="k">型号</text>
+          <text class="v">{{obj.model || '—'}}</text>
+        </view>
+        <view class="d-row">
+          <text class="k">颜色</text>
+          <text class="v">{{obj.color || '—'}}</text>
+        </view>
+        <view class="d-row">
+          <text class="k">数量</text>
+          <text class="v">{{obj.quantity}}</text>
+        </view>
+        <view class="d-row desc">
+          <text class="k">描述</text>
+          <text class="v">{{obj.description || '—'}}</text>
+        </view>
+      </view>
+
       <view class="sec-title">相关物品（同类物品）</view>
       <scroll-view class="rel" scroll-x>
         <view class="rel-card" wx:for="{{related}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
@@ -47,5 +79,59 @@
         </view>
       </view>
     </block>
+
+    <!-- 编辑弹层：字段与 PATCH /items/:id 契约对齐；位置仍在「移动位置」里改 -->
+    <view class="mask" wx:if="{{editing}}" bindtap="closeEdit"></view>
+    <view class="sheet" wx:if="{{editing}}">
+      <view class="sheet-hd">
+        <text class="sheet-title">编辑物品</text>
+        <text class="sheet-close" bindtap="closeEdit">关闭</text>
+      </view>
+
+      <scroll-view class="sheet-bd" scroll-y>
+        <view class="f-row">
+          <text class="f-k">名称<text class="req">*</text></text>
+          <input class="f-input" value="{{form.name}}" data-k="name" bindinput="onInput" placeholder="必填" placeholder-class="f-ph" />
+        </view>
+        <view class="f-row">
+          <text class="f-k">类别</text>
+          <input class="f-input" value="{{form.category}}" data-k="category" bindinput="onInput" placeholder="如：数码配件" placeholder-class="f-ph" />
+        </view>
+        <view class="f-row">
+          <text class="f-k">品牌</text>
+          <input class="f-input" value="{{form.brand}}" data-k="brand" bindinput="onInput" placeholder="如：罗技" placeholder-class="f-ph" />
+        </view>
+        <view class="f-row">
+          <text class="f-k">型号</text>
+          <input class="f-input" value="{{form.model}}" data-k="model" bindinput="onInput" placeholder="如：M330" placeholder-class="f-ph" />
+        </view>
+        <view class="f-row">
+          <text class="f-k">颜色</text>
+          <input class="f-input" value="{{form.color}}" data-k="color" bindinput="onInput" placeholder="如：黑色" placeholder-class="f-ph" />
+        </view>
+        <view class="f-row">
+          <text class="f-k">数量</text>
+          <input class="f-input" type="number" value="{{form.quantity}}" data-k="quantity" bindinput="onInput" placeholder="1" placeholder-class="f-ph" />
+        </view>
+        <view class="f-row f-col">
+          <text class="f-k">描述</text>
+          <textarea class="f-area" value="{{form.description}}" data-k="description" bindinput="onInput" placeholder="补充说明（选填）" placeholder-class="f-ph" maxlength="200" />
+        </view>
+        <view class="f-row f-col">
+          <text class="f-k">标签</text>
+          <view class="tags">
+            <view class="tag-chip" wx:for="{{form.tags}}" wx:key="*this" bindtap="removeTag" data-t="{{item}}">
+              {{item}}<text class="x">×</text>
+            </view>
+            <view class="tag-chip add" bindtap="addTag">＋ 标签</view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="sheet-ft">
+        <view class="btn-outline f-btn" bindtap="closeEdit">取消</view>
+        <view class="btn-primary f-btn" bindtap="saveEdit">{{saving ? '保存中…' : '保存'}}</view>
+      </view>
+    </view>
   </view>
 </view>
