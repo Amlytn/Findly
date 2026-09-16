@@ -72,22 +72,16 @@
   color: #9AB0B4;
 }
 
-/* ================= 拍照识别横幅 ================= */
+/* ================= 拍照识别横幅（设计稿 1:1 像素级复刻） ================= */
 .hero {
-  margin-top: 36rpx;
-  /* 设计稿横幅 686x354rpx（实测 1249x650px @1376 宽） */
-  height: 354rpx;
-  border-radius: 20rpx;
-  background: linear-gradient(115deg, #D6F1F8 0%, #E2F8FA 50%, #C4F0F4 100%);
+  margin-top: 24rpx;
+  /* 卡片设计稿实测 999x534px → 686x370rpx */
+  height: 370rpx;
+  border-radius: 32rpx;
   position: relative;
   overflow: hidden;
-  padding: 0 40rpx;
-  box-sizing: border-box;
-  display: flex;
-  align-items: flex-start;
 }
 
-/* 3D 渐变场景背景图（蓝绿渐变 + 底部体块 + 右侧同心圆，比例 686:354 与容器一致） */
 .hero-bg {
   position: absolute;
   left: 0;
@@ -96,35 +90,86 @@
   height: 100%;
 }
 
-.hero-text {
-  position: relative;
+.hero-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   z-index: 2;
-  /* 首行墨顶距横幅顶 56rpx，扣除行框半行距 */
-  padding-top: 40rpx;
+  padding: 38rpx 0 36rpx 28rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
+/* AI 智能识别 Pill 徽章：设计稿 1:1 通透薄荷微渐变 + 顶部柔光 + 柔和青辉光 */
+.hero-pill {
+  align-self: flex-start;
+  height: 44rpx;
+  padding: 0 22rpx;
+  background: linear-gradient(180deg, #7CE7D8 0%, #46D5C5 45%, #24BCAD 100%);
+  box-shadow: 0 6rpx 16rpx rgba(32, 180, 168, 0.35), inset 0 1.5rpx 2rpx rgba(255, 255, 255, 0.65);
+  box-sizing: border-box;
+  border-radius: 999rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23rpx;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1;
+  letter-spacing: 0.5rpx;
+  margin-bottom: 18rpx;
+}
+
+/* 主标题：两行排版，实测 46rpx/800，深青墨色 #043242 */
+.hero-title {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14rpx;
 }
 
 .hero-line {
-  font-size: 48rpx;
+  font-size: 46rpx;
   font-weight: 800;
-  color: #0A1A3A;
-  line-height: 1.6;
+  color: #043242;
+  line-height: 1.22;
+  letter-spacing: -0.5rpx;
 }
 
-/* 相机徽章：白色圆环 + 青绿渐变正圆 + 白色相机（设计稿实测直径 152rpx） */
-.hero-cam {
-  position: absolute;
-  right: 70rpx;
-  /* 圆心距横幅顶 150rpx（横幅高 354rpx 的 42.5%） */
-  top: 150rpx;
-  transform: translateY(-50%);
-  width: 152rpx;
-  height: 152rpx;
+/* 副标题：识别物品 · 记录位置 · 建立空间 */
+.hero-sub {
+  font-size: 22rpx;
+  font-weight: 400;
+  color: #4D8795;
+  line-height: 1.25;
+  margin-bottom: 22rpx;
+  letter-spacing: 0.5rpx;
+}
+
+/* 白色圆钮：直径 56rpx，带微阴影 */
+.hero-go {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 4rpx 14rpx rgba(4, 50, 66, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* > 箭头：SVG 描边复刻（实测墨迹 10.4x18.8rpx，色 #014156，圆头描边） */
+.hero-arrow {
+  width: 11rpx;
+  height: 19rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  filter: drop-shadow(0 10rpx 22rpx rgba(4, 134, 157, 0.28));
-  z-index: 2;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%2331CBBB' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%2304869D' stop-opacity='0.88'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='120' cy='120' r='120' fill='%23FCFDFE'/%3E%3Ccircle cx='120' cy='120' r='111' fill='url(%23g)'/%3E%3Cg transform='translate(38,27) scale(0.68)' fill='%23ffffff'%3E%3Crect x='88' y='52' width='64' height='36' rx='14'/%3E%3Cpath fill-rule='evenodd' d='M62 72 H178 A30 30 0 0 1 208 102 V172 A30 30 0 0 1 178 202 H62 A30 30 0 0 1 32 172 V102 A30 30 0 0 1 62 72 Z M120 101 A36 36 0 1 0 120 173 A36 36 0 1 0 120 101 Z'/%3E%3Ccircle cx='120' cy='137' r='17'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 24' fill='none'%3E%3Cpath d='M3.5 2.5 11.5 12 3.5 21.5' stroke='%23014156' stroke-width='4.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 /* ================= 分组标题 ================= */
@@ -150,9 +195,20 @@
 }
 
 .see-all {
-  font-size: 27rpx;
-  color: #12A5A0;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #336277;
+}
+
+.see-all-chev {
+  width: 12rpx;
+  height: 12rpx;
+  border-top: 3rpx solid #336277;
+  border-right: 3rpx solid #336277;
+  transform: rotate(45deg);
+  margin-left: 10rpx;
 }
 
 /* ================= 最近添加（对齐物品列表网格卡片：1:1 浅底圆角图块） ================= */
@@ -183,22 +239,68 @@
   margin-top: 14rpx;
   font-size: 28rpx;
   font-weight: 700;
-  color: #124E5B;
+  color: #0A1B29;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .recent-meta {
-  margin-top: 6rpx;
-  font-size: 24rpx;
-  color: #9AB0B4;
+  margin-top: 8rpx;
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+  color: #6A8C97;
+  line-height: 1.2;
 }
 
-/* ================= 快捷入口（高保真还原参考图） ================= */
-/* 实测参考图：卡 311×116rpx、圆角 24rpx；底色按"最近查看"卡统一为
-   超浅灰 #FAFBFF + 一丝丝暗色描边 #F1F2F6；图标盒 70rpx 距卡左 38rpx、
-   距文字 42rpx；文字 29rpx/500/#121832 */
+.recent-pin {
+  width: 16rpx;
+  height: 22rpx;
+  margin-right: 8rpx;
+  flex-shrink: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 16' fill='%236A8C97'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M6 0C2.69 0 0 2.69 0 6c0 4.5 5.3 9.5 5.53 9.72a.7.7 0 0 0 .94 0C6.7 15.5 12 10.5 12 6c0-3.31-2.69-6-6-6zm0 8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'/%3E%3C/svg%3E");
+}
+
+.recent-meta-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ================= 常用功能（设计稿实测 1:1） ================= */
+/* 标题行：常用功能 40/700 距 banner 25rpx；右侧「更多功能」28 #336277（纯展示，暂无跳转目标） */
+.q-head {
+  margin: 28rpx 0 20rpx;
+}
+
+.q-title {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #0C1B2A;
+}
+
+.q-more {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #336277;
+}
+
+.q-more-chev {
+  width: 12rpx;
+  height: 12rpx;
+  border-top: 3rpx solid #336277;
+  border-right: 3rpx solid #336277;
+  transform: rotate(45deg);
+  margin-left: 10rpx;
+}
+
+/* 2×2 彩色卡：设计稿 1:1 实测（高度 166rpx、圆角 28rpx、行距 18rpx、间隙 20rpx） */
 .quick {
   display: flex;
   flex-wrap: wrap;
@@ -206,51 +308,81 @@
 }
 
 .quick-card {
-  width: calc(50% - 24rpx);
-  height: 116rpx;
-  margin-bottom: 25rpx;
-  background: #FAFBFF;
-  border: 2rpx solid #F1F2F6;
-  border-radius: 24rpx;
+  width: calc(50% - 10rpx);
+  height: 166rpx;
+  margin-bottom: 20rpx;
+  border-radius: 28rpx;
   display: flex;
   align-items: center;
-  padding-left: 38rpx;
+  padding: 0 26rpx 0 22rpx;
   box-sizing: border-box;
 }
 
+.qc-camera { background: #E8F9FA; }
+.qc-items  { background: #E8F6FD; }
+.qc-space  { background: #EDF2FE; }
+.qc-recent { background: #E7F8F6; }
+
+/* 图标盒：实测 86rpx，垂直居中 */
 .quick-ico {
-  width: 70rpx;
-  height: 70rpx;
-  margin-right: 42rpx;
+  width: 86rpx;
+  height: 86rpx;
   flex-shrink: 0;
-  /* 双层背景:第一层图标 SVG(contain),第二层光晕圆(铺满) */
-  background-size: contain, 100% 100%;
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 
+.quick-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+}
+
+/* 实测标题 28rpx/700，副标题 21rpx/400 #5C7E8E */
 .quick-name {
-  font-size: 29rpx;
-  font-weight: 500;
-  color: #121832;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #0A1B29;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-/* 拍照识别：淡蓝光晕 + 蓝圆角方徽章 + 白相机（镜头镂空透蓝） */
-.ico-scan {
-  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='6 -0.5 108 108' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='24' y='34' width='72' height='52' rx='10' fill='%232A6BE0'/%3E%3Cpath d='M44 34 L48 24 Q49.5 21 53 21 L67 21 Q70.5 21 72 24 L76 34 Z' fill='%232A6BE0'/%3E%3Ccircle cx='60' cy='60' r='17' fill='%23fff'/%3E%3Ccircle cx='60' cy='60' r='10' fill='%232A6BE0'/%3E%3C/svg%3E"), radial-gradient(circle closest-side, #DDF1FE 96%, transparent 100%);
+.quick-sub {
+  margin-top: 8rpx;
+  font-size: 21rpx;
+  font-weight: 400;
+  color: #5C7E8E;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-/* 我的物品：淡蓝光晕 + 蓝五边形徽章 + 白提手箱（双缝镂空） */
+/* 卡内右箭头：实测 12x22rpx 纤细圆角矢量箭头 #7593A4 */
+.quick-chev {
+  width: 12rpx;
+  height: 22rpx;
+  flex-shrink: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 15' fill='none' stroke='%237593A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 1.5l5 6-5 6'/%3E%3C/svg%3E");
+}
+
+/* 四个功能图标：内联 SVG（含圆角浅色彩底板，底色统一步调对齐“我的物品”质感） */
+.ico-camera {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='camGrad' x1='24' y1='16' x2='24' y2='33' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%2316BBAF'/%3E%3Cstop offset='100%25' stop-color='%230B978D'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='48' height='48' rx='15' fill='%23D3F3F4'/%3E%3Cpath d='M16.5 12H13.8C12.8 12 12 12.8 12 13.8V16.5' stroke='%2312B3A8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M31.5 12H34.2C35.2 12 36 12.8 36 13.8V16.5' stroke='%2312B3A8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16.5 36H13.8C12.8 36 12 35.2 12 34.2V31.5' stroke='%2312B3A8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M31.5 36H34.2C35.2 36 36 35.2 36 34.2V31.5' stroke='%2312B3A8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M21.2 16.5C22.1 15.6 23.2 15.2 24 15.2C24.8 15.2 25.9 15.6 26.8 16.5L28.1 17.8H30.5C32.16 17.8 33.5 19.14 33.5 20.8V28.5C33.5 30.71 31.71 32.5 29.5 32.5H18.5C16.29 32.5 14.5 30.71 14.5 28.5V20.8C14.5 19.14 15.84 17.8 17.5 17.8H19.9L21.2 16.5ZM24 21.2C21.79 21.2 20 22.99 20 25.2C20 27.41 21.79 29.2 24 29.2C26.21 29.2 28 27.41 28 25.2C28 22.99 26.21 21.2 24 21.2Z' fill='url(%23camGrad)'/%3E%3C/svg%3E");
+}
+
 .ico-items {
-  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 -6 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='30' y='38' width='60' height='56' rx='8' fill='%236F5EE8'/%3E%3Cpath d='M46 40 v-8 a14 14 0 0 1 28 0 v8' fill='none' stroke='%236F5EE8' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='40' y1='66' x2='80' y2='66' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='40' y1='78' x2='80' y2='78' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E"), radial-gradient(circle closest-side, #E3DFFB 96%, transparent 100%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Crect width='48' height='48' rx='15' fill='%23DCEFFE'/%3E%3Cpath d='M23.15 11.5C23.68 11.19 24.32 11.19 24.85 11.5L34.3 17.02C34.88 17.36 34.88 18.21 34.3 18.55L24.85 24.07C24.32 24.38 23.68 24.38 23.15 24.07L13.7 18.55C13.12 18.21 13.12 17.36 13.7 17.02L23.15 11.5Z' fill='%234D96EB'/%3E%3Cpath d='M13.2 20.25C12.7 19.96 12 20.32 12 20.9V28.98C12 29.6 12.33 30.17 12.87 30.48L21.93 35.71C22.42 35.99 23.03 35.63 23.03 35.06V27.05C23.03 26.54 22.76 26.07 22.31 25.82L13.2 20.25Z' fill='%235DAAEF'/%3E%3Cpath d='M34.8 20.25C35.3 19.96 36 20.32 36 20.9V28.98C36 29.6 35.67 30.17 35.13 30.48L26.07 35.71C25.58 35.99 24.97 35.63 24.97 35.06V27.05C24.97 26.54 25.24 26.07 25.69 25.82L34.8 20.25Z' fill='%23256EE2'/%3E%3C/svg%3E");
 }
 
-/* 空间管理：淡绿光晕 + 绿六边形徽章 + 白等距开口箱 */
 .ico-space {
-  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='-8.25 -6.25 136.5 136.5' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='26' y='20' width='68' height='84' rx='6' fill='none' stroke='%233E9C70' stroke-width='7'/%3E%3Cpath d='M38 30 L66 42 L66 94 L38 94 Z' fill='%235BAF83'/%3E%3Ccircle cx='60' cy='64' r='4' fill='%23fff'/%3E%3Cpath d='M66 42 L82 36 L82 94 L66 94 Z' fill='%23C6E8D4'/%3E%3C/svg%3E"), radial-gradient(circle closest-side, #DDF7ED 96%, transparent 100%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='spaceGrad' x1='24' y1='13' x2='24' y2='36' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%235594F7'/%3E%3Cstop offset='100%25' stop-color='%232667E4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='48' height='48' rx='15' fill='%23DDE4FC'/%3E%3Cpath d='M22.95 13.4C23.53 12.87 24.47 12.87 25.05 13.4L35.72 23.05C36.34 23.61 35.94 24.65 35.1 24.65H33.5V34.5C33.5 35.6 32.6 36.5 31.5 36.5H26.8V29.2C26.8 27.65 25.55 26.4 24 26.4C22.45 26.4 21.2 27.65 21.2 29.2V36.5H16.5C15.4 36.5 14.5 35.6 14.5 34.5V24.65H12.9C12.06 24.65 11.66 23.61 12.28 23.05L22.95 13.4Z' fill='url(%23spaceGrad)'/%3E%3C/svg%3E");
 }
 
-/* 最近查看：淡橙光晕 + 橙六边形徽章 + 白表盘 + 斜向指针 */
 .ico-recent {
-  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='-4.5 -4.5 129 129' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='38' fill='none' stroke='%23EE9A2E' stroke-width='10'/%3E%3Cline x1='60' y1='60' x2='60' y2='42' stroke='%23EE9A2E' stroke-width='9' stroke-linecap='round'/%3E%3Cline x1='60' y1='60' x2='74' y2='60' stroke='%23EE9A2E' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E"), radial-gradient(circle closest-side, #FEF4E4 96%, transparent 100%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='clockGrad' x1='24' y1='12' x2='24' y2='36' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%2315BBAA'/%3E%3Cstop offset='100%25' stop-color='%230B978C'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='48' height='48' rx='15' fill='%23D3F4F0'/%3E%3Ccircle cx='24' cy='24' r='12' fill='url(%23clockGrad)'/%3E%3Cpath d='M24 16.5V24L27.8 27.8' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }

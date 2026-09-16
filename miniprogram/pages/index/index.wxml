@@ -20,41 +20,66 @@
       />
     </view>
 
-    <!-- 拍照识别横幅（3D 渐变场景背景图 + 真实文字/徽章叠加，比例对齐设计稿 686x354rpx） -->
+    <!-- 拍照识别横幅：使用 banner_background.jpg 原图，叠加复刻设计稿文案、排版、pill 与白色圆钮 -->
     <view class="hero" bindtap="onHeroTap">
-      <image class="hero-bg" src="/assets/hero-bg.jpg" mode="aspectFill" />
-      <view class="hero-text">
-        <view class="hero-line">拍一张照片</view>
-        <view class="hero-line">AI帮你识别物品</view>
+      <image class="hero-bg" src="/assets/banner_background.jpg" mode="aspectFill" />
+      <view class="hero-content">
+        <view class="hero-pill">AI 智能识别</view>
+        <view class="hero-title">
+          <view class="hero-line">拍照，自动整理</view>
+          <view class="hero-line">你的物品</view>
+        </view>
+        <view class="hero-sub">识别物品 · 记录位置 · 建立空间</view>
+        <view class="hero-go">
+          <view class="hero-arrow"></view>
+        </view>
       </view>
-      <view class="hero-cam"></view>
     </view>
 
-    <!-- 快捷入口（四个均为 3D 图标） -->
-    <view class="section-title">快捷入口</view>
+    <!-- 常用功能（设计稿 1:1：彩色卡 + SVG 图标盒 + 标题/副标题 + 右箭头） -->
+    <view class="section-head q-head">
+      <view class="q-title">常用功能</view>
+      <view class="q-more">更多功能<view class="q-more-chev"></view></view>
+    </view>
     <view class="quick">
-      <view class="quick-card" bindtap="goCamera">
-        <image class="quick-ico" src="/assets/icon-camera-3d.png" mode="aspectFit" />
-        <text class="quick-name">拍照识别</text>
+      <view class="quick-card qc-camera" bindtap="goCamera">
+        <view class="quick-ico ico-camera"></view>
+        <view class="quick-info">
+          <view class="quick-name">拍照识别</view>
+          <view class="quick-sub">智能识别物品</view>
+        </view>
+        <view class="quick-chev"></view>
       </view>
-      <view class="quick-card" bindtap="goItems">
-        <image class="quick-ico" src="/assets/icon-items-3d.png" mode="aspectFit" />
-        <text class="quick-name">我的物品</text>
+      <view class="quick-card qc-items" bindtap="goItems">
+        <view class="quick-ico ico-items"></view>
+        <view class="quick-info">
+          <view class="quick-name">我的物品</view>
+          <view class="quick-sub">查看和管理物品</view>
+        </view>
+        <view class="quick-chev"></view>
       </view>
-      <view class="quick-card" bindtap="goSpaces">
-        <image class="quick-ico" src="/assets/icon-space-3d.png" mode="aspectFit" />
-        <text class="quick-name">空间管理</text>
+      <view class="quick-card qc-space" bindtap="goSpaces">
+        <view class="quick-ico ico-space"></view>
+        <view class="quick-info">
+          <view class="quick-name">空间管理</view>
+          <view class="quick-sub">整理你的空间</view>
+        </view>
+        <view class="quick-chev"></view>
       </view>
-      <view class="quick-card" bindtap="goRecent">
-        <image class="quick-ico" src="/assets/icon-recent-3d.png" mode="aspectFit" />
-        <text class="quick-name">最近查看</text>
+      <view class="quick-card qc-recent" bindtap="goRecent">
+        <view class="quick-ico ico-recent"></view>
+        <view class="quick-info">
+          <view class="quick-name">最近查看</view>
+          <view class="quick-sub">快速访问记录</view>
+        </view>
+        <view class="quick-chev"></view>
       </view>
     </view>
 
     <!-- 最近添加 -->
     <view class="section-head">
       <view class="section-title">最近添加</view>
-      <text class="see-all" bindtap="goItems">查看全部</text>
+      <view class="see-all" bindtap="goItems">查看全部<view class="see-all-chev"></view></view>
     </view>
     <view class="recent">
       <view
@@ -66,7 +91,10 @@
       >
         <image class="recent-img" src="{{item.img}}" mode="aspectFill" />
         <view class="recent-name">{{item.name}}</view>
-        <view class="recent-meta">{{item.space}} · {{item.time}}</view>
+        <view class="recent-meta">
+          <view class="recent-pin"></view>
+          <text class="recent-meta-text">{{item.space}} · {{item.time}}</text>
+        </view>
       </view>
     </view>
 
