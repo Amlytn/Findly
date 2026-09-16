@@ -4,12 +4,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  /* 内容区 100rpx + 底部留白（安全区优先，无安全区机型保底 24rpx，防止下移的文字贴边被裁） */
-  height: calc(100rpx + max(24rpx, env(safe-area-inset-bottom)));
+  /* 内容区适配微调，整体元素略向下移 */
+  height: calc(108rpx + max(20rpx, env(safe-area-inset-bottom)));
   background: #FFFFFF;
   display: flex;
   align-items: stretch;
-  padding: 0 12rpx max(24rpx, env(safe-area-inset-bottom));
+  padding: 0 12rpx calc(4rpx + max(20rpx, env(safe-area-inset-bottom)));
   box-sizing: border-box;
   box-shadow: 0 -6rpx 24rpx rgba(4, 134, 157, 0.08);
 }
@@ -20,22 +20,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  /* 图标与文字整体下移：图标盒顶距栏顶 22rpx，文字顺势探入底部留白区 */
-  padding-top: 22rpx;
+  /* 元素整体下移：从 20rpx 调整至 28rpx */
+  padding-top: 28rpx;
 }
 
 /* 选中态：仅图标与文字变色，无背景高亮 */
 
 .tab-icon {
-  width: 72rpx;
-  height: 72rpx;
+  /* 图标归位无负边距，顺畅下移 */
+  margin-top: 0;
+  width: 38rpx;
+  height: 38rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .tab-label {
-  margin-top: 0;
+  /* 文字微调：轻微再下移一点点点点 */
+  margin-top: 12rpx;
   font-size: 24rpx;
   font-weight: 300;
   line-height: 1.3;
@@ -46,42 +49,43 @@
   color: #12A5A0;
 }
 
-/* 首页 - 房子（灰描边 / 选中青实心） */
+/* 底部图标集 v2：桌面「1/底部svg」{home,items,space,profile}.svg 内联改造
+   形状/路径原样取自新稿，色值统一走现行逻辑：未选中灰 #93A9AE / 选中青 #12A5A0（与文字色一致） */
+
+/* 首页 - 房子（实心 + 底部镂空圆拱门） */
 .icon-home {
-  /* 极简实心·灰色未选中态（与 icon-home-a 同形，仅换色） */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M30 105 120 30 210 105H185V188Q185 200 173 200H138V158Q138 144 124 144H116Q102 144 102 158V200H67Q55 200 55 188V105Z' fill='%2393A9AE'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2.2 2.43 19.6 19.6'%3E%3Cpath d='M11.22 2.68C11.66 2.27 12.34 2.27 12.78 2.68L21.42 10.38C21.92 10.82 21.61 11.65 20.95 11.65H19.5V19.75C19.5 20.99 18.49 22 17.25 22H14.25V16.2C14.25 14.96 13.24 13.95 12 13.95C10.76 13.95 9.75 14.96 9.75 16.2V22H6.75C5.51 22 4.5 20.99 4.5 19.75V11.65H3.05C2.39 11.65 2.08 10.82 2.58 10.38L11.22 2.68Z' fill='%2393A9AE'/%3E%3C/svg%3E");
 }
 
 .icon-home-a {
-  /* 极简实心（demo/house-03-solid-rounded.svg）：单色剪影 + 底部镂空圆拱门 */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M30 105 120 30 210 105H185V188Q185 200 173 200H138V158Q138 144 124 144H116Q102 144 102 158V200H67Q55 200 55 188V105Z' fill='%2312A5A0'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2.2 2.43 19.6 19.6'%3E%3Cpath d='M11.22 2.68C11.66 2.27 12.34 2.27 12.78 2.68L21.42 10.38C21.92 10.82 21.61 11.65 20.95 11.65H19.5V19.75C19.5 20.99 18.49 22 17.25 22H14.25V16.2C14.25 14.96 13.24 13.95 12 13.95C10.76 13.95 9.75 14.96 9.75 16.2V22H6.75C5.51 22 4.5 20.99 4.5 19.75V11.65H3.05C2.39 11.65 2.08 10.82 2.58 10.38L11.22 2.68Z' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
-/* 物品 - 放大镜（demo/items-01-ring.svg，灰 / 青） */
+/* 物品 - 等距开口盒（顶/左/右三面） */
 .icon-items {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M100 28 A72 72 0 1 0 100 172 A72 72 0 1 0 100 28 Z M100 56 A44 44 0 1 0 100 144 A44 44 0 1 0 100 56 Z' fill='%2393A9AE'/%3E%3Cpath d='M150.9 131.1 L201.9 182.1 A14 14 0 0 1 182.1 201.9 L131.1 150.9 Z' fill='%2393A9AE'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='1.6 1.75 20.8 20.8'%3E%3Cpath d='M11.38 1.9C11.76 1.68 12.24 1.68 12.62 1.9L20.65 6.54C21.12 6.81 21.12 7.49 20.65 7.76L12.62 12.4C12.24 12.62 11.76 12.62 11.38 12.4L3.35 7.76C2.88 7.49 2.88 6.81 3.35 6.54L11.38 1.9Z' fill='%2393A9AE'/%3E%3Cpath d='M2.68 9.42C2.26 9.18 1.75 9.48 1.75 9.96V16.75C1.75 17.26 2.03 17.73 2.47 17.99L10.22 22.46C10.64 22.7 11.15 22.4 11.15 21.92V15.13C11.15 14.71 10.92 14.33 10.55 14.12L2.68 9.42Z' fill='%2393A9AE'/%3E%3Cpath d='M21.32 9.42C21.74 9.18 22.25 9.48 22.25 9.96V16.75C22.25 17.26 21.97 17.73 21.53 17.99L13.78 22.46C13.36 22.7 12.85 22.4 12.85 21.92V15.13C12.85 14.71 13.08 14.33 13.45 14.12L21.32 9.42Z' fill='%2393A9AE'/%3E%3C/svg%3E");
 }
 
 .icon-items-a {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M100 28 A72 72 0 1 0 100 172 A72 72 0 1 0 100 28 Z M100 56 A44 44 0 1 0 100 144 A44 44 0 1 0 100 56 Z' fill='%2312A5A0'/%3E%3Cpath d='M150.9 131.1 L201.9 182.1 A14 14 0 0 1 182.1 201.9 L131.1 150.9 Z' fill='%2312A5A0'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='1.6 1.75 20.8 20.8'%3E%3Cpath d='M11.38 1.9C11.76 1.68 12.24 1.68 12.62 1.9L20.65 6.54C21.12 6.81 21.12 7.49 20.65 7.76L12.62 12.4C12.24 12.62 11.76 12.62 11.38 12.4L3.35 7.76C2.88 7.49 2.88 6.81 3.35 6.54L11.38 1.9Z' fill='%2312A5A0'/%3E%3Cpath d='M2.68 9.42C2.26 9.18 1.75 9.48 1.75 9.96V16.75C1.75 17.26 2.03 17.73 2.47 17.99L10.22 22.46C10.64 22.7 11.15 22.4 11.15 21.92V15.13C11.15 14.71 10.92 14.33 10.55 14.12L2.68 9.42Z' fill='%2312A5A0'/%3E%3Cpath d='M21.32 9.42C21.74 9.18 22.25 9.48 22.25 9.96V16.75C22.25 17.26 21.97 17.73 21.53 17.99L13.78 22.46C13.36 22.7 12.85 22.4 12.85 21.92V15.13C12.85 14.71 13.08 14.33 13.45 14.12L21.32 9.42Z' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
-/* 空间 - 等距立方体（demo/space-02-cube.svg，灰 / 青） */
+/* 空间 - 房屋结构 + 右下分区（主体 / 分区两块） */
 .icon-space {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='%2393A9AE' stroke='%2393A9AE' stroke-width='10' stroke-linejoin='round'%3E%3Cpath d='M120 46.4L181.9 82L120 117.6L58.1 82Z'/%3E%3Cpath d='M49 97.6L111 133.2V204.4L49 168.8Z'/%3E%3Cpath d='M191 97.6V168.8L129 204.4V133.2Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2 2.2 20 20'%3E%3Cpath d='M11.33 2.64C11.74 2.34 12.26 2.34 12.67 2.64L21.16 8.35C21.68 8.7 22 9.29 22 9.92V11.23C22 11.97 21.2 12.44 20.55 12.09L11.53 17.1C11.32 17.22 11.19 17.44 11.19 17.68V21.4C11.19 21.73 10.92 22 10.59 22H4.5C3.12 22 2 20.88 2 19.5V9.92C2 9.29 2.32 8.7 2.84 8.35L11.33 2.64Z' fill='%2393A9AE'/%3E%3Cpath d='M12.9 17.65L20.8 13.25C21.45 12.88 22 13.43 22 14.12V19.5C22 20.88 20.88 22 19.5 22H13.5C13.17 22 12.9 21.73 12.9 21.4V17.65Z' fill='%2393A9AE'/%3E%3C/svg%3E");
 }
 
 .icon-space-a {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='%2312A5A0' stroke='%2312A5A0' stroke-width='10' stroke-linejoin='round'%3E%3Cpath d='M120 46.4L181.9 82L120 117.6L58.1 82Z'/%3E%3Cpath d='M49 97.6L111 133.2V204.4L49 168.8Z'/%3E%3Cpath d='M191 97.6V168.8L129 204.4V133.2Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2 2.2 20 20'%3E%3Cpath d='M11.33 2.64C11.74 2.34 12.26 2.34 12.67 2.64L21.16 8.35C21.68 8.7 22 9.29 22 9.92V11.23C22 11.97 21.2 12.44 20.55 12.09L11.53 17.1C11.32 17.22 11.19 17.44 11.19 17.68V21.4C11.19 21.73 10.92 22 10.59 22H4.5C3.12 22 2 20.88 2 19.5V9.92C2 9.29 2.32 8.7 2.84 8.35L11.33 2.64Z' fill='%2312A5A0'/%3E%3Cpath d='M12.9 17.65L20.8 13.25C21.45 12.88 22 13.43 22 14.12V19.5C22 20.88 20.88 22 19.5 22H13.5C13.17 22 12.9 21.73 12.9 21.4V17.65Z' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
-/* 我的 - 人像（demo/me-01-person.svg，灰 / 青） */
+/* 我的 - 人像（圆头 + 肩身） */
 .icon-me {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Ccircle cx='120' cy='80' r='40' fill='%2393A9AE'/%3E%3Cpath d='M62 200 Q50 200 50 189 C50 160 82 136 120 136 C158 136 190 160 190 189 Q190 200 178 200 Z' fill='%2393A9AE'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2.22 2.5 19.55 19.55'%3E%3Ccircle cx='12' cy='7' r='4.5' fill='%2393A9AE'/%3E%3Cpath d='M12 13.2C7.3 13.2 3.4 16.35 2.6 20.85C2.48 21.48 2.97 22.05 3.61 22.05H20.39C21.03 22.05 21.52 21.48 21.4 20.85C20.6 16.35 16.7 13.2 12 13.2Z' fill='%2393A9AE'/%3E%3C/svg%3E");
 }
 
 .icon-me-a {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Ccircle cx='120' cy='80' r='40' fill='%2312A5A0'/%3E%3Cpath d='M62 200 Q50 200 50 189 C50 160 82 136 120 136 C158 136 190 160 190 189 Q190 200 178 200 Z' fill='%2312A5A0'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2.22 2.5 19.55 19.55'%3E%3Ccircle cx='12' cy='7' r='4.5' fill='%2312A5A0'/%3E%3Cpath d='M12 13.2C7.3 13.2 3.4 16.35 2.6 20.85C2.48 21.48 2.97 22.05 3.61 22.05H20.39C21.03 22.05 21.52 21.48 21.4 20.85C20.6 16.35 16.7 13.2 12 13.2Z' fill='%2312A5A0'/%3E%3C/svg%3E");
 }
 
 /* 中间横向胶囊：拍照识别 */
@@ -93,10 +97,10 @@
 }
 
 .add-btn {
-  /* 圆形按钮，直径 96rpx（对齐设计稿青色圆）；随 Tab 内容同步下移 */
-  margin-top: 8rpx;
-  width: 96rpx;
-  height: 96rpx;
+  /* 圆形按钮，直径 88rpx；随其他控件同步下调至 2rpx */
+  margin-top: 2rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 50%;
   background: linear-gradient(135deg, #31CBBB, #04869D);
   box-shadow: 0 10rpx 24rpx rgba(4, 134, 157, 0.45);
@@ -106,8 +110,8 @@
 }
 
 .icon-cam {
-  width: 42rpx;
-  height: 42rpx;
+  width: 48rpx;
+  height: 48rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
