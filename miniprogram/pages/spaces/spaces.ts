@@ -241,7 +241,8 @@ Page({
       })
       that.setData({
         ['itemsMap.' + spaceId]: items,
-        ['itemsCountMap.' + spaceId]: items.length,
+        // 徽标显示后端直属总数（res.total），而非本页已加载条数（pageSize 50 会截断 items.length）
+        ['itemsCountMap.' + spaceId]: typeof res.total === 'number' ? res.total : items.length,
         ['loadingMap.' + spaceId]: false
       })
     }).catch(function () {

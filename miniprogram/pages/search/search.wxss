@@ -98,3 +98,40 @@
   font-size: 28rpx;
   color: #124E5B;
 }
+
+/* ================= 搜索历史（PRD 图 6：未输入态展示，最近 10 条） ================= */
+.hist-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 36rpx 0 20rpx;
+}
+
+.hist-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #0C1B2A;
+}
+
+.hist-clear {
+  font-size: 24rpx;
+  color: #6A8C97;
+}
+
+.hist-chips {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.hist-chip {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 0 16rpx 16rpx 0;
+  padding: 12rpx 28rpx;
+  background: #F0F6F7;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  color: #124E5B;
+}

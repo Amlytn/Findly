@@ -172,8 +172,9 @@ Page({
       tags: tags
     }
     if (this.data.aiResultId) body.aiResultId = this.data.aiResultId
-    // 物品照片走 /upload（契约 v1.3 §5.2）入库；上传失败不阻塞保存（imageUrl 可空）
-    const finishSave = function (imageUrl: string) {
+    // 物品照片走 /upload（契约 v1.3 §5.2）入库；上传失败不阻塞保存（imageUrl 可空），
+    // 但必须显式告知用户照片未存——编辑弹层无换图入口，静默丢图不可恢复
+    const finishSave = function (imageUrl: string, uploadFailed: boolean) {
       if (imageUrl) body.imageUrl = imageUrl
       createItem(body).then(function () {
         app.globalData.recognizeImg = ''
@@ -181,20 +182,24 @@ Page({
         app.globalData.locationPath = []
         app.globalData.locationId = ''
         that.setData({ saving: false })
-        wx.showToast({ title: '已保存', icon: 'success' })
+        if (uploadFailed) {
+          wx.showToast({ title: '已保存，但照片上传失败', icon: 'none', duration: 2500 })
+        } else {
+          wx.showToast({ title: '已保存', icon: 'success' })
+        }
         setTimeout(function () {
           wx.switchTab({ url: '/pages/items/items' })
-        }, 800)
+        }, 2000)
       }).catch(function () {
         that.setData({ saving: false })
       })
     }
     if (this.data.img) {
       uploadImage(this.data.img)
-        .then(function (up) { finishSave(up.imageUrl) })
-        .catch(function () { finishSave('') })
+        .then(function (up) { finishSave(up.imageUrl, false) })
+        .catch(function () { finishSave('', true) })
     } else {
-      finishSave('')
+      finishSave('', false)
     }
   }
 })

@@ -1,5 +1,6 @@
 import { fullUrl } from '../../services/request'
 import { getSearch, SearchType } from '../../services/search'
+import { pushHistory } from '../../utils/search-history'
 import { ItemListItem, SearchSpaceItem, ParsedQuery } from '../../types/api'
 
 Page({
@@ -16,8 +17,13 @@ Page({
 
   onLoad(query: any) {
     const kw = decodeURIComponent(query.kw || '')
-    if (kw) this.apply(kw, 'all')
-    else this.setData({ loading: false })
+    // 首页搜索框直达本页的查询也计入历史（PRD 图 6）
+    if (kw) {
+      pushHistory(kw)
+      this.apply(kw, 'all')
+    } else {
+      this.setData({ loading: false })
+    }
   },
 
   apply(kw: string, tab: string) {

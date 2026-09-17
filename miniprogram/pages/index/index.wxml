@@ -73,7 +73,7 @@
       <view class="section-title">最近添加</view>
       <view class="see-all" bindtap="goItems">查看全部<view class="see-all-chev"></view></view>
     </view>
-    <view class="recent">
+    <view class="recent" wx:if="{{recentItems.length > 0}}">
       <view
         class="recent-item"
         wx:for="{{recentItems}}"
@@ -88,6 +88,18 @@
           <text class="recent-meta-text">{{item.space}} · {{item.time}}</text>
         </view>
       </view>
+    </view>
+
+    <!-- 错误态：拉取失败（后端不可达等），与真空态区分（PRD 6.4） -->
+    <view class="recent-state" wx:elif="{{recentFailed}}">
+      <text class="recent-state-txt">暂时无法加载物品</text>
+      <view class="recent-state-btn" bindtap="retryRecent">重试</view>
+    </view>
+
+    <!-- 空态：首次使用引导（PRD 图 1） -->
+    <view class="recent-state" wx:elif="{{recentLoaded}}">
+      <text class="recent-state-txt">还没有物品，拍张照片试试</text>
+      <view class="recent-state-btn recent-state-btn-primary" bindtap="goAdd">去添加第一件物品</view>
     </view>
 
   </view>
