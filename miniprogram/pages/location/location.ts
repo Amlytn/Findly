@@ -1,5 +1,6 @@
-import { getSpaces } from '../../services/spaces'
+import { getSpaces, createSpace } from '../../services/spaces'
 import { SpaceTree } from '../../types/api'
+import { matchSpaceIcon, subtreeCount } from '../../utils/spaces'
 
 interface Row {
   id: string
@@ -7,24 +8,24 @@ interface Row {
   /** 面包屑完整路径，选中后回填识别结果页 */
   path: string[]
   pathText: string
-  /** 缩进 rpx（按树深） */
-  pad: number
   depth: number
-  itemCount: number
+  total: number
+  cardIcon: string
 }
 
-/** 递归展平：任意深度的空间树全部可选（避免 3 层截断导致深层空间选不到） */
 function flattenAll(nodes: SpaceTree[], prefix: string[], depth: number, out: Row[]) {
   for (const n of nodes) {
     const path = prefix.concat(n.name)
+    const icon = matchSpaceIcon(n.name)
+    const total = subtreeCount(n)
     out.push({
       id: n.id,
       name: n.name,
-      path,
-      pathText: depth === 0 ? (n.itemCount || 0) + ' 件物品' : path.join(' › '),
-      pad: 24 + depth * 40,
-      depth,
-      itemCount: n.itemCount || 0
+      path: path,
+      pathText: path.join(' · '),
+      depth: depth,
+      total: total,
+      cardIcon: icon.card
     })
     if (n.children && n.children.length) {
       flattenAll(n.children, path, depth + 1, out)
@@ -45,14 +46,23 @@ Page({
     this.fetch()
   },
 
-  fetch() {
+  fetch(autoSelectId?: string) {
     const that = this
     this.setData({ loading: true, error: '' })
     getSpaces().then(function (res) {
-      that.setData({ rows: flattenAll(res.tree || [], [], 0, []), loading: false })
+      const rows = flattenAll(res.tree || [], [], 0, [])
+      let selIndex = that.data.selIndex
+      if (autoSelectId) {
+        selIndex = rows.findIndex(function (r) { return r.id === autoSelectId })
+      }
+      that.setData({ rows: rows, selIndex: selIndex, loading: false })
     }).catch(function (e: any) {
       that.setData({ loading: false, error: e.message || '空间加载失败' })
     })
+  },
+
+  retry() {
+    this.fetch()
   },
 
   select(e: any) {
@@ -73,5 +83,27 @@ Page({
     app.globalData.locationPath = row.path
     app.globalData.locationId = row.id
     wx.navigateBack({ delta: 1 })
+  },
+
+  /** 允许在位置选择页直接快捷创建新空间，彻底消除首次录物死锁 */
+  addNewSpace() {
+    const that = this
+    wx.showModal({
+      title: '新建空间',
+      editable: true,
+      placeholderText: '如：我的家、书桌、抽屉',
+      success(res: any) {
+        if (!res.confirm) return
+        const name = (res.content || '').trim()
+        if (!name) {
+          wx.showToast({ title: '空间名称不能为空', icon: 'none' })
+          return
+        }
+        createSpace({ name: name }).then(function (r: any) {
+          wx.showToast({ title: '已创建空间', icon: 'success' })
+          that.fetch(r && r.id)
+        }).catch(function () { /* request 层已统一 toast */ })
+      }
+    })
   }
 })

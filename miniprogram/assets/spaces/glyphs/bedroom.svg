@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <!-- Slatted Headboard -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M12 11.5a2.5 2.5 0 0 1 2.5-2.5h19a2.5 2.5 0 0 1 2.5 2.5V20h-3.5v-2a1.5 1.5 0 0 0-1.5-1.5h-3.5a1.5 1.5 0 0 0-1.5 1.5V20h-2.5v-2a1.5 1.5 0 0 0-1.5-1.5h-3.5a1.5 1.5 0 0 0-1.5 1.5V20H12v-8.5z" fill="#728cdb"/>
+  <!-- Mattress / Quilt -->
+  <rect x="11" y="23" width="26" height="11.5" rx="3" fill="#728cdb"/>
+  <!-- Left Leg -->
+  <path d="M12.5 34.5h2v1.5a1.25 1.25 0 0 1-1.25 1.25h0A1.25 1.25 0 0 1 12.5 36v-1.5z" fill="#728cdb"/>
+  <!-- Right Leg -->
+  <path d="M33.5 34.5h2v1.5a1.25 1.25 0 0 1-1.25 1.25h0a1.25 1.25 0 0 1-1.25-1.25v-1.5z" fill="#728cdb"/>
+</svg>

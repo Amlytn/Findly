@@ -1,123 +1,252 @@
-.root-row {
-  display: flex;
-  align-items: center;
-  padding: 28rpx 0 20rpx;
+/* 位置选择页 · 现代化 Squircle 卡片风格 */
+.page {
+  background: #F7FAF9;
+  min-height: 100vh;
 }
 
-.root-row .name {
+.screen {
+  padding-bottom: 220rpx;
+}
+
+/* 状态加载与错误 */
+.state-box {
+  padding: 140rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.state-loading-spinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid #E0EFEA;
+  border-top-color: #20B4AF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.state-text {
+  font-size: 26rpx;
+  color: #9CB4BE;
+}
+
+.state-err {
+  color: #E06B6B;
+  padding: 16rpx 32rpx;
+  background: #FFF5F5;
+  border-radius: 999rpx;
+}
+
+/* 空态引导 */
+.empty-state {
+  padding: 140rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.empty-icon-box {
+  width: 136rpx;
+  height: 136rpx;
+  border-radius: 50%;
+  background: #E8F7F3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
+}
+
+.empty-icon {
+  width: 68rpx;
+  height: 68rpx;
+}
+
+.empty-title {
   font-size: 32rpx;
-  font-weight: 800;
-  color: #0F4C5A;
-  margin-left: 16rpx;
-}
-
-.root-row .meta {
-  margin-left: 16rpx;
-  font-size: 24rpx;
-  color: #9AB0B4;
-  flex: 1;
-}
-
-/* 树形分组 */
-.group {
-  margin-left: 44rpx;
-  border-left: 2rpx solid #E4EFF0;
-  padding-left: 28rpx;
-}
-
-.g-head {
-  display: flex;
-  align-items: center;
-  padding: 24rpx 0;
-}
-
-.g-head .name {
-  font-size: 30rpx;
   font-weight: 700;
-  color: #0F4C5A;
-  margin-left: 16rpx;
+  color: #0E2E3B;
 }
 
-.g-head .meta {
-  margin-left: 16rpx;
+.empty-desc {
   font-size: 24rpx;
-  color: #9AB0B4;
-  flex: 1;
+  color: #9CB4BE;
+  margin-top: 10rpx;
+  margin-bottom: 40rpx;
 }
 
-.g-body {
-  padding-left: 64rpx;
-  padding-bottom: 8rpx;
-}
-
-.leaf {
-  display: flex;
-  align-items: center;
-  padding: 20rpx 20rpx;
-  border-radius: 16rpx;
-  margin-bottom: 8rpx;
-}
-
-.leaf.sel {
-  background: #E4F6F3;
-}
-
-.leaf-name {
-  flex: 1;
+.empty-btn {
+  padding: 20rpx 56rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, #20B4AF, #0FA47F);
+  color: #FFFFFF;
   font-size: 28rpx;
-  color: #124E5B;
+  font-weight: 600;
+  box-shadow: 0 10rpx 24rpx rgba(15, 164, 127, 0.28);
 }
 
-.l-confirm {
-  margin-top: 56rpx;
+/* 空间卡片列表 */
+.loc-list {
+  padding: 16rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
 }
 
-/* 平铺全深度选择列表（任意层级空间均可选） */
-.loc-row {
+.loc-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 20rpx 24rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #FFFFFF;
-  border-radius: 20rpx;
-  padding: 24rpx 28rpx;
-  margin: 16rpx 32rpx 0;
+  box-shadow: 0 2rpx 10rpx rgba(14, 46, 59, 0.03);
+  border: 2rpx solid transparent;
+  transition: all 0.2s ease;
 }
 
-.loc-row.sel {
-  background: #EAF6F5;
+.loc-card:active {
+  transform: scale(0.985);
 }
 
-.loc-main {
+.loc-card.is-selected {
+  border-color: #20B4AF;
+  background: #F4FBFA;
+  box-shadow: 0 6rpx 20rpx rgba(32, 180, 175, 0.12);
+}
+
+.card-left {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  flex: 1;
   min-width: 0;
 }
 
-.loc-name {
-  font-size: 30rpx;
-  color: #124E5B;
-  font-weight: 500;
+.card-icon {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 26rpx;
+  flex-shrink: 0;
 }
 
-.loc-sub {
-  margin-top: 4rpx;
+.card-info {
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14rpx;
+}
+
+.card-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0E2E3B;
+}
+
+.card-count {
+  font-size: 24rpx;
+  color: #9CB4BE;
+}
+
+.card-path {
   font-size: 22rpx;
-  color: #93A9AE;
+  color: #9CB4BE;
+  margin-top: 6rpx;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.ic-radio {
-  width: 28rpx;
-  height: 28rpx;
+/* 选中勾选框 */
+.check-box {
+  width: 44rpx;
+  height: 44rpx;
   border-radius: 50%;
   border: 3rpx solid #C7D6D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  transition: all 0.2s;
 }
 
-.ic-check {
-  width: 28rpx;
-  height: 28rpx;
+.check-box.is-checked {
+  border-color: #20B4AF;
+  background: #20B4AF;
+}
+
+.check-inner {
+  width: 18rpx;
+  height: 18rpx;
   border-radius: 50%;
-  background: #12A5A0;
+  background: #FFFFFF;
+}
+
+/* 底部操作区（悬浮吸底） */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 36rpx calc(env(safe-area-inset-bottom) + 30rpx);
+  background: linear-gradient(to top, rgba(247, 250, 249, 1) 75%, rgba(247, 250, 249, 0));
+  z-index: 50;
+}
+
+.btn-group {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.btn-outline-add {
+  height: 96rpx;
+  padding: 0 36rpx;
+  border-radius: 48rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #B8E6DE;
+  color: #0FA47F;
+  font-size: 28rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-outline-add:active {
+  background: #F0FAF8;
+}
+
+.btn-confirm {
+  flex: 1;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #20B4AF, #0FA47F);
+  box-shadow: 0 10rpx 24rpx rgba(15, 164, 127, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.btn-confirm:active {
+  opacity: 0.88;
 }

@@ -2,49 +2,161 @@
   <view class="screen">
     <nav-bar title="空间管理" />
 
-    <view class="empty" wx:if="{{loading}}">加载中…</view>
-    <view class="empty" wx:elif="{{error}}" bindtap="retry">{{error}}，点击重试</view>
+    <!-- 顶部规划提示通栏（对齐设计稿） -->
+    <view class="tip-bar" bindtap="onTipTap">
+      <view class="tip-left">
+        <image class="tip-icon" src="/assets/spaces/glyphs/home.svg" mode="aspectFit" />
+        <text class="tip-text">合理规划空间，让物品各归其位</text>
+      </view>
+      <image class="tip-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+    </view>
 
+    <!-- 加载中 / 错误态 -->
+    <view class="state-box" wx:if="{{loading}}">
+      <view class="state-loading-spinner"></view>
+      <text class="state-text">空间加载中…</text>
+    </view>
+    <view class="state-box" wx:elif="{{error}}" bindtap="retry">
+      <view class="state-text state-err">{{error}}，点击重试</view>
+    </view>
+
+    <!-- 空白状态引导 -->
+    <view class="empty-state" wx:elif="{{!sections.length}}">
+      <view class="empty-icon-box">
+        <image class="empty-icon" src="/assets/spaces/glyphs/home.svg" mode="aspectFit" />
+      </view>
+      <view class="empty-title">还没有创建任何空间</view>
+      <view class="empty-desc">添加第一个空间（如：我的家、办公室），开始清晰收纳</view>
+      <view class="empty-btn" bindtap="addRootSpace">＋ 创建我的家</view>
+    </view>
+
+    <!-- 空间分组列表 -->
     <block wx:else>
-      <!-- 全部空间（任意深度，长按可管理） -->
-      <view
-        class="sp-row2 {{selIndex === index ? 'sel' : ''}}"
-        wx:for="{{rows}}"
-        wx:key="id"
-        style="padding-left: {{item.pad}}rpx;"
-        bindtap="tapRow"
-        bindlongpress="rowLongPress"
-        data-i="{{index}}"
-      >
-        <view class="sp-main">
-          <view class="sp-line">
-            <text class="sp-name2">{{item.name}}</text>
-            <text class="sp-count">{{item.total}}件</text>
+      <view class="spaces-scroll">
+        <view class="section-group" wx:for="{{sections}}" wx:key="id" wx:for-item="sec">
+          
+          <!-- 根空间分组头部（Section Header） -->
+          <view
+            class="section-header"
+            bindtap="tapSectionHeader"
+            bindlongpress="onSectionLongPress"
+            data-section="{{sec}}"
+          >
+            <view class="sec-left">
+              <image class="sec-icon" src="{{sec.glyphIcon}}" mode="aspectFit" />
+              <text class="sec-title">{{sec.name}}</text>
+              <text class="sec-count">{{sec.total}}件</text>
+            </view>
+            <view
+              class="sec-toggle {{sec.collapsed ? 'is-collapsed' : ''}}"
+              catchtap="toggleSection"
+              data-id="{{sec.id}}"
+            >
+              <image class="sec-arrow" src="/assets/spaces/glyphs/chevron_down.svg" mode="aspectFit" />
+            </view>
           </view>
-          <text class="sp-sub" wx:if="{{item.depth > 0}}">{{item.pathText}}</text>
+
+          <!-- 若无子空间，且该根空间被点中查看时展开面板 -->
+          <block wx:if="{{!sec.children.length && selId === sec.id}}">
+            <view class="items-panel">
+              <view class="panel-header">
+                <view class="panel-title">「{{sec.name}}」里的物品 ({{items.length}}件)</view>
+                <view class="panel-actions">
+                  <view class="action-btn" catchtap="onPanelRename">重命名</view>
+                  <view class="action-btn action-add" catchtap="onPanelAddChild">＋子空间</view>
+                  <view class="action-btn action-del" catchtap="onPanelDelete">删除</view>
+                </view>
+              </view>
+              <view class="items-loading" wx:if="{{itemsLoading}}">正在加载物品…</view>
+              <view class="items-empty" wx:elif="{{!items.length}}">该空间暂无直接存放的物品</view>
+              <view class="items-list" wx:else>
+                <view class="item-card" wx:for="{{items}}" wx:key="id" bindtap="goItemDetail" data-id="{{item.id}}">
+                  <image class="item-img" src="{{item.img}}" mode="aspectFill" />
+                  <view class="item-info">
+                    <view class="item-name">{{item.name}}</view>
+                    <view class="item-meta">{{item.subtitle}}</view>
+                  </view>
+                  <image class="item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+                </view>
+              </view>
+            </view>
+          </block>
+
+          <!-- 根空间下的子空间卡片流（展开态） -->
+          <view class="cards-container" wx:if="{{!sec.collapsed}}">
+            <block wx:for="{{sec.children}}" wx:key="id" wx:for-item="card">
+              
+              <!-- 单张空间卡片（Squircle 图标 + 路径 + 导航箭头） -->
+              <view
+                class="sp-card {{selId === card.id ? 'is-selected' : ''}}"
+                bindtap="tapCard"
+                bindlongpress="onCardLongPress"
+                data-item="{{card}}"
+              >
+                <view class="card-left">
+                  <image class="card-icon" src="{{card.cardIcon}}" mode="aspectFit" />
+                  <view class="card-info">
+                    <view class="card-title-row">
+                      <text class="card-name">{{card.name}}</text>
+                      <text class="card-count">{{card.total}}件</text>
+                    </view>
+                    <view class="card-path">{{card.pathText}}</view>
+                  </view>
+                </view>
+                <view class="card-arrow-box {{selId === card.id ? 'arrow-down' : ''}}">
+                  <image class="card-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+                </view>
+              </view>
+
+              <!-- 选中该卡片时展开的物品抽屉面板 -->
+              <view class="items-panel" wx:if="{{selId === card.id}}">
+                <view class="panel-header">
+                  <view class="panel-title">「{{card.name}}」里的物品 ({{items.length}}件)</view>
+                  <view class="panel-actions">
+                    <view class="action-btn" catchtap="onPanelRename">重命名</view>
+                    <view class="action-btn action-add" catchtap="onPanelAddChild">＋子空间</view>
+                    <view class="action-btn action-del" catchtap="onPanelDelete">删除</view>
+                  </view>
+                </view>
+                <view class="items-loading" wx:if="{{itemsLoading}}">正在加载物品…</view>
+                <view class="items-empty" wx:elif="{{!items.length}}">{{card.total > 0 ? '物品存放在其下级子空间中' : '该空间暂无直接存放的物品'}}</view>
+                <view class="items-list" wx:else>
+                  <view class="item-card" wx:for="{{items}}" wx:key="id" bindtap="goItemDetail" data-id="{{item.id}}">
+                    <image class="item-img" src="{{item.img}}" mode="aspectFill" />
+                    <view class="item-info">
+                      <view class="item-name">{{item.name}}</view>
+                      <view class="item-meta">{{item.subtitle}}</view>
+                    </view>
+                    <image class="item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+                  </view>
+                </view>
+              </view>
+
+            </block>
+          </view>
         </view>
-        <view class="ic {{selIndex === index ? 'ic-check' : 'ic-radio'}}"></view>
       </view>
 
-      <!-- 选中空间的物品 -->
-      <view class="items-panel" wx:if="{{selRow}}">
-        <view class="panel-title">「{{selRow.name}}」里的物品</view>
-        <view class="empty" wx:if="{{itemsLoading}}">加载中…</view>
-        <view class="empty" wx:elif="{{!items.length}}">{{selRow.total > 0 ? '物品在子区域里，点选子空间查看' : '该空间下没有直接存放的物品'}}</view>
-        <view class="item-line" wx:for="{{items}}" wx:key="id" bindtap="goItem" data-id="{{item.id}}">
-          <view class="item-main">
-            <text class="item-name">{{item.name}}</text>
-            <text class="item-path">{{item.path}}</text>
+      <!-- 底部操作区（消除死锁） -->
+      <view class="bottom-bar">
+        <block wx:if="{{!selRow}}">
+          <view class="btn-main" bindtap="onAddButtonTap">
+            <text class="btn-plus">＋</text>
+            <text>添加空间</text>
           </view>
-          <view class="chev"></view>
-        </view>
+        </block>
+        <block wx:else>
+          <view class="btn-group">
+            <view class="btn-cancel" bindtap="clearSelection">取消选择</view>
+            <view class="btn-main btn-main-sub" bindtap="onAddButtonTap">
+              <text class="btn-plus">＋</text>
+              <text class="btn-sub-text">在「{{selRow.name}}」下添加</text>
+            </view>
+          </view>
+        </block>
+        <view class="bottom-hint">提示：长按空间可 重命名 / 添加子空间 / 删除</view>
       </view>
-
-      <view class="btn-outline add-space" bindtap="addSpace">
-        <view class="ic ic-plus"></view>
-        <text>{{selRow ? '在「' + selRow.name + '」下添加子空间' : '添加空间'}}</text>
-      </view>
-      <view class="sp-hint">提示：长按空间可 重命名 / 添加子空间 / 删除</view>
     </block>
+
   </view>
 </view>

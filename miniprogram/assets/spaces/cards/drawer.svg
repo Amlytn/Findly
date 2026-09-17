@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+  <rect width="96" height="96" rx="26" fill="#d7f4f6"/>
+  <!-- Top Lid Trapezoid with Slot Opening -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M35.6 28a4 4 0 0 1 3.4-1.9h18a4 4 0 0 1 3.4 1.9l9.3 14a3 3 0 0 1-2.5 4.7H63v-3.5a1.5 1.5 0 0 0-1.5-1.5h-27a1.5 1.5 0 0 0-1.5 1.5V47h-4.2a3 3 0 0 1-2.5-4.7l9.3-14.3z" fill="#0faeb5"/>
+  <!-- Drawer Box Body with Handle Cutout -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M26 47h44v17a5 5 0 0 1-5 5H31a5 5 0 0 1-5-5V47zm15 6a2.5 2.5 0 0 1 2.5-2.5h9a2.5 2.5 0 0 1 2.5 2.5v0a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 41 53v0z" fill="#0faeb5"/>
+</svg>
