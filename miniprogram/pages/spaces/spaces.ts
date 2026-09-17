@@ -26,17 +26,26 @@ export interface RootSection {
   children: SpaceCardItem[]
 }
 
+export interface PanelItem extends ItemListItem {
+  img: string
+  subtitle: string
+}
+
 Page({
   data: {
     sections: [] as RootSection[],
     collapsedMap: {} as Record<string, boolean>,
     expandedMap: {} as Record<string, boolean>,
-    itemsMap: {} as Record<string, (ItemListItem & { img: string; subtitle: string })[]>,
+    itemsMap: {} as Record<string, PanelItem[]>,
     itemsCountMap: {} as Record<string, number>,
     loadingMap: {} as Record<string, boolean>,
     loading: true,
     error: '',
-    loaded: false
+    loaded: false,
+
+    // 自定义空间设置弹层
+    settingModalVisible: false,
+    settingTarget: null as RootSection | SpaceCardItem | null
   },
 
   onLoad() {
@@ -48,7 +57,7 @@ Page({
     if (bar) {
       bar.setData({ selected: 2 })
     }
-    // 从搜索结果或其他页面带着 focusSpaceId 切回时自动定位并选中
+    // 从搜索结果或其他页面带着 focusSpaceId 切回时自动定位并唤起抽屉
     const app = getApp() as any
     const focusId = app && app.globalData && app.globalData.focusSpaceId
     if (focusId) {
@@ -112,12 +121,11 @@ Page({
 
       const expandedMap = Object.assign({}, that.data.expandedMap)
 
-      // 若传入了 focusId，自动展开对应根分组并高亮加载直属物品
+      // 若传入了 focusId，自动展开对应根空间并展开该卡片
       if (focusId) {
         for (const s of sections) {
           if (s.id === focusId) {
             expandedMap[s.id] = true
-            that.loadSpaceItems(s.id)
             break
           }
           const child = s.children.find(function (c) { return c.id === focusId })
@@ -125,18 +133,10 @@ Page({
             s.collapsed = false
             delete collapsedMap[s.id]
             expandedMap[child.id] = true
-            that.loadSpaceItems(child.id)
             break
           }
         }
       }
-
-      // 若有已展开的空间，静默刷新其物品列表
-      Object.keys(expandedMap).forEach(function (spaceId) {
-        if (expandedMap[spaceId] && (!that.data.itemsMap[spaceId] || silent)) {
-          that.loadSpaceItems(spaceId)
-        }
-      })
 
       that.setData({
         sections: sections,
@@ -145,6 +145,13 @@ Page({
         loading: false,
         loaded: true
       })
+
+      // 对所有当前已展开的空间刷新或拉取物品列表
+      for (const spaceId in expandedMap) {
+        if (expandedMap[spaceId]) {
+          that.loadSpaceItems(spaceId)
+        }
+      }
     }).catch(function (e: any) {
       that.setData({ loading: false, error: e.message || '加载空间失败' })
     })
@@ -159,7 +166,7 @@ Page({
     wx.showToast({ title: '建议按 房间 → 家具 → 容器 规划位置', icon: 'none', duration: 2500 })
   },
 
-  /** 展开 / 收起根空间分组（不影响各子空间卡片的独立展开状态） */
+  /** 展开 / 收起根空间分组（折叠子空间卡片） */
   toggleSection(e: any) {
     const id = (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id) || (e.target && e.target.dataset && e.target.dataset.id)
     if (!id) return
@@ -180,70 +187,119 @@ Page({
     })
   },
 
-  /** 点击子空间卡片：独立展开/收起物品面板，点击其他控件互不影响，需主动再次点击收起 */
+  /** 点击分组头部：有子空间则折叠/展开子空间列表；无子空间时点击唤起添加子空间弹窗，绝不伪装成子空间物品面板 */
+  tapSectionHeader(e: any) {
+    const sec: RootSection = e.currentTarget.dataset.section
+    if (!sec) return
+    if (sec.children && sec.children.length > 0) {
+      this.toggleSection({ currentTarget: { dataset: { id: sec.id } } })
+    } else {
+      this.addChildSpace(sec)
+    }
+  },
+
+  /** 点击子空间卡片：独立展开/收起其内联面板，点击其他卡片不互斥收回，主动点击才收回 */
   tapCard(e: any) {
     const item: SpaceCardItem = e.currentTarget.dataset.item
     if (!item) return
-
-    const isExpanded = !this.data.expandedMap[item.id]
-    const expandedMap = Object.assign({}, this.data.expandedMap, {
-      [item.id]: isExpanded
+    const isCurrentlyExpanded = !this.data.expandedMap[item.id]
+    this.setData({
+      ['expandedMap.' + item.id]: isCurrentlyExpanded
     })
-
-    this.setData({ expandedMap: expandedMap })
-
-    // 若展开且该空间的物品列表尚未加载，立即发起请求加载
-    if (isExpanded && !this.data.itemsMap[item.id]) {
+    if (isCurrentlyExpanded && !this.data.itemsMap[item.id]) {
       this.loadSpaceItems(item.id)
     }
   },
 
-  /** 点击根分组头部：若有子空间则折叠/展开；若无子空间则展开/收起物品面板 */
-  tapSectionHeader(e: any) {
-    const section: RootSection = e.currentTarget.dataset.section
-    if (!section) return
-
-    // 如果该分组有子空间，触发折叠/展开
-    if (section.children && section.children.length > 0) {
-      this.toggleSection(e)
-      return
-    }
-
-    // 若无子空间，独立展开/收起物品面板
-    const isExpanded = !this.data.expandedMap[section.id]
-    const expandedMap = Object.assign({}, this.data.expandedMap, {
-      [section.id]: isExpanded
-    })
-
-    this.setData({ expandedMap: expandedMap })
-
-    if (isExpanded && !this.data.itemsMap[section.id]) {
-      this.loadSpaceItems(section.id)
-    }
-  },
-
-  /** 加载指定空间的直属物品列表 */
+  /** 加载指定空间下的直属物品列表 */
   loadSpaceItems(spaceId: string) {
     const that = this
-    const loadingMap = Object.assign({}, this.data.loadingMap, { [spaceId]: true })
-    this.setData({ loadingMap: loadingMap })
+    this.setData({ ['loadingMap.' + spaceId]: true })
 
-    getItems({ spaceId: spaceId, page: 1, pageSize: 20 }).then(function (res) {
-      const items = res.items.map(function (it: ItemListItem) {
+    getItems({ spaceId: spaceId, page: 1, pageSize: 50 }).then(function (res) {
+      const items: PanelItem[] = res.items.map(function (it: ItemListItem) {
         const parts = [it.category, it.color, it.brand].filter(Boolean)
         return Object.assign({}, it, {
           img: fullUrl(it.imageUrl) || '/assets/logo.png',
           subtitle: parts.join(' · ') || '暂无描述'
         })
       })
-      const itemsMap = Object.assign({}, that.data.itemsMap, { [spaceId]: items })
-      const itemsCountMap = Object.assign({}, that.data.itemsCountMap, { [spaceId]: items.length })
-      const lMap = Object.assign({}, that.data.loadingMap, { [spaceId]: false })
-      that.setData({ itemsMap: itemsMap, itemsCountMap: itemsCountMap, loadingMap: lMap })
+      that.setData({
+        ['itemsMap.' + spaceId]: items,
+        ['itemsCountMap.' + spaceId]: items.length,
+        ['loadingMap.' + spaceId]: false
+      })
     }).catch(function () {
-      const lMap = Object.assign({}, that.data.loadingMap, { [spaceId]: false })
-      that.setData({ loadingMap: lMap })
+      that.setData({ ['loadingMap.' + spaceId]: false })
     })
+  },
+
+  /** 根分组设置按钮：唤起自定义空间设置弹层（取代微信原生 UI） */
+  onSectionSettings(e: any) {
+    const section: RootSection = e.currentTarget.dataset.section
+    if (!section) return
+    this.setData({
+      settingModalVisible: true,
+      settingTarget: section
+    })
+  },
+
+  closeSettingModal() {
+    this.setData({ settingModalVisible: false })
+  },
+
+  preventBubble() {
+    // 阻止点击弹层卡片冒泡到遮罩关闭
+  },
+
+  preventTouchMove() {
+    // 阻止底层滑动穿透
+  },
+
+  /** 弹层操作：重命名空间 */
+  onSettingModalRename() {
+    const target = this.data.settingTarget
+    this.closeSettingModal()
+    if (target) {
+      this.renameSpace(target)
+    }
+  },
+
+  /** 弹层操作：删除空间 */
+  onSettingModalDelete() {
+    const target = this.data.settingTarget
+    this.closeSettingModal()
+    if (target) {
+      this.deleteSpaceConfirm(target)
+    }
+  },
+
+  /** 根分组右侧加号：在该根空间下快速添加子空间（如：书房、卧室） */
+  onSectionAddChild(e: any) {
+    const section: RootSection = e.currentTarget.dataset.section
+    if (section) this.addChildSpace(section)
+  },
+
+  /** 内联面板专属操作栏：重命名 */
+  onPanelRename(e: any) {
+    const item = e.currentTarget.dataset.item
+    if (item) this.renameSpace(item)
+  },
+
+  /** 内联面板专属操作栏：直接向当前空间内加入物品 */
+  onPanelAddItem(e: any) {
+    const item = e.currentTarget.dataset.item
+    if (!item) return
+    const app = getApp() as any
+    app.globalData.locationId = item.id
+    app.globalData.locationPath = item.pathText ? item.pathText.split(' · ') : [item.name]
+    wx.navigateTo({ url: '/pages/add/add' })
+  },
+
+  /** 内联面板专属操作栏：删除空间 */
+  onPanelDelete(e: any) {
+    const item = e.currentTarget.dataset.item
+    if (item) this.deleteSpaceConfirm(item)
   },
 
   /** 底部大按钮：常驻创建新空间 */
@@ -289,7 +345,7 @@ Page({
         }
         createSpace({ name: name, parentId: parent.id }).then(function () {
           wx.showToast({ title: '子空间已添加', icon: 'success' })
-          // 确保父分组处于展开状态，便于用户立刻看见
+          // 确保父分组处于展开状态
           const collapsedMap = Object.assign({}, that.data.collapsedMap)
           delete collapsedMap[parent.id]
           that.setData({ collapsedMap: collapsedMap })
@@ -331,12 +387,12 @@ Page({
         deleteSpace(target.id).then(function () {
           wx.showToast({ title: '已删除空间', icon: 'success' })
           const expandedMap = Object.assign({}, that.data.expandedMap)
-          delete expandedMap[target.id]
           const itemsMap = Object.assign({}, that.data.itemsMap)
-          delete itemsMap[target.id]
           const itemsCountMap = Object.assign({}, that.data.itemsCountMap)
-          delete itemsCountMap[target.id]
           const loadingMap = Object.assign({}, that.data.loadingMap)
+          delete expandedMap[target.id]
+          delete itemsMap[target.id]
+          delete itemsCountMap[target.id]
           delete loadingMap[target.id]
           that.setData({
             expandedMap: expandedMap,
@@ -386,22 +442,6 @@ Page({
         }
       }
     })
-  },
-
-  /** 快捷操作入口（面板内按钮触发） */
-  onPanelRename(e: any) {
-    const item = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
-    if (item) this.renameSpace(item)
-  },
-
-  onPanelAddChild(e: any) {
-    const item = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
-    if (item) this.addChildSpace(item)
-  },
-
-  onPanelDelete(e: any) {
-    const item = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
-    if (item) this.deleteSpaceConfirm(item)
   },
 
   /** 查看物品详情 */

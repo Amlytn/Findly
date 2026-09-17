@@ -41,55 +41,54 @@
             bindtap="tapSectionHeader"
             bindlongpress="onSectionLongPress"
             data-section="{{sec}}"
-            data-id="{{sec.id}}"
           >
             <view class="sec-left">
               <image class="sec-icon" src="{{sec.glyphIcon}}" mode="aspectFit" />
               <text class="sec-title">{{sec.name}}</text>
               <text class="sec-count">{{sec.total}}件</text>
             </view>
-            <view
-              class="sec-toggle {{sec.collapsed ? 'is-collapsed' : ''}}"
-              catchtap="toggleSection"
-              data-id="{{sec.id}}"
-            >
-              <image class="sec-arrow" src="/assets/spaces/glyphs/chevron_down.svg" mode="aspectFit" />
+            <view class="sec-right">
+              <view
+                class="sec-act-btn"
+                catchtap="onSectionAddChild"
+                data-section="{{sec}}"
+                aria-label="添加子空间"
+              >
+                <text class="sec-act-plus">＋</text>
+              </view>
+              <view
+                class="sec-act-btn sec-act-settings"
+                catchtap="onSectionSettings"
+                data-section="{{sec}}"
+                aria-label="空间设置"
+              >
+                <image class="sec-act-icon" src="/assets/spaces/glyphs/settings.svg" mode="aspectFit" />
+              </view>
+              <view
+                class="sec-toggle {{sec.collapsed ? 'is-collapsed' : ''}}"
+                catchtap="toggleSection"
+                data-id="{{sec.id}}"
+                wx:if="{{sec.children.length}}"
+              >
+                <image class="sec-arrow" src="/assets/spaces/glyphs/chevron_down.svg" mode="aspectFit" />
+              </view>
             </view>
           </view>
 
-          <!-- 若无子空间，且该根空间展开时展示物品面板 -->
-          <block wx:if="{{!sec.children.length && expandedMap[sec.id]}}">
-            <view class="items-panel">
-              <view class="panel-header">
-                <view class="panel-title">「{{sec.name}}」里的物品 ({{itemsCountMap[sec.id] || 0}}件)</view>
-                <view class="panel-actions">
-                  <view class="action-btn" catchtap="onPanelRename" data-item="{{sec}}">重命名</view>
-                  <view class="action-btn action-add" catchtap="onPanelAddChild" data-item="{{sec}}">＋子空间</view>
-                  <view class="action-btn action-del" catchtap="onPanelDelete" data-item="{{sec}}">删除</view>
-                </view>
-              </view>
-              <view class="items-loading" wx:if="{{loadingMap[sec.id]}}">正在加载物品…</view>
-              <view class="items-empty" wx:elif="{{!itemsCountMap[sec.id]}}">该空间暂无直接存放的物品</view>
-              <view class="items-list" wx:else>
-                <view class="item-card" wx:for="{{itemsMap[sec.id]}}" wx:key="id" bindtap="goItemDetail" data-id="{{item.id}}">
-                  <image class="item-img" src="{{item.img}}" mode="aspectFill" />
-                  <view class="item-info">
-                    <view class="item-name">{{item.name}}</view>
-                    <view class="item-meta">{{item.subtitle}}</view>
-                  </view>
-                  <image class="item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
-                </view>
-              </view>
+          <!-- 若无子空间，展示清晰引导卡片，不伪装成子空间面板 -->
+          <view class="sec-empty-wrap" wx:if="{{!sec.children.length}}" bindtap="onSectionAddChild" data-section="{{sec}}">
+            <view class="sec-empty-card">
+              <text class="sec-empty-tip">点击此处或右上角 ＋ 添加子空间（如：书房、卧室）</text>
             </view>
-          </block>
+          </view>
 
           <!-- 根空间下的子空间卡片流（展开态） -->
           <view class="cards-container" wx:if="{{!sec.collapsed}}">
             <block wx:for="{{sec.children}}" wx:key="id" wx:for-item="card">
               
-              <!-- 单张空间卡片（Squircle 图标 + 路径 + 导航箭头） -->
+              <!-- 单张空间卡片（Squircle 图标 + 路径 + 独立展开指示箭头） -->
               <view
-                class="sp-card {{expandedMap[card.id] ? 'is-selected' : ''}}"
+                class="sp-card {{expandedMap[card.id] ? 'is-expanded' : ''}}"
                 bindtap="tapCard"
                 bindlongpress="onCardLongPress"
                 data-item="{{card}}"
@@ -109,26 +108,53 @@
                 </view>
               </view>
 
-              <!-- 该卡片独立展开的物品抽屉面板（点击其他控件不自动折叠，仅主动点击再次折叠） -->
-              <view class="items-panel" wx:if="{{expandedMap[card.id]}}">
-                <view class="panel-header">
-                  <view class="panel-title">「{{card.name}}」里的物品 ({{itemsCountMap[card.id] || 0}}件)</view>
-                  <view class="panel-actions">
-                    <view class="action-btn" catchtap="onPanelRename" data-item="{{card}}">重命名</view>
-                    <view class="action-btn action-add" catchtap="onPanelAddChild" data-item="{{card}}">＋子空间</view>
-                    <view class="action-btn action-del" catchtap="onPanelDelete" data-item="{{card}}">删除</view>
+              <!-- 新版分层解耦式内联抽屉面板（点击其他卡片不自动收起，仅主动点击再次折叠） -->
+              <view class="in-panel" wx:if="{{expandedMap[card.id]}}">
+                <!-- 第一层：专属空间管理工具栏（独立成行，等宽均分，绝不与标题竞争横向宽度） -->
+                <view class="panel-act-row">
+                  <view class="panel-act-btn" catchtap="onPanelRename" data-item="{{card}}">
+                    <text>重命名</text>
+                  </view>
+                  <view class="panel-act-btn act-add" catchtap="onPanelAddItem" data-item="{{card}}">
+                    <text>加入物品</text>
+                  </view>
+                  <view class="panel-act-btn act-del" catchtap="onPanelDelete" data-item="{{card}}">
+                    <text>删除</text>
                   </view>
                 </view>
-                <view class="items-loading" wx:if="{{loadingMap[card.id]}}">正在加载物品…</view>
-                <view class="items-empty" wx:elif="{{!itemsCountMap[card.id]}}">{{card.total > 0 ? '物品存放在其下级子空间中' : '该空间暂无直接存放的物品'}}</view>
-                <view class="items-list" wx:else>
-                  <view class="item-card" wx:for="{{itemsMap[card.id]}}" wx:key="id" bindtap="goItemDetail" data-id="{{item.id}}">
-                    <image class="item-img" src="{{item.img}}" mode="aspectFill" />
-                    <view class="item-info">
-                      <view class="item-name">{{item.name}}</view>
-                      <view class="item-meta">{{item.subtitle}}</view>
+
+                <!-- 第二层：物品统计信息行（纯粹独立，无按钮抢占） -->
+                <view class="panel-head-row">
+                  <view class="panel-head-title">存放在此的物品</view>
+                  <view class="panel-head-badge">共 {{itemsCountMap[card.id] || 0}} 件</view>
+                </view>
+
+                <!-- 第三层：物品流 / 加载中 / 友好空态提示 -->
+                <view class="panel-loading" wx:if="{{loadingMap[card.id]}}">
+                  <view class="state-loading-spinner"></view>
+                  <text class="panel-loading-text">正在读取物品列表…</text>
+                </view>
+
+                <view class="panel-empty" wx:elif="{{!itemsCountMap[card.id]}}">
+                  <image class="panel-empty-icon" src="/assets/spaces/glyphs/other_space.svg" mode="aspectFit" />
+                  <view class="panel-empty-title">{{card.total > 0 ? '物品存放在其下级子空间中' : '此空间暂无直接存放的物品'}}</view>
+                  <view class="panel-empty-desc" wx:if="{{card.total > 0}}">可轻触其下级子空间卡片展开盘点</view>
+                </view>
+
+                <view class="panel-item-list" wx:else>
+                  <view
+                    class="p-item-card"
+                    wx:for="{{itemsMap[card.id]}}"
+                    wx:key="id"
+                    bindtap="goItemDetail"
+                    data-id="{{item.id}}"
+                  >
+                    <image class="p-item-img" src="{{item.img}}" mode="aspectFill" />
+                    <view class="p-item-info">
+                      <view class="p-item-name">{{item.name}}</view>
+                      <view class="p-item-meta">{{item.subtitle}}</view>
                     </view>
-                    <image class="item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+                    <image class="p-item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
                   </view>
                 </view>
               </view>
@@ -138,7 +164,7 @@
         </view>
       </view>
 
-      <!-- 底部操作区（常驻单一「添加空间」，移除多余的状态分支） -->
+      <!-- 底部操作区（常驻单一「＋ 添加空间」） -->
       <view class="bottom-actions">
         <view class="btn-main" bindtap="onAddButtonTap">
           <text class="btn-plus">＋</text>
@@ -148,5 +174,49 @@
       </view>
     </block>
 
+  </view>
+
+  <!-- 自定义空间设置弹层（取代微信原生 ActionSheet） -->
+  <view class="custom-modal-mask {{settingModalVisible ? 'is-visible' : ''}}" bindtap="closeSettingModal" catchtouchmove="preventTouchMove">
+    <view class="custom-modal-sheet {{settingModalVisible ? 'is-visible' : ''}}" catchtap="preventBubble">
+      
+      <!-- 弹层顶部拖拽指示条 -->
+      <view class="modal-handle-bar">
+        <view class="modal-handle"></view>
+      </view>
+
+      <!-- 空间信息头 -->
+      <view class="modal-space-info">
+        <image class="modal-space-icon" src="{{settingTarget.glyphIcon || '/assets/spaces/glyphs/home.svg'}}" mode="aspectFit" />
+        <view class="modal-space-meta">
+          <view class="modal-space-name">{{settingTarget.name}}</view>
+          <view class="modal-space-sub">空间管理设置 · 累计 {{settingTarget.total || 0}} 件物品</view>
+        </view>
+      </view>
+
+      <!-- 操作项列表 -->
+      <view class="modal-actions-list">
+        <view class="modal-action-card" bindtap="onSettingModalRename">
+          <view class="modal-act-left">
+            <view class="modal-act-title">重命名空间</view>
+            <view class="modal-act-desc">修改该空间的显示名称</view>
+          </view>
+          <image class="modal-act-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+        </view>
+
+        <view class="modal-action-card act-danger" bindtap="onSettingModalDelete">
+          <view class="modal-act-left">
+            <view class="modal-act-title title-danger">删除空间</view>
+            <view class="modal-act-desc">删除该空间（若有子空间或物品需先清空）</view>
+          </view>
+          <image class="modal-act-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+        </view>
+      </view>
+
+      <!-- 底部取消操作 -->
+      <view class="modal-cancel-btn" bindtap="closeSettingModal">
+        <text>取消</text>
+      </view>
+    </view>
   </view>
 </view>
