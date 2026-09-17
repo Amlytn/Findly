@@ -14,6 +14,7 @@ import { SpacesModule } from './spaces/spaces.module';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { StatsModule } from './stats/stats.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 // @Amlytn TODO: settings 等模块待实现后在此追加 import。
 @Module({
@@ -29,6 +30,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     UploadModule,
     AuthModule,
     UsersModule,
+    StatsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
