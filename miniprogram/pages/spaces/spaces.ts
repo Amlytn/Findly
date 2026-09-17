@@ -36,9 +36,7 @@ Page({
     itemsLoading: false,
     loading: true,
     error: '',
-    loaded: false,
-    hasCompany: false,
-    hasOther: false
+    loaded: false
   },
 
   onLoad() {
@@ -148,18 +146,13 @@ Page({
         }
       }
 
-      const hasCompany = sections.some(function (s) { return s.name.includes('公司') })
-      const hasOther = sections.some(function (s) { return s.name.includes('其他') })
-
       that.setData({
         sections: sections,
         collapsedMap: collapsedMap,
         selId: selId,
         selRow: selRow,
         loading: false,
-        loaded: true,
-        hasCompany: hasCompany,
-        hasOther: hasOther
+        loaded: true
       })
     }).catch(function (e: any) {
       that.setData({ loading: false, error: e.message || '加载空间失败' })
@@ -418,16 +411,5 @@ Page({
     if (id) {
       wx.navigateTo({ url: '/pages/detail/detail?id=' + id })
     }
-  },
-
-  /** 快捷添加推荐的根空间（如：公司、其他空间） */
-  quickAddPreset(e: any) {
-    const name = e.currentTarget.dataset.name
-    if (!name) return
-    const that = this
-    createSpace({ name }).then(function () {
-      wx.showToast({ title: '已添加「' + name + '」', icon: 'success' })
-      that.fetch(true)
-    }).catch(function () { /* request 层已 toast */ })
   }
 })

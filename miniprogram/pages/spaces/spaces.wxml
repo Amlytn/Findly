@@ -137,21 +137,6 @@
         </view>
       </view>
 
-      <!-- 推荐常用空间（对齐设计稿「公司」「其他空间」） -->
-      <view class="quick-rec" wx:if="{{sections.length > 0 && (!hasCompany || !hasOther)}}">
-        <view class="quick-rec-title">推荐常用分类</view>
-        <view class="quick-rec-chips">
-          <view class="quick-rec-chip" bindtap="quickAddPreset" data-name="公司" wx:if="{{!hasCompany}}">
-            <image class="rec-icon" src="/assets/spaces/glyphs/company.svg" mode="aspectFit" />
-            <text class="rec-text">＋ 公司</text>
-          </view>
-          <view class="quick-rec-chip" bindtap="quickAddPreset" data-name="其他空间" wx:if="{{!hasOther}}">
-            <image class="rec-icon" src="/assets/spaces/glyphs/other_space.svg" mode="aspectFit" />
-            <text class="rec-text">＋ 其他空间</text>
-          </view>
-        </view>
-      </view>
-
       <!-- 底部操作区（随页面流动，彻底消除大白雾覆盖） -->
       <view class="bottom-actions">
         <block wx:if="{{!selRow}}">

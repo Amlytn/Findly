@@ -22,13 +22,14 @@ page {
   box-sizing: border-box;
 }
 
-/* 2. 顶部规划通栏（对齐设计稿） */
+/* 2. 顶部规划通栏（对齐首页顶部搜索栏大圆角风格 24rpx） */
 .tip-bar {
   margin: 16rpx 32rpx 20rpx;
+  height: 84rpx;
   background: #EBF8F5;
   border: 1rpx solid #D2EFE9;
-  border-radius: 999rpx;
-  padding: 18rpx 28rpx;
+  border-radius: 24rpx;
+  padding: 0 28rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -342,55 +343,7 @@ page {
   flex-shrink: 0;
 }
 
-/* 6. 快捷扩展推荐（对齐设计稿的丰富分类，提高空间利用率） */
-.quick-rec {
-  margin: 28rpx 32rpx 0;
-  background: #FFFFFF;
-  border-radius: 24rpx;
-  padding: 20rpx 24rpx;
-  box-shadow: 0 4rpx 14rpx rgba(14, 46, 59, 0.03);
-}
-
-.quick-rec-title {
-  font-size: 24rpx;
-  font-weight: 700;
-  color: #0E2E3B;
-  margin-bottom: 14rpx;
-}
-
-.quick-rec-chips {
-  display: flex;
-  gap: 14rpx;
-  flex-wrap: wrap;
-}
-
-.quick-rec-chip {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  padding: 12rpx 24rpx;
-  background: #F4FAF8;
-  border: 1rpx solid #D1EFE9;
-  border-radius: 999rpx;
-  transition: all 0.2s;
-}
-
-.quick-rec-chip:active {
-  background: #E4F7F3;
-}
-
-.rec-icon {
-  width: 32rpx;
-  height: 32rpx;
-}
-
-.rec-text {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: #12A5A0;
-}
-
-/* 7. 底部操作区（随页面自然流布局，彻底移除破坏底色的浮动白色渐变罩） */
+/* 6. 底部操作区（随页面自然流布局，彻底移除破坏底色的浮动白色渐变罩） */
 .bottom-actions {
   margin: 36rpx 32rpx 0;
   display: flex;
@@ -468,7 +421,7 @@ page {
   text-align: center;
 }
 
-/* 8. 空白状态 */
+/* 7. 空白状态 */
 .empty-state {
   padding: 140rpx 40rpx;
   display: flex;
