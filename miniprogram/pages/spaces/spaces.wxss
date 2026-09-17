@@ -184,6 +184,7 @@ page {
   flex-direction: column;
   gap: 16rpx;
   margin-top: 4rpx;
+  padding: 0 32rpx;
 }
 
 .sp-card {

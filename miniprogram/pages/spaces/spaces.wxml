@@ -68,97 +68,39 @@
                 class="sec-toggle {{sec.collapsed ? 'is-collapsed' : ''}}"
                 catchtap="toggleSection"
                 data-id="{{sec.id}}"
-                wx:if="{{sec.children.length}}"
               >
                 <image class="sec-arrow" src="/assets/spaces/glyphs/chevron_down.svg" mode="aspectFit" />
               </view>
             </view>
           </view>
 
-          <!-- 若无子空间，展示清晰引导卡片，不伪装成子空间面板 -->
-          <view class="sec-empty-wrap" wx:if="{{!sec.children.length}}" bindtap="onSectionAddChild" data-section="{{sec}}">
+          <!-- 若无子空间，在展开状态下展示引导卡片 -->
+          <view class="sec-empty-wrap" wx:if="{{!sec.children.length && !sec.collapsed}}" bindtap="onSectionAddChild" data-section="{{sec}}">
             <view class="sec-empty-card">
               <text class="sec-empty-tip">点击此处或右上角 ＋ 添加子空间（如：书房、卧室）</text>
             </view>
           </view>
 
-          <!-- 根空间下的子空间卡片流（展开态） -->
-          <view class="cards-container" wx:if="{{!sec.collapsed}}">
-            <block wx:for="{{sec.children}}" wx:key="id" wx:for-item="card">
-              
-              <!-- 单张空间卡片（Squircle 图标 + 路径 + 独立展开指示箭头） -->
-              <view
-                class="sp-card {{expandedMap[card.id] ? 'is-expanded' : ''}}"
-                bindtap="tapCard"
-                bindlongpress="onCardLongPress"
-                data-item="{{card}}"
-              >
-                <view class="card-left">
-                  <image class="card-icon" src="{{card.cardIcon}}" mode="aspectFit" />
-                  <view class="card-info">
-                    <view class="card-title-row">
-                      <text class="card-name">{{card.name}}</text>
-                      <text class="card-count">{{card.total}}件</text>
-                    </view>
-                    <view class="card-path">{{card.pathText}}</view>
-                  </view>
-                </view>
-                <view class="card-arrow-box {{expandedMap[card.id] ? 'arrow-down' : ''}}">
-                  <image class="card-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
-                </view>
-              </view>
-
-              <!-- 新版分层解耦式内联抽屉面板（点击其他卡片不自动收起，仅主动点击再次折叠） -->
-              <view class="in-panel" wx:if="{{expandedMap[card.id]}}">
-                <!-- 第一层：专属空间管理工具栏（独立成行，等宽均分，绝不与标题竞争横向宽度） -->
-                <view class="panel-act-row">
-                  <view class="panel-act-btn" catchtap="onPanelRename" data-item="{{card}}">
-                    <text>重命名</text>
-                  </view>
-                  <view class="panel-act-btn act-add" catchtap="onPanelAddItem" data-item="{{card}}">
-                    <text>加入物品</text>
-                  </view>
-                  <view class="panel-act-btn act-del" catchtap="onPanelDelete" data-item="{{card}}">
-                    <text>删除</text>
-                  </view>
-                </view>
-
-                <!-- 第二层：物品统计信息行（纯粹独立，无按钮抢占） -->
-                <view class="panel-head-row">
-                  <view class="panel-head-title">存放在此的物品</view>
-                  <view class="panel-head-badge">共 {{itemsCountMap[card.id] || 0}} 件</view>
-                </view>
-
-                <!-- 第三层：物品流 / 加载中 / 友好空态提示 -->
-                <view class="panel-loading" wx:if="{{loadingMap[card.id]}}">
-                  <view class="state-loading-spinner"></view>
-                  <text class="panel-loading-text">正在读取物品列表…</text>
-                </view>
-
-                <view class="panel-empty" wx:elif="{{!itemsCountMap[card.id]}}">
-                  <image class="panel-empty-icon" src="/assets/spaces/glyphs/other_space.svg" mode="aspectFit" />
-                  <view class="panel-empty-title">{{card.total > 0 ? '物品存放在其下级子空间中' : '此空间暂无直接存放的物品'}}</view>
-                  <view class="panel-empty-desc" wx:if="{{card.total > 0}}">可轻触其下级子空间卡片展开盘点</view>
-                </view>
-
-                <view class="panel-item-list" wx:else>
-                  <view
-                    class="p-item-card"
-                    wx:for="{{itemsMap[card.id]}}"
-                    wx:key="id"
-                    bindtap="goItemDetail"
-                    data-id="{{item.id}}"
-                  >
-                    <image class="p-item-img" src="{{item.img}}" mode="aspectFill" />
-                    <view class="p-item-info">
-                      <view class="p-item-name">{{item.name}}</view>
-                      <view class="p-item-meta">{{item.subtitle}}</view>
-                    </view>
-                    <image class="p-item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
-                  </view>
-                </view>
-              </view>
-
+          <!-- 根空间下的子空间卡片流（展开态，分层树形递归） -->
+          <view
+            class="cards-container"
+            wx:if="{{sec.children.length && !sec.collapsed}}"
+            bind:tapcard="onTapCard"
+            bind:rename="onPanelRename"
+            bind:addchild="onPanelAddChild"
+            bind:additem="onPanelAddItem"
+            bind:deletespace="onPanelDelete"
+            bind:cardlongpress="onCardLongPress"
+            bind:itemdetail="goItemDetail"
+          >
+            <block wx:for="{{sec.children}}" wx:key="id" wx:for-item="childNode">
+              <space-tree-card
+                node="{{childNode}}"
+                expandedMap="{{expandedMap}}"
+                itemsMap="{{itemsMap}}"
+                itemsCountMap="{{itemsCountMap}}"
+                loadingMap="{{loadingMap}}"
+              />
             </block>
           </view>
         </view>

@@ -9,11 +9,13 @@ export interface SpaceCardItem {
   name: string
   parentId: string | null
   total: number
+  directCount?: number
   pathText: string
   cardIcon: string
   glyphIcon: string
   depth: number
   hasChildren: boolean
+  children?: SpaceCardItem[]
 }
 
 export interface RootSection {
@@ -80,33 +82,31 @@ Page({
       const sections: RootSection[] = tree.map(function (root: SpaceTree) {
         const rootIcons = matchSpaceIcon(root.name)
         const total = subtreeCount(root)
-        const childrenList: SpaceCardItem[] = []
 
-        // 递归平铺该根空间下的所有后代子空间卡片
-        function walk(nodes: SpaceTree[], prefix: string[], depth: number) {
-          for (const node of nodes) {
-            const path = prefix.concat(node.name)
+        // 递归构建分层嵌套子空间树节点（不平铺，按真实物理层级包含）
+        function buildTreeNodes(nodes: SpaceTree[], depth: number, prefix: string[]): SpaceCardItem[] {
+          return nodes.map(function (node: SpaceTree) {
             const icons = matchSpaceIcon(node.name)
-            childrenList.push({
+            const currentPath = prefix.concat(node.name)
+            const hasChildren = !!(node.children && node.children.length)
+            const children = hasChildren ? buildTreeNodes(node.children!, depth + 1, currentPath) : []
+            return {
               id: node.id,
               name: node.name,
               parentId: node.parentId || null,
               total: subtreeCount(node),
-              pathText: path.join(' · '),
+              directCount: node.itemCount || 0,
+              pathText: currentPath.join(' · '),
               cardIcon: icons.card,
               glyphIcon: icons.glyph,
               depth: depth,
-              hasChildren: !!(node.children && node.children.length)
-            })
-            if (node.children && node.children.length) {
-              walk(node.children, path, depth + 1)
+              hasChildren: hasChildren,
+              children: children
             }
-          }
+          })
         }
 
-        if (root.children && root.children.length) {
-          walk(root.children, [root.name], 1)
-        }
+        const children = (root.children && root.children.length) ? buildTreeNodes(root.children, 1, [root.name]) : []
 
         return {
           id: root.id,
@@ -115,24 +115,39 @@ Page({
           glyphIcon: rootIcons.glyph,
           cardIcon: rootIcons.card,
           collapsed: !!collapsedMap[root.id],
-          children: childrenList
+          children: children
         }
       })
 
       const expandedMap = Object.assign({}, that.data.expandedMap)
 
-      // 若传入了 focusId，自动展开对应根空间并展开该卡片
+      // 若传入了 focusId，自动展开对应根空间并沿层级展开所有祖先及目标卡片
       if (focusId) {
+        function expandAncestors(nodes: SpaceCardItem[], targetId: string): boolean {
+          for (const node of nodes) {
+            if (node.id === targetId) {
+              expandedMap[node.id] = true
+              return true
+            }
+            if (node.children && node.children.length) {
+              if (expandAncestors(node.children, targetId)) {
+                expandedMap[node.id] = true
+                return true
+              }
+            }
+          }
+          return false
+        }
+
         for (const s of sections) {
           if (s.id === focusId) {
-            expandedMap[s.id] = true
-            break
-          }
-          const child = s.children.find(function (c) { return c.id === focusId })
-          if (child) {
             s.collapsed = false
             delete collapsedMap[s.id]
-            expandedMap[child.id] = true
+            break
+          }
+          if (expandAncestors(s.children, focusId)) {
+            s.collapsed = false
+            delete collapsedMap[s.id]
             break
           }
         }
@@ -187,20 +202,16 @@ Page({
     })
   },
 
-  /** 点击分组头部：有子空间则折叠/展开子空间列表；无子空间时点击唤起添加子空间弹窗，绝不伪装成子空间物品面板 */
+  /** 点击分组头部：无论有无子空间均折叠/展开当前分组 */
   tapSectionHeader(e: any) {
     const sec: RootSection = e.currentTarget.dataset.section
     if (!sec) return
-    if (sec.children && sec.children.length > 0) {
-      this.toggleSection({ currentTarget: { dataset: { id: sec.id } } })
-    } else {
-      this.addChildSpace(sec)
-    }
+    this.toggleSection({ currentTarget: { dataset: { id: sec.id } } })
   },
 
   /** 点击子空间卡片：独立展开/收起其内联面板，点击其他卡片不互斥收回，主动点击才收回 */
   tapCard(e: any) {
-    const item: SpaceCardItem = e.currentTarget.dataset.item
+    const item: SpaceCardItem = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
     if (!item) return
     const isCurrentlyExpanded = !this.data.expandedMap[item.id]
     this.setData({
@@ -209,6 +220,10 @@ Page({
     if (isCurrentlyExpanded && !this.data.itemsMap[item.id]) {
       this.loadSpaceItems(item.id)
     }
+  },
+
+  onTapCard(e: any) {
+    this.tapCard(e)
   },
 
   /** 加载指定空间下的直属物品列表 */
@@ -282,13 +297,19 @@ Page({
 
   /** 内联面板专属操作栏：重命名 */
   onPanelRename(e: any) {
-    const item = e.currentTarget.dataset.item
+    const item = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
     if (item) this.renameSpace(item)
+  },
+
+  /** 内联面板专属操作栏：在当前空间下快速添加下一级子空间 */
+  onPanelAddChild(e: any) {
+    const item = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
+    if (item) this.addChildSpace(item)
   },
 
   /** 内联面板专属操作栏：直接向当前空间内加入物品 */
   onPanelAddItem(e: any) {
-    const item = e.currentTarget.dataset.item
+    const item = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
     if (!item) return
     const app = getApp() as any
     app.globalData.locationId = item.id
@@ -298,7 +319,7 @@ Page({
 
   /** 内联面板专属操作栏：删除空间 */
   onPanelDelete(e: any) {
-    const item = e.currentTarget.dataset.item
+    const item = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
     if (item) this.deleteSpaceConfirm(item)
   },
 
@@ -345,10 +366,12 @@ Page({
         }
         createSpace({ name: name, parentId: parent.id }).then(function () {
           wx.showToast({ title: '子空间已添加', icon: 'success' })
-          // 确保父分组处于展开状态
+          // 确保父分组与父空间处于展开状态，以便立即看见新子空间
           const collapsedMap = Object.assign({}, that.data.collapsedMap)
           delete collapsedMap[parent.id]
-          that.setData({ collapsedMap: collapsedMap })
+          const expandedMap = Object.assign({}, that.data.expandedMap)
+          expandedMap[parent.id] = true
+          that.setData({ collapsedMap: collapsedMap, expandedMap: expandedMap })
           that.fetch(true)
         }).catch(function () { /* request 层已 toast */ })
       }
@@ -408,7 +431,7 @@ Page({
 
   /** 卡片长按菜单：重命名 / 添加子空间 / 删除 */
   onCardLongPress(e: any) {
-    const item: SpaceCardItem = e.currentTarget.dataset.item
+    const item: SpaceCardItem = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
     if (!item) return
     const that = this
     wx.showActionSheet({
@@ -446,7 +469,7 @@ Page({
 
   /** 查看物品详情 */
   goItemDetail(e: any) {
-    const id = e.currentTarget.dataset.id
+    const id = (e.detail && e.detail.id) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id)
     if (id) {
       wx.navigateTo({ url: '/pages/detail/detail?id=' + id })
     }
