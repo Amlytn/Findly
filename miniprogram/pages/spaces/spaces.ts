@@ -32,6 +32,7 @@ Page({
     collapsedMap: {} as Record<string, boolean>,
     expandedMap: {} as Record<string, boolean>,
     itemsMap: {} as Record<string, (ItemListItem & { img: string; subtitle: string })[]>,
+    itemsCountMap: {} as Record<string, number>,
     loadingMap: {} as Record<string, boolean>,
     loading: true,
     error: '',
@@ -236,8 +237,9 @@ Page({
         })
       })
       const itemsMap = Object.assign({}, that.data.itemsMap, { [spaceId]: items })
+      const itemsCountMap = Object.assign({}, that.data.itemsCountMap, { [spaceId]: items.length })
       const lMap = Object.assign({}, that.data.loadingMap, { [spaceId]: false })
-      that.setData({ itemsMap: itemsMap, loadingMap: lMap })
+      that.setData({ itemsMap: itemsMap, itemsCountMap: itemsCountMap, loadingMap: lMap })
     }).catch(function () {
       const lMap = Object.assign({}, that.data.loadingMap, { [spaceId]: false })
       that.setData({ loadingMap: lMap })
@@ -332,11 +334,14 @@ Page({
           delete expandedMap[target.id]
           const itemsMap = Object.assign({}, that.data.itemsMap)
           delete itemsMap[target.id]
+          const itemsCountMap = Object.assign({}, that.data.itemsCountMap)
+          delete itemsCountMap[target.id]
           const loadingMap = Object.assign({}, that.data.loadingMap)
           delete loadingMap[target.id]
           that.setData({
             expandedMap: expandedMap,
             itemsMap: itemsMap,
+            itemsCountMap: itemsCountMap,
             loadingMap: loadingMap
           })
           that.fetch(true)

@@ -61,7 +61,7 @@
           <block wx:if="{{!sec.children.length && expandedMap[sec.id]}}">
             <view class="items-panel">
               <view class="panel-header">
-                <view class="panel-title">「{{sec.name}}」里的物品 ({{(itemsMap[sec.id] || []).length}}件)</view>
+                <view class="panel-title">「{{sec.name}}」里的物品 ({{itemsCountMap[sec.id] || 0}}件)</view>
                 <view class="panel-actions">
                   <view class="action-btn" catchtap="onPanelRename" data-item="{{sec}}">重命名</view>
                   <view class="action-btn action-add" catchtap="onPanelAddChild" data-item="{{sec}}">＋子空间</view>
@@ -69,7 +69,7 @@
                 </view>
               </view>
               <view class="items-loading" wx:if="{{loadingMap[sec.id]}}">正在加载物品…</view>
-              <view class="items-empty" wx:elif="{{!(itemsMap[sec.id] && itemsMap[sec.id].length)}}">该空间暂无直接存放的物品</view>
+              <view class="items-empty" wx:elif="{{!itemsCountMap[sec.id]}}">该空间暂无直接存放的物品</view>
               <view class="items-list" wx:else>
                 <view class="item-card" wx:for="{{itemsMap[sec.id]}}" wx:key="id" bindtap="goItemDetail" data-id="{{item.id}}">
                   <image class="item-img" src="{{item.img}}" mode="aspectFill" />
@@ -112,7 +112,7 @@
               <!-- 该卡片独立展开的物品抽屉面板（点击其他控件不自动折叠，仅主动点击再次折叠） -->
               <view class="items-panel" wx:if="{{expandedMap[card.id]}}">
                 <view class="panel-header">
-                  <view class="panel-title">「{{card.name}}」里的物品 ({{(itemsMap[card.id] || []).length}}件)</view>
+                  <view class="panel-title">「{{card.name}}」里的物品 ({{itemsCountMap[card.id] || 0}}件)</view>
                   <view class="panel-actions">
                     <view class="action-btn" catchtap="onPanelRename" data-item="{{card}}">重命名</view>
                     <view class="action-btn action-add" catchtap="onPanelAddChild" data-item="{{card}}">＋子空间</view>
@@ -120,7 +120,7 @@
                   </view>
                 </view>
                 <view class="items-loading" wx:if="{{loadingMap[card.id]}}">正在加载物品…</view>
-                <view class="items-empty" wx:elif="{{!(itemsMap[card.id] && itemsMap[card.id].length)}}">{{card.total > 0 ? '物品存放在其下级子空间中' : '该空间暂无直接存放的物品'}}</view>
+                <view class="items-empty" wx:elif="{{!itemsCountMap[card.id]}}">{{card.total > 0 ? '物品存放在其下级子空间中' : '该空间暂无直接存放的物品'}}</view>
                 <view class="items-list" wx:else>
                   <view class="item-card" wx:for="{{itemsMap[card.id]}}" wx:key="id" bindtap="goItemDetail" data-id="{{item.id}}">
                     <image class="item-img" src="{{item.img}}" mode="aspectFill" />
