@@ -62,7 +62,12 @@ Page({
     wx.navigateTo({ url: '/pages/detail/detail?id=' + e.currentTarget.dataset.id })
   },
 
-  goSpaces() {
+  goSpaces(e: any) {
+    const id = e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id
+    if (id) {
+      const app = getApp() as any
+      if (app && app.globalData) app.globalData.focusSpaceId = id
+    }
     wx.switchTab({ url: '/pages/spaces/spaces' })
   }
 })

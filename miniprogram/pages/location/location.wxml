@@ -1,25 +1,60 @@
 <view class="page">
   <view class="screen">
-    <nav-bar title="选择位置" />
+    <nav-bar title="选择存放位置" />
 
-    <view class="empty" wx:if="{{loading}}">空间加载中…</view>
-    <view class="empty" wx:elif="{{error}}">{{error}}</view>
-
-    <view
-      class="loc-row {{selIndex === index ? 'sel' : ''}}"
-      wx:for="{{rows}}"
-      wx:key="id"
-      style="padding-left: {{item.pad}}rpx;"
-      bindtap="select"
-      data-i="{{index}}"
-    >
-      <view class="loc-main">
-        <text class="loc-name">{{item.name}}</text>
-        <text class="loc-sub">{{item.pathText}}</text>
-      </view>
-      <view class="ic {{selIndex === index ? 'ic-check' : 'ic-radio'}}"></view>
+    <!-- 状态反馈 -->
+    <view class="state-box" wx:if="{{loading}}">
+      <view class="state-loading-spinner"></view>
+      <text class="state-text">空间加载中…</text>
+    </view>
+    <view class="state-box" wx:elif="{{error}}" bindtap="retry">
+      <view class="state-text state-err">{{error}}，点击重试</view>
     </view>
 
-    <view class="btn-primary l-confirm" bindtap="confirm">确定</view>
+    <!-- 空白状态引导（新用户拍照后首次选择空间） -->
+    <view class="empty-state" wx:elif="{{!rows.length}}">
+      <view class="empty-icon-box">
+        <image class="empty-icon" src="/assets/spaces/glyphs/home.svg" mode="aspectFit" />
+      </view>
+      <view class="empty-title">还没有任何可用空间</view>
+      <view class="empty-desc">创建一个空间存放刚才拍摄或录入的物品</view>
+      <view class="empty-btn" bindtap="addNewSpace">＋ 新建空间</view>
+    </view>
+
+    <!-- 空间列表（对齐设计风格的 Squircle 卡片） -->
+    <block wx:else>
+      <view class="loc-list">
+        <view
+          class="loc-card {{selIndex === index ? 'is-selected' : ''}}"
+          wx:for="{{rows}}"
+          wx:key="id"
+          bindtap="select"
+          data-i="{{index}}"
+        >
+          <view class="card-left">
+            <image class="card-icon" src="{{item.cardIcon}}" mode="aspectFit" />
+            <view class="card-info">
+              <view class="card-title-row">
+                <text class="card-name">{{item.name}}</text>
+                <text class="card-count">{{item.total}}件物品</text>
+              </view>
+              <view class="card-path">{{item.pathText}}</view>
+            </view>
+          </view>
+          <view class="check-box {{selIndex === index ? 'is-checked' : ''}}">
+            <view class="check-inner" wx:if="{{selIndex === index}}"></view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部操作区（悬浮吸底） -->
+      <view class="bottom-bar">
+        <view class="btn-group">
+          <view class="btn-outline-add" bindtap="addNewSpace">＋ 新建空间</view>
+          <view class="btn-confirm" bindtap="confirm">确定选择</view>
+        </view>
+      </view>
+    </block>
+
   </view>
 </view>

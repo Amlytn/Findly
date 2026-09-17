@@ -1,5 +1,9 @@
 {
   "usingComponents": {
-    "nav-bar": "/components/nav-bar/index"
-  }
+    "nav-bar": "/components/nav-bar/index",
+    "space-tree-card": "/components/space-tree-card/index"
+  },
+  "backgroundColor": "#F4F7F6",
+  "backgroundColorTop": "#F4F7F6",
+  "backgroundColorBottom": "#F4F7F6"
 }

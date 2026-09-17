@@ -23,7 +23,7 @@
     </block>
 
     <block wx:if="{{tab !== 'item'}}">
-      <view class="res-item" wx:for="{{spaces}}" wx:key="id" bindtap="goSpaces">
+      <view class="res-item" wx:for="{{spaces}}" wx:key="id" bindtap="goSpaces" data-id="{{item.id}}">
         <view class="sp-chip">
           <view class="ic ic-house"></view>
         </view>

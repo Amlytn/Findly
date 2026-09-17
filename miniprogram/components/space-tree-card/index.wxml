@@ -1,0 +1,99 @@
+<view class="tree-node-wrap {{'depth-' + (node.depth || 1)}}">
+  <!-- 空间卡片主体 -->
+  <view
+    class="sp-card {{expandedMap[node.id] ? 'is-expanded' : ''}}"
+    bindtap="onTapCard"
+    bindlongpress="onLongPress"
+  >
+    <view class="card-left">
+      <image class="card-icon" src="{{node.cardIcon || '/assets/spaces/cards/other_space.svg'}}" mode="aspectFit" />
+      <view class="card-info">
+        <view class="card-title-row">
+          <text class="card-name">{{node.name}}</text>
+          <text class="card-count">{{node.total || 0}}件</text>
+        </view>
+      </view>
+    </view>
+    <view class="card-arrow-box {{expandedMap[node.id] ? 'arrow-down' : ''}}">
+      <image class="card-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+    </view>
+  </view>
+
+  <!-- 展开后的内容面板 -->
+  <view class="in-panel" wx:if="{{expandedMap[node.id]}}">
+    <!-- 第一层：专属空间管理工具栏（重命名、＋子空间、加入物品、删除） -->
+    <view class="panel-act-row">
+      <view class="panel-act-btn" catchtap="onRename">
+        <text>重命名</text>
+      </view>
+      <view class="panel-act-btn act-add-child" catchtap="onAddChild">
+        <text>＋子空间</text>
+      </view>
+      <view class="panel-act-btn act-add" catchtap="onAddItem">
+        <text>加入物品</text>
+      </view>
+      <view class="panel-act-btn act-del" catchtap="onDelete">
+        <text>删除</text>
+      </view>
+    </view>
+
+    <!-- 第二层：直属物品列表（若直接存放在此空间） -->
+    <view class="panel-section" wx:if="{{itemsCountMap[node.id] || loadingMap[node.id]}}">
+      <view class="panel-head-row">
+        <view class="panel-head-title">存放在此的物品</view>
+        <view class="panel-head-badge">共 {{itemsCountMap[node.id] || 0}} 件</view>
+      </view>
+
+      <view class="panel-loading" wx:if="{{loadingMap[node.id]}}">
+        <view class="state-loading-spinner"></view>
+        <text class="panel-loading-text">正在读取物品列表…</text>
+      </view>
+
+      <view class="panel-item-list" wx:else>
+        <view
+          class="p-item-card"
+          wx:for="{{itemsMap[node.id]}}"
+          wx:key="id"
+          catchtap="onItemDetail"
+          data-id="{{item.id}}"
+        >
+          <image class="p-item-img" src="{{item.img}}" mode="aspectFill" />
+          <view class="p-item-info">
+            <view class="p-item-name">{{item.name}}</view>
+            <view class="p-item-meta">{{item.subtitle}}</view>
+          </view>
+          <image class="p-item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 第三层：下级子空间列表（递归调用 space-tree-card） -->
+    <view class="panel-section panel-children-section" wx:if="{{node.children && node.children.length}}">
+      <view class="panel-head-row">
+        <view class="panel-head-title">下级子空间</view>
+        <view class="panel-head-badge">共 {{node.children.length}} 个</view>
+      </view>
+
+      <view class="nested-children-list">
+        <block wx:for="{{node.children}}" wx:key="id" wx:for-item="childNode">
+          <space-tree-card
+            node="{{childNode}}"
+            expandedMap="{{expandedMap}}"
+            itemsMap="{{itemsMap}}"
+            itemsCountMap="{{itemsCountMap}}"
+            loadingMap="{{loadingMap}}"
+          />
+        </block>
+      </view>
+    </view>
+
+    <!-- 空态：若既无直属物品也无子空间 -->
+    <view
+      class="panel-empty-card"
+      wx:if="{{!loadingMap[node.id] && (!itemsCountMap[node.id] || itemsCountMap[node.id] === 0) && (!node.children || !node.children.length)}}"
+      catchtap="onAddItem"
+    >
+      <text class="panel-empty-tip">暂无直接物品与子空间，点击上方按钮开始整理</text>
+    </view>
+  </view>
+</view>

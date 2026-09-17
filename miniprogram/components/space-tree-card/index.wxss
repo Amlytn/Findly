@@ -1,0 +1,311 @@
+/* 递归空间卡片与内联分层面板 */
+.tree-node-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. 空间卡片主体 */
+.sp-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 22rpx 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
+  border: 1rpx solid rgba(18, 78, 91, 0.04);
+  box-sizing: border-box;
+}
+
+.sp-card.is-expanded {
+  border-bottom-left-radius: 8rpx;
+  border-bottom-right-radius: 8rpx;
+  border-color: rgba(18, 165, 160, 0.25);
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.08);
+}
+
+.card-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-icon {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 24rpx;
+  flex-shrink: 0;
+}
+
+.card-info {
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.card-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #124E5B;
+  letter-spacing: 0.5rpx;
+}
+
+.card-count {
+  font-size: 24rpx;
+  color: #8FA8AD;
+  font-weight: 400;
+}
+
+.card-arrow-box {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: #F0F6F7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  transition: transform 0.25s ease, background-color 0.2s ease;
+}
+
+.card-arrow-box.arrow-down {
+  transform: rotate(90deg);
+  background: #EBF8F5;
+}
+
+.card-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  opacity: 0.5;
+}
+
+/* 2. 内联展开面板 */
+.in-panel {
+  margin: -6rpx 0 14rpx;
+  background: #FFFFFF;
+  border-radius: 0 0 24rpx 24rpx;
+  border: 1rpx solid rgba(18, 78, 91, 0.06);
+  border-top: none;
+  padding: 22rpx 24rpx 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(18, 78, 91, 0.04);
+  box-sizing: border-box;
+}
+
+/* 第一层：专属空间管理工具栏（等宽均分） */
+.panel-act-row {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 22rpx;
+}
+
+.panel-act-btn {
+  flex: 1;
+  height: 68rpx;
+  border-radius: 18rpx;
+  background: #F0F6F7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #124E5B;
+  box-sizing: border-box;
+}
+
+.panel-act-btn.act-add-child {
+  background: #F0F6F7;
+  color: #124E5B;
+}
+
+.panel-act-btn.act-add {
+  background: #EBF8F5;
+  color: #12A5A0;
+}
+
+.panel-act-btn.act-del {
+  background: #FDF2F2;
+  color: #E06B6B;
+}
+
+/* 第二层与第三层通用分块标题 */
+.panel-section {
+  margin-top: 12rpx;
+}
+
+.panel-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6rpx 4rpx 14rpx;
+  border-bottom: 1rpx solid #F2F5F5;
+  margin-bottom: 16rpx;
+}
+
+.panel-head-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #124E5B;
+  letter-spacing: 0.5rpx;
+}
+
+.panel-head-badge {
+  font-size: 22rpx;
+  color: #12A5A0;
+  background: #EBF8F5;
+  padding: 4rpx 14rpx;
+  border-radius: 14rpx;
+  font-weight: 600;
+}
+
+/* 物品列表流 */
+.panel-loading {
+  padding: 24rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+}
+
+.state-loading-spinner {
+  width: 28rpx;
+  height: 28rpx;
+  border: 4rpx solid #D2E8E4;
+  border-top-color: #12A5A0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.panel-loading-text {
+  font-size: 24rpx;
+  color: #8FA8AD;
+}
+
+.panel-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.p-item-card {
+  background: #F8FAFA;
+  border: 1rpx solid #EEF5F6;
+  border-radius: 18rpx;
+  padding: 16rpx 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.p-item-img {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 16rpx;
+  background: #E2EAEB;
+  flex-shrink: 0;
+}
+
+.p-item-info {
+  margin-left: 18rpx;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.p-item-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #124E5B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p-item-meta {
+  font-size: 21rpx;
+  color: #8FA8AD;
+  margin-top: 4rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p-item-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  opacity: 0.35;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+/* 3. 递归子空间容器与层级导轨线 */
+.panel-children-section {
+  margin-top: 20rpx;
+}
+
+.nested-children-list {
+  margin-top: 14rpx;
+  padding-left: 16rpx;
+  border-left: 3rpx solid #DCE6E7;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+/* 嵌套层级在导轨线内的样式自适应（层级深入时的精致感） */
+.nested-children-list .sp-card {
+  background: #F8FAFA;
+  border-color: rgba(18, 78, 91, 0.06);
+  padding: 18rpx 22rpx;
+}
+
+.nested-children-list .sp-card.is-expanded {
+  background: #FFFFFF;
+}
+
+.nested-children-list .card-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+}
+
+.nested-children-list .card-name {
+  font-size: 28rpx;
+}
+
+.nested-children-list .in-panel {
+  background: #F8FAFA;
+  border-color: rgba(18, 78, 91, 0.06);
+  padding: 18rpx 20rpx 20rpx;
+}
+
+/* 空态卡片提示 */
+.panel-empty-card {
+  background: rgba(255, 255, 255, 0.6);
+  border: 2rpx dashed #D2E8E4;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  text-align: center;
+  margin-top: 8rpx;
+}
+
+.panel-empty-tip {
+  font-size: 24rpx;
+  color: #12A5A0;
+  font-weight: 500;
+}
