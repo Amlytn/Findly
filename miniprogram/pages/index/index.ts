@@ -18,7 +18,10 @@ Page({
   data: {
     statusBarHeight: 20,
     navBarHeight: 44,
-    recentItems: [] as (ItemListItem & { time: string; img: string })[]
+    recentItems: [] as (ItemListItem & { time: string; img: string })[],
+    // 首次拉取完成前不渲染空态，避免加载中闪现「去添加」引导；失败态与真空态区分展示
+    recentLoaded: false,
+    recentFailed: false
   },
 
   onShow() {
@@ -44,8 +47,11 @@ Page({
           space: it.space ? it.space.name : '未归位'
         })
       })
-      that.setData({ recentItems: recentItems })
-    }).catch(function () { /* 后端未启动时首页保持空白，不阻塞浏览 */ })
+      that.setData({ recentItems: recentItems, recentLoaded: true, recentFailed: false })
+    }).catch(function () {
+      // 拉取失败与真空态区分：失败显示错误态+重试（PRD 6.4），不误导「还没有物品」
+      that.setData({ recentLoaded: true, recentFailed: true })
+    })
   },
 
   onSearch(e: any) {
@@ -81,5 +87,16 @@ Page({
 
   goItems() {
     wx.switchTab({ url: '/pages/items/items' })
+  },
+
+  /** 空态引导：去添加第一件物品（与 ➕ Tab 同路径） */
+  goAdd() {
+    wx.navigateTo({ url: '/pages/add/add' })
+  },
+
+  /** 最近添加错误态重试 */
+  retryRecent() {
+    this.setData({ recentLoaded: false, recentFailed: false })
+    this.onShow()
   }
 })

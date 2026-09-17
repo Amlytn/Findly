@@ -171,6 +171,37 @@
   display: flex;
 }
 
+/* 空态/错误态引导卡（PRD 图 1 + 6.4） */
+.recent-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48rpx 32rpx;
+  background: #F5F7F8;
+  border-radius: 24rpx;
+}
+
+.recent-state-txt {
+  font-size: 26rpx;
+  color: #6A8C97;
+  margin-bottom: 24rpx;
+}
+
+.recent-state-btn {
+  padding: 14rpx 40rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  color: #02505C;
+  border: 2rpx solid #B8DAD5;
+  background: #FFFFFF;
+}
+
+.recent-state-btn-primary {
+  color: #FFFFFF;
+  background: #2BAE66;
+  border-color: #2BAE66;
+}
+
 .recent-item {
   flex: 1;
   margin-right: 24rpx;
