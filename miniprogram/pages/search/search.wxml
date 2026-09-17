@@ -16,6 +16,15 @@
       />
     </view>
 
+    <!-- 搜索历史：仅未输入状态展示（PRD 图 6） -->
+    <view class="hist-head" wx:if="{{!kw && history.length > 0}}">
+      <text class="hist-title">搜索历史</text>
+      <text class="hist-clear" catchtap="clearHist">清空</text>
+    </view>
+    <view class="hist-chips" wx:if="{{!kw && history.length > 0}}">
+      <view class="hist-chip" wx:for="{{history}}" wx:key="*this" bindtap="goHist" data-kw="{{item}}">{{item}}</view>
+    </view>
+
     <view class="sec-title">相关物品</view>
     <view class="rel-card" wx:for="{{hot}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
       <image src="{{item.img}}" mode="aspectFit" />
