@@ -72,10 +72,10 @@
   color: #9AB0B4;
 }
 
-/* ================= 拍照识别横幅（设计稿 1:1 像素级复刻） ================= */
+/* ================= 拍照识别横幅（文案与插画已烘焙进 banner_background.jpg） ================= */
 .hero {
   margin-top: 24rpx;
-  /* 卡片设计稿实测 999x534px → 686x370rpx */
+  /* 容器 686x370rpx（1.854:1），banner 图已按此比例裁切，aspectFill 无二次裁切 */
   height: 370rpx;
   border-radius: 32rpx;
   position: relative;
@@ -90,68 +90,13 @@
   height: 100%;
 }
 
-.hero-content {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  padding: 38rpx 0 36rpx 28rpx;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  pointer-events: none;
-}
-
-/* AI 智能识别 Pill 徽章：设计稿 1:1 通透薄荷微渐变 + 顶部柔光 + 柔和青辉光 */
-.hero-pill {
-  align-self: flex-start;
-  height: 44rpx;
-  padding: 0 22rpx;
-  background: linear-gradient(180deg, #7CE7D8 0%, #46D5C5 45%, #24BCAD 100%);
-  box-shadow: 0 6rpx 16rpx rgba(32, 180, 168, 0.35), inset 0 1.5rpx 2rpx rgba(255, 255, 255, 0.65);
-  box-sizing: border-box;
-  border-radius: 999rpx;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 23rpx;
-  font-weight: 500;
-  color: #FFFFFF;
-  line-height: 1;
-  letter-spacing: 0.5rpx;
-  margin-bottom: 18rpx;
-}
-
-/* 主标题：两行排版，实测 46rpx/800，深青墨色 #043242 */
-.hero-title {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 14rpx;
-}
-
-.hero-line {
-  font-size: 46rpx;
-  font-weight: 800;
-  color: #043242;
-  line-height: 1.22;
-  letter-spacing: -0.5rpx;
-}
-
-/* 副标题：识别物品 · 记录位置 · 建立空间 */
-.hero-sub {
-  font-size: 22rpx;
-  font-weight: 400;
-  color: #4D8795;
-  line-height: 1.25;
-  margin-bottom: 22rpx;
-  letter-spacing: 0.5rpx;
-}
-
-/* 白色圆钮：直径 56rpx，带微阴影；恢复事件接收 */
+/* 白色圆钮：唯一代码叠加层；坐标复刻改造前布局（原 flex 流实测 top 276rpx / left 28rpx，
+   恰位于烘焙副标题下缘 256rpx 之下），保留按压回弹微动效 */
 .hero-go {
+  position: absolute;
+  left: 28rpx;
+  top: 276rpx;
+  z-index: 2;
   width: 56rpx;
   height: 56rpx;
   border-radius: 50%;
@@ -160,7 +105,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: auto;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   outline: none;
@@ -283,32 +227,15 @@
 }
 
 /* ================= 常用功能（设计稿实测 1:1） ================= */
-/* 标题行：常用功能 40/700 距 banner 25rpx；右侧「更多功能」28 #336277（纯展示，暂无跳转目标） */
+/* 标题行：上间距 44rpx 与「最近添加」等节标题统一节奏 */
 .q-head {
-  margin: 28rpx 0 20rpx;
+  margin: 44rpx 0 20rpx;
 }
 
 .q-title {
   font-size: 34rpx;
   font-weight: 800;
   color: #0C1B2A;
-}
-
-.q-more {
-  display: flex;
-  align-items: center;
-  font-size: 24rpx;
-  font-weight: 400;
-  color: #336277;
-}
-
-.q-more-chev {
-  width: 12rpx;
-  height: 12rpx;
-  border-top: 3rpx solid #336277;
-  border-right: 3rpx solid #336277;
-  transform: rotate(45deg);
-  margin-left: 10rpx;
 }
 
 /* 2×2 彩色卡：设计稿 1:1 实测（高度 166rpx、圆角 28rpx、行距 18rpx、间隙 20rpx） */
@@ -327,6 +254,11 @@
   align-items: center;
   padding: 0 26rpx 0 22rpx;
   box-sizing: border-box;
+}
+
+/* 末行卡片（第 3、4 张）去掉行间距尾巴，让「常用功能→最近添加」落在干净的 44rpx 节律上 */
+.quick .quick-card:nth-child(n+3) {
+  margin-bottom: 0;
 }
 
 .qc-camera { background: #E8F9FA; }
