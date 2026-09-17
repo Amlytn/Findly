@@ -30,7 +30,7 @@
       <view class="list-row" bindtap="clearCache">
         <view class="ic ic-del"></view>
         <text class="row-name">清除缓存</text>
-        <text class="row-extra">12.5MB</text>
+        <text class="row-extra">{{cacheText}}</text>
         <view class="chev"></view>
       </view>
     </view>
