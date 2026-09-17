@@ -30,10 +30,9 @@ Page({
   data: {
     sections: [] as RootSection[],
     collapsedMap: {} as Record<string, boolean>,
-    selId: '',
-    selRow: null as SpaceCardItem | RootSection | null,
-    items: [] as (ItemListItem & { img: string; subtitle: string })[],
-    itemsLoading: false,
+    expandedMap: {} as Record<string, boolean>,
+    itemsMap: {} as Record<string, (ItemListItem & { img: string; subtitle: string })[]>,
+    loadingMap: {} as Record<string, boolean>,
     loading: true,
     error: '',
     loaded: false
@@ -110,47 +109,38 @@ Page({
         }
       })
 
-      // 若当前选中的空间被删除或已不存在，安全重置选中态
-      let selRow = that.data.selRow
-      let selId = that.data.selId
-      if (selId) {
-        const exists = sections.some(function (s) {
-          return s.id === selId || s.children.some(function (c) { return c.id === selId })
-        })
-        if (!exists) {
-          selId = ''
-          selRow = null
-        }
-      }
+      const expandedMap = Object.assign({}, that.data.expandedMap)
 
       // 若传入了 focusId，自动展开对应根分组并高亮加载直属物品
       if (focusId) {
-        let found: any = null
         for (const s of sections) {
           if (s.id === focusId) {
-            found = s
+            expandedMap[s.id] = true
+            that.loadSpaceItems(s.id)
             break
           }
           const child = s.children.find(function (c) { return c.id === focusId })
           if (child) {
-            found = child
             s.collapsed = false
             delete collapsedMap[s.id]
+            expandedMap[child.id] = true
+            that.loadSpaceItems(child.id)
             break
           }
         }
-        if (found) {
-          selId = found.id
-          selRow = found
-          that.loadSpaceItems(found.id)
-        }
       }
+
+      // 若有已展开的空间，静默刷新其物品列表
+      Object.keys(expandedMap).forEach(function (spaceId) {
+        if (expandedMap[spaceId] && (!that.data.itemsMap[spaceId] || silent)) {
+          that.loadSpaceItems(spaceId)
+        }
+      })
 
       that.setData({
         sections: sections,
         collapsedMap: collapsedMap,
-        selId: selId,
-        selRow: selRow,
+        expandedMap: expandedMap,
         loading: false,
         loaded: true
       })
@@ -168,9 +158,11 @@ Page({
     wx.showToast({ title: '建议按 房间 → 家具 → 容器 规划位置', icon: 'none', duration: 2500 })
   },
 
-  /** 展开 / 收起根空间分组 */
+  /** 展开 / 收起根空间分组（不影响各子空间卡片的独立展开状态） */
   toggleSection(e: any) {
-    const id = e.currentTarget.dataset.id
+    const id = (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id) || (e.target && e.target.dataset && e.target.dataset.id)
+    if (!id) return
+
     const collapsedMap = Object.assign({}, this.data.collapsedMap)
     collapsedMap[id] = !collapsedMap[id]
 
@@ -187,62 +179,54 @@ Page({
     })
   },
 
-  /** 点击子空间卡片：已选中则取消（解开死锁），未选中则选中并加载物品 */
+  /** 点击子空间卡片：独立展开/收起物品面板，点击其他控件互不影响，需主动再次点击收起 */
   tapCard(e: any) {
     const item: SpaceCardItem = e.currentTarget.dataset.item
     if (!item) return
 
-    // 重复点击同一张卡片：取消选中（关闭物品面板）
-    if (this.data.selId === item.id) {
-      this.setData({ selId: '', selRow: null, items: [] })
-      return
-    }
-
-    this.setData({
-      selId: item.id,
-      selRow: item,
-      items: [],
-      itemsLoading: true
+    const isExpanded = !this.data.expandedMap[item.id]
+    const expandedMap = Object.assign({}, this.data.expandedMap, {
+      [item.id]: isExpanded
     })
 
-    this.loadSpaceItems(item.id)
+    this.setData({ expandedMap: expandedMap })
+
+    // 若展开且该空间的物品列表尚未加载，立即发起请求加载
+    if (isExpanded && !this.data.itemsMap[item.id]) {
+      this.loadSpaceItems(item.id)
+    }
   },
 
-  /** 点击根分组头部：若无子空间则支持选中，若有子空间则折叠/展开 */
+  /** 点击根分组头部：若有子空间则折叠/展开；若无子空间则展开/收起物品面板 */
   tapSectionHeader(e: any) {
     const section: RootSection = e.currentTarget.dataset.section
     if (!section) return
 
-    // 如果该分组有子空间，默认触发折叠/展开
+    // 如果该分组有子空间，触发折叠/展开
     if (section.children && section.children.length > 0) {
       this.toggleSection(e)
       return
     }
 
-    // 若无子空间，支持选中以查看其直属物品或添加子空间
-    if (this.data.selId === section.id) {
-      this.setData({ selId: '', selRow: null, items: [] })
-      return
-    }
-
-    this.setData({
-      selId: section.id,
-      selRow: section,
-      items: [],
-      itemsLoading: true
+    // 若无子空间，独立展开/收起物品面板
+    const isExpanded = !this.data.expandedMap[section.id]
+    const expandedMap = Object.assign({}, this.data.expandedMap, {
+      [section.id]: isExpanded
     })
 
-    this.loadSpaceItems(section.id)
+    this.setData({ expandedMap: expandedMap })
+
+    if (isExpanded && !this.data.itemsMap[section.id]) {
+      this.loadSpaceItems(section.id)
+    }
   },
 
-  /** 取消当前选中状态 */
-  clearSelection() {
-    this.setData({ selId: '', selRow: null, items: [] })
-  },
-
-  /** 加载直属物品列表 */
+  /** 加载指定空间的直属物品列表 */
   loadSpaceItems(spaceId: string) {
     const that = this
+    const loadingMap = Object.assign({}, this.data.loadingMap, { [spaceId]: true })
+    this.setData({ loadingMap: loadingMap })
+
     getItems({ spaceId: spaceId, page: 1, pageSize: 20 }).then(function (res) {
       const items = res.items.map(function (it: ItemListItem) {
         const parts = [it.category, it.color, it.brand].filter(Boolean)
@@ -251,19 +235,18 @@ Page({
           subtitle: parts.join(' · ') || '暂无描述'
         })
       })
-      that.setData({ items: items, itemsLoading: false })
+      const itemsMap = Object.assign({}, that.data.itemsMap, { [spaceId]: items })
+      const lMap = Object.assign({}, that.data.loadingMap, { [spaceId]: false })
+      that.setData({ itemsMap: itemsMap, loadingMap: lMap })
     }).catch(function () {
-      that.setData({ itemsLoading: false })
+      const lMap = Object.assign({}, that.data.loadingMap, { [spaceId]: false })
+      that.setData({ loadingMap: lMap })
     })
   },
 
-  /** 底部大按钮：未选中时添加根空间，选中时在其下添加子空间 */
+  /** 底部大按钮：常驻创建新空间 */
   onAddButtonTap() {
-    if (this.data.selRow) {
-      this.addChildSpace(this.data.selRow)
-    } else {
-      this.addRootSpace()
-    }
+    this.addRootSpace()
   },
 
   /** 新建根空间（如：我的家、公司、宿舍） */
@@ -345,9 +328,17 @@ Page({
         if (!res.confirm) return
         deleteSpace(target.id).then(function () {
           wx.showToast({ title: '已删除空间', icon: 'success' })
-          if (that.data.selId === target.id) {
-            that.setData({ selId: '', selRow: null, items: [] })
-          }
+          const expandedMap = Object.assign({}, that.data.expandedMap)
+          delete expandedMap[target.id]
+          const itemsMap = Object.assign({}, that.data.itemsMap)
+          delete itemsMap[target.id]
+          const loadingMap = Object.assign({}, that.data.loadingMap)
+          delete loadingMap[target.id]
+          that.setData({
+            expandedMap: expandedMap,
+            itemsMap: itemsMap,
+            loadingMap: loadingMap
+          })
           that.fetch(true)
         }).catch(function () { /* 400 提示由 request 层自动 toast */ })
       }
@@ -393,16 +384,19 @@ Page({
   },
 
   /** 快捷操作入口（面板内按钮触发） */
-  onPanelRename() {
-    if (this.data.selRow) this.renameSpace(this.data.selRow)
+  onPanelRename(e: any) {
+    const item = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
+    if (item) this.renameSpace(item)
   },
 
-  onPanelAddChild() {
-    if (this.data.selRow) this.addChildSpace(this.data.selRow)
+  onPanelAddChild(e: any) {
+    const item = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
+    if (item) this.addChildSpace(item)
   },
 
-  onPanelDelete() {
-    if (this.data.selRow) this.deleteSpaceConfirm(this.data.selRow)
+  onPanelDelete(e: any) {
+    const item = (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
+    if (item) this.deleteSpaceConfirm(item)
   },
 
   /** 查看物品详情 */

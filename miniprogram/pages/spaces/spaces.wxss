@@ -376,44 +376,6 @@ page {
   font-weight: 500;
 }
 
-.btn-group {
-  display: flex;
-  gap: 16rpx;
-  align-items: center;
-}
-
-.btn-cancel {
-  height: 96rpx;
-  padding: 0 32rpx;
-  border-radius: 48rpx;
-  background: #FFFFFF;
-  border: 2rpx solid #B8E6DE;
-  color: #0FA47F;
-  font-size: 28rpx;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 4rpx 12rpx rgba(14, 46, 59, 0.03);
-}
-
-.btn-cancel:active {
-  background: #F0FAF8;
-}
-
-.btn-main-sub {
-  flex: 1;
-  font-size: 28rpx;
-}
-
-.btn-sub-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 320rpx;
-}
-
 .bottom-hint {
   margin-top: 18rpx;
   font-size: 24rpx;
