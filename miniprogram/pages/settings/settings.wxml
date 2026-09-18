@@ -9,17 +9,17 @@
         <text class="row-name">版本信息</text>
         <text class="row-extra">v{{version}}</text>
       </view>
-      <view class="list-row" bindtap="doc" data-t="用户协议">
+      <view class="list-row" bindtap="doc" data-type="terms">
         <view class="ic ic-doc"></view>
         <text class="row-name">用户协议</text>
         <view class="chev"></view>
       </view>
-      <view class="list-row" bindtap="doc" data-t="隐私政策">
+      <view class="list-row" bindtap="doc" data-type="privacy">
         <view class="ic ic-shield"></view>
         <text class="row-name">隐私政策</text>
         <view class="chev"></view>
       </view>
-      <view class="list-row" bindtap="doc" data-t="常见问题">
+      <view class="list-row" bindtap="doc" data-type="faq">
         <view class="ic ic-help"></view>
         <text class="row-name">常见问题</text>
         <view class="chev"></view>
