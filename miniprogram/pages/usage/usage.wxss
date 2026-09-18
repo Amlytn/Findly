@@ -1,0 +1,379 @@
+/* 页面通用布局 */
+page {
+  background-color: #F4F7F6;
+  min-height: 100vh;
+}
+
+.page {
+  background-color: #F4F7F6;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.screen {
+  padding-bottom: 60rpx;
+  box-sizing: border-box;
+}
+
+/* 状态框（加载态 / 错误重试态） */
+.state-box {
+  margin: 120rpx 32rpx;
+  padding: 60rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(18, 78, 91, 0.04);
+}
+
+.state-loading-spinner {
+  width: 44rpx;
+  height: 44rpx;
+  border: 5rpx solid #D2E8E4;
+  border-top-color: #12A5A0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.state-text {
+  font-size: 28rpx;
+  color: #8FA8AD;
+}
+
+.state-err {
+  color: #E06B6B;
+  font-weight: 600;
+}
+
+/* 空态卡片 */
+.empty-state {
+  margin: 80rpx 32rpx;
+  padding: 80rpx 48rpx;
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 6rpx 24rpx rgba(18, 78, 91, 0.04);
+}
+
+.empty-icon-box {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background: #EBF8F5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+}
+
+.empty-icon {
+  width: 60rpx;
+  height: 60rpx;
+  opacity: 0.8;
+}
+
+.empty-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #124E5B;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #8FA8AD;
+  line-height: 1.6;
+  margin-bottom: 40rpx;
+}
+
+.empty-btn {
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0 48rpx;
+  background: linear-gradient(135deg, #31CBBB, #04869D);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 700;
+  border-radius: 42rpx;
+  box-shadow: 0 8rpx 20rpx rgba(4, 134, 157, 0.25);
+}
+
+/* 正式数据内容流 */
+.usage-content {
+  padding: 16rpx 32rpx 40rpx;
+}
+
+/* 核心英雄大卡片 */
+.hero-card {
+  background: linear-gradient(135deg, #124E5B 0%, #0D3E49 100%);
+  border-radius: 32rpx;
+  padding: 36rpx 36rpx 32rpx;
+  color: #FFFFFF;
+  box-shadow: 0 12rpx 32rpx rgba(18, 78, 91, 0.2);
+  margin-bottom: 36rpx;
+}
+
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero-label {
+  font-size: 26rpx;
+  color: #9EC7CE;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+}
+
+.hero-tag {
+  font-size: 20rpx;
+  color: #31CBBB;
+  background: rgba(49, 203, 187, 0.15);
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+}
+
+.hero-cost {
+  font-size: 64rpx;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 16rpx 0 24rpx;
+  letter-spacing: -1rpx;
+}
+
+.hero-divider {
+  height: 1rpx;
+  background: rgba(255, 255, 255, 0.12);
+  margin-bottom: 24rpx;
+}
+
+.hero-bottom {
+  display: flex;
+  align-items: center;
+}
+
+.hero-sub-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sub-num {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #E6F6F6;
+}
+
+.sub-lbl {
+  font-size: 22rpx;
+  color: #8FAFB5;
+  margin-top: 4rpx;
+}
+
+.hero-sep {
+  width: 1rpx;
+  height: 48rpx;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 32rpx;
+}
+
+/* 分块标题 */
+.sec-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 16rpx 4rpx 18rpx;
+}
+
+.sec-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #124E5B;
+  letter-spacing: 0.5rpx;
+}
+
+.sec-tip {
+  font-size: 22rpx;
+  color: #8FA8AD;
+}
+
+/* 6 项指标网格 */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+  margin-bottom: 36rpx;
+}
+
+.metric-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 24rpx 24rpx 22rpx;
+  border: 1rpx solid rgba(18, 78, 91, 0.05);
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.03);
+  box-sizing: border-box;
+}
+
+.metric-card.m-highlight {
+  border-color: rgba(18, 165, 160, 0.25);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFEFE 100%);
+}
+
+.metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.m-label {
+  font-size: 24rpx;
+  color: #8FA8AD;
+  font-weight: 500;
+}
+
+.badge {
+  font-size: 19rpx;
+  padding: 3rpx 10rpx;
+  border-radius: 8rpx;
+  background: #F0F6F7;
+  color: #5E7A80;
+  font-weight: 600;
+}
+
+.badge-mint {
+  background: #EBF8F5;
+  color: #12A5A0;
+}
+
+.m-value-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+  margin-bottom: 6rpx;
+}
+
+.m-num {
+  font-size: 38rpx;
+  font-weight: 800;
+  color: #124E5B;
+  letter-spacing: -0.5rpx;
+}
+
+.m-mint {
+  color: #12A5A0;
+}
+
+.m-unit {
+  font-size: 22rpx;
+  color: #8FA8AD;
+  font-weight: 500;
+}
+
+.m-sub {
+  font-size: 20rpx;
+  color: #A4B8BC;
+}
+
+/* 任务类型明细列表 */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 36rpx;
+}
+
+.task-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 24rpx 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1rpx solid rgba(18, 78, 91, 0.05);
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.03);
+}
+
+.task-left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 8rpx;
+}
+
+.task-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #124E5B;
+}
+
+.task-code {
+  font-size: 20rpx;
+  color: #8FA8AD;
+  background: #F4F7F6;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-family: monospace;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 22rpx;
+  color: #8FA8AD;
+}
+
+.meta-part {
+  white-space: nowrap;
+}
+
+.meta-dot {
+  color: #C2CFD2;
+}
+
+.task-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 20rpx;
+}
+
+.task-cost {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #12A5A0;
+}
+
+.task-cost-lbl {
+  font-size: 20rpx;
+  color: #A4B8BC;
+  margin-top: 2rpx;
+}
+
+/* 底部说明文案 */
+.footer-note {
+  text-align: center;
+  font-size: 22rpx;
+  color: #A4B8BC;
+  padding: 16rpx 0 24rpx;
+}

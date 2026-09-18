@@ -39,6 +39,10 @@ Page({
     wx.showToast({ title: e.currentTarget.dataset.t + '（待补充）', icon: 'none' })
   },
 
+  goUsage() {
+    wx.navigateTo({ url: '/pages/usage/usage' })
+  },
+
   clearCache() {
     const that = this
     wx.showModal({
