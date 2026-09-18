@@ -1,0 +1,194 @@
+page {
+  background-color: #F4F7F6;
+  min-height: 100vh;
+}
+
+.page {
+  background-color: #F4F7F6;
+  min-height: 100vh;
+}
+
+.screen {
+  padding-bottom: 60rpx;
+  box-sizing: border-box;
+}
+
+.doc-container {
+  padding: 16rpx 32rpx 40rpx;
+}
+
+/* ================= 1. 文档模式样式 ================= */
+.doc-header-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
+  border: 1rpx solid rgba(18, 78, 91, 0.05);
+  margin-bottom: 20rpx;
+}
+
+.doc-main-title {
+  font-size: 38rpx;
+  font-weight: 800;
+  color: #124E5B;
+  letter-spacing: 0.5rpx;
+  margin-bottom: 16rpx;
+}
+
+.doc-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.doc-meta-tag {
+  font-size: 20rpx;
+  color: #12A5A0;
+  background: #EBF8F5;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+  font-weight: 600;
+}
+
+.doc-meta-date {
+  font-size: 22rpx;
+  color: #8FA8AD;
+}
+
+.doc-body-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 36rpx 32rpx 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
+  border: 1rpx solid rgba(18, 78, 91, 0.05);
+}
+
+.doc-section {
+  margin-bottom: 36rpx;
+}
+
+.sec-heading {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #124E5B;
+  margin-bottom: 16rpx;
+  letter-spacing: 0.5rpx;
+}
+
+.sec-paras {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.para-text {
+  font-size: 26rpx;
+  color: #4A696E;
+  line-height: 1.75;
+  text-align: justify;
+}
+
+.doc-footer {
+  text-align: center;
+  padding: 36rpx 0 16rpx;
+}
+
+.doc-footer-txt {
+  font-size: 22rpx;
+  color: #A4B8BC;
+}
+
+/* ================= 2. 常见问题 (FAQ) 样式 ================= */
+.faq-tip-bar {
+  background: #EBF8F5;
+  border-radius: 20rpx;
+  padding: 20rpx 26rpx;
+  margin-bottom: 24rpx;
+}
+
+.faq-tip-txt {
+  font-size: 24rpx;
+  color: #12A5A0;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.faq-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 28rpx 26rpx;
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
+  border: 1rpx solid rgba(18, 78, 91, 0.05);
+  transition: all 0.2s ease;
+}
+
+.faq-card.is-active {
+  border-color: rgba(18, 165, 160, 0.25);
+  box-shadow: 0 6rpx 20rpx rgba(18, 78, 91, 0.08);
+}
+
+.faq-q-row {
+  display: flex;
+  align-items: center;
+}
+
+.faq-q-prefix {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, #31CBBB, #12A5A0);
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 18rpx;
+}
+
+.faq-q-text {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #124E5B;
+  line-height: 1.45;
+  margin-right: 16rpx;
+}
+
+.faq-arrow-box {
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.faq-arrow-box.arrow-down {
+  transform: rotate(90deg);
+}
+
+.faq-a-wrap {
+  margin-top: 22rpx;
+}
+
+.faq-a-divider {
+  height: 1rpx;
+  background: #F0F6F7;
+  margin-bottom: 20rpx;
+}
+
+.faq-a-text {
+  font-size: 26rpx;
+  color: #5E7A80;
+  line-height: 1.7;
+  text-align: justify;
+}

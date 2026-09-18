@@ -1,0 +1,59 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="{{title}}" />
+
+    <!-- 1. 常见问题 (FAQ 手风琴模式) -->
+    <view class="doc-container" wx:if="{{type === 'faq'}}">
+      <view class="faq-tip-bar">
+        <text class="faq-tip-txt">关于空间规划、物品查找与数据安全的常见疑问解答</text>
+      </view>
+
+      <view class="faq-list">
+        <view
+          class="faq-card {{expandedMap[index] ? 'is-active' : ''}}"
+          wx:for="{{faqList}}"
+          wx:key="index"
+          bindtap="toggleFaq"
+          data-index="{{index}}"
+        >
+          <view class="faq-q-row">
+            <view class="faq-q-prefix">Q</view>
+            <text class="faq-q-text">{{item.q}}</text>
+            <view class="faq-arrow-box {{expandedMap[index] ? 'arrow-down' : ''}}">
+              <view class="chev"></view>
+            </view>
+          </view>
+          <view class="faq-a-wrap" wx:if="{{expandedMap[index]}}">
+            <view class="faq-a-divider"></view>
+            <text class="faq-a-text">{{item.a}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 2. 用户协议 / 隐私政策 (合规文档模式) -->
+    <view class="doc-container" wx:else>
+      <view class="doc-header-card">
+        <view class="doc-main-title">{{title}}</view>
+        <view class="doc-meta-row">
+          <text class="doc-meta-tag">官方合规声明</text>
+          <text class="doc-meta-date">更新日期：{{updateDate}}</text>
+        </view>
+      </view>
+
+      <view class="doc-body-card">
+        <view class="doc-section" wx:for="{{sections}}" wx:key="index" wx:for-item="sec">
+          <view class="sec-heading" wx:if="{{sec.title}}">{{sec.title}}</view>
+          <view class="sec-paras">
+            <text class="para-text" wx:for="{{sec.content}}" wx:key="*this" wx:for-item="p">{{p}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="doc-footer">
+        <text class="doc-footer-txt">Findly 团队 · 专注打造清晰可靠的智能收纳体验</text>
+      </view>
+    </view>
+
+  </view>
+</view>

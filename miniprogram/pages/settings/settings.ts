@@ -35,8 +35,8 @@ Page({
   },
 
   doc(e: any) {
-    // TODO 上线前补：用户协议/隐私政策静态页（PRD 6.3，需真实文案）
-    wx.showToast({ title: e.currentTarget.dataset.t + '（待补充）', icon: 'none' })
+    const type = (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.type) || 'terms'
+    wx.navigateTo({ url: '/pages/doc/doc?type=' + type })
   },
 
   goUsage() {

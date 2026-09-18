@@ -13,7 +13,8 @@
     "pages/results/results",
     "pages/settings/settings",
     "pages/profile-edit/profile-edit",
-    "pages/usage/usage"
+    "pages/usage/usage",
+    "pages/doc/doc"
   ],
   "window": {
     "navigationStyle": "custom",
