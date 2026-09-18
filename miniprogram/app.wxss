@@ -131,6 +131,11 @@ view, text, image {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath d='M85 92 C85 68 102 56 122 56 C144 56 157 71 157 90 C157 107 144 115 131 126 C122 132 120 138 120 146' stroke='%238FA8AD' stroke-width='33' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='120' cy='183' r='16' fill='%238FA8AD'/%3E%3C/svg%3E");
 }
 
+.ic-chart {
+  /* 用量统计 · 实心柱状图（灰，与设置页图标规范一致） */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Crect x='52' y='128' width='32' height='68' rx='8' fill='%238FA8AD'/%3E%3Crect x='104' y='80' width='32' height='116' rx='8' fill='%238FA8AD'/%3E%3Crect x='156' y='44' width='32' height='152' rx='8' fill='%238FA8AD'/%3E%3C/svg%3E");
+}
+
 .ic-gear {
   /* 设置 · 六边形 + 环形镂空（demo/setting-gear.svg，青色与其他行统一） */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cpath fill-rule='evenodd' d='M129.5 50.5 L175.5 77 Q185 82.5 185 93.5 L185 146.5 Q185 157.5 175.5 163 L129.5 189.5 Q120 195 110.5 189.5 L64.5 163 Q55 157.5 55 146.5 L55 93.5 Q55 82.5 64.5 77 L110.5 50.5 Q120 45 129.5 50.5 Z M120 92 A28 28 0 1 0 120 148 A28 28 0 1 0 120 92 Z M120 108 A12 12 0 1 0 120 132 A12 12 0 1 0 120 108 Z' fill='%2312A5A0'/%3E%3C/svg%3E");

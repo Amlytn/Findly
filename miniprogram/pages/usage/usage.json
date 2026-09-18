@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "用量统计",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/index"
+  }
+}

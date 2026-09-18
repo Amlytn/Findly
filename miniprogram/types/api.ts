@@ -194,3 +194,25 @@ export interface UsersMe {
   itemCount: number
   spaceCount: number
 }
+
+/** GET /stats 按任务类型统计明细 */
+export interface StatsByTaskType {
+  taskType: string
+  calls: number
+  tokens: number
+  cost: number
+}
+
+/** GET /stats 用量统计响应（契约 T7 / B02） */
+export interface StatsResponse {
+  totalCalls: number
+  totalTokens: number
+  estimatedCost: number
+  currency: string
+  degradedRate: number
+  cacheHitRate: number
+  avgDurationMs: number | null
+  byTaskType: StatsByTaskType[]
+  generatedAt: string
+}
+

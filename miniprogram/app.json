@@ -12,7 +12,8 @@
     "pages/search/search",
     "pages/results/results",
     "pages/settings/settings",
-    "pages/profile-edit/profile-edit"
+    "pages/profile-edit/profile-edit",
+    "pages/usage/usage"
   ],
   "window": {
     "navigationStyle": "custom",

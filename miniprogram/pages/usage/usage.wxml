@@ -1,0 +1,160 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="用量统计" />
+
+    <!-- 1. 加载中态 -->
+    <view class="state-box" wx:if="{{loading}}">
+      <view class="state-loading-spinner"></view>
+      <text class="state-text">用量数据统计中…</text>
+    </view>
+
+    <!-- 2. 错误态（点击重试，绝不白屏） -->
+    <view class="state-box" wx:elif="{{error}}" bindtap="retry">
+      <view class="state-text state-err">{{error}}，点击重试</view>
+    </view>
+
+    <!-- 3. 空态（无 AI 调用记录） -->
+    <view class="empty-state" wx:elif="{{totalCalls === 0}}">
+      <view class="empty-icon-box">
+        <view class="ic ic-chart empty-icon"></view>
+      </view>
+      <view class="empty-title">还没有 AI 调用记录</view>
+      <view class="empty-desc">拍摄识别物品或使用智能搜索后，即可在此查看 AI 调用的 Token 消耗与成本分析</view>
+      <view class="empty-btn" bindtap="goCamera">去拍照识别</view>
+    </view>
+
+    <!-- 4. 正式数据展示区 -->
+    <view class="usage-content" wx:else>
+
+      <!-- 成本核心大卡片 -->
+      <view class="hero-card">
+        <view class="hero-top">
+          <text class="hero-label">AI 估算累计成本</text>
+          <view class="hero-tag">Qwen 官方单价换算</view>
+        </view>
+        <view class="hero-cost">{{estimatedCostText}}</view>
+        <view class="hero-divider"></view>
+        <view class="hero-bottom">
+          <view class="hero-sub-item">
+            <text class="sub-num">{{totalCalls}}</text>
+            <text class="sub-lbl">累计调用次数</text>
+          </view>
+          <view class="hero-sep"></view>
+          <view class="hero-sub-item">
+            <text class="sub-num">{{totalTokensText}}</text>
+            <text class="sub-lbl">Token 消耗合计</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 6 项核心指标网格 -->
+      <view class="sec-header">
+        <text class="sec-title">核心指标概览</text>
+        <text class="sec-tip">面试现场量化展示</text>
+      </view>
+
+      <view class="metrics-grid">
+        <!-- 调用总次数 -->
+        <view class="metric-card">
+          <view class="metric-head">
+            <text class="m-label">总调用次数</text>
+          </view>
+          <view class="m-value-wrap">
+            <text class="m-num">{{totalCalls}}</text>
+            <text class="m-unit">次</text>
+          </view>
+          <view class="m-sub">累计请求量</view>
+        </view>
+
+        <!-- Token 合计 -->
+        <view class="metric-card">
+          <view class="metric-head">
+            <text class="m-label">Token 合计</text>
+          </view>
+          <view class="m-value-wrap">
+            <text class="m-num">{{totalTokensText}}</text>
+          </view>
+          <view class="m-sub">提示词与补全</view>
+        </view>
+
+        <!-- 缓存命中率 -->
+        <view class="metric-card m-highlight">
+          <view class="metric-head">
+            <text class="m-label">缓存命中率</text>
+            <view class="badge badge-mint">降本增效</view>
+          </view>
+          <view class="m-value-wrap">
+            <text class="m-num m-mint">{{cacheHitRateText}}</text>
+          </view>
+          <view class="m-sub">同图重复识别复用</view>
+        </view>
+
+        <!-- 降级率 -->
+        <view class="metric-card">
+          <view class="metric-head">
+            <text class="m-label">降级率</text>
+            <view class="badge">高可用</view>
+          </view>
+          <view class="m-value-wrap">
+            <text class="m-num">{{degradedRateText}}</text>
+          </view>
+          <view class="m-sub">自动降级直查保障</view>
+        </view>
+
+        <!-- 估算成本 -->
+        <view class="metric-card">
+          <view class="metric-head">
+            <text class="m-label">估算成本</text>
+          </view>
+          <view class="m-value-wrap">
+            <text class="m-num">{{estimatedCostText}}</text>
+          </view>
+          <view class="m-sub">人民币 (CNY)</view>
+        </view>
+
+        <!-- 平均耗时 -->
+        <view class="metric-card">
+          <view class="metric-head">
+            <text class="m-label">平均耗时</text>
+          </view>
+          <view class="m-value-wrap">
+            <text class="m-num">{{avgDurationText}}</text>
+          </view>
+          <view class="m-sub">端到端响应表现</view>
+        </view>
+      </view>
+
+      <!-- 任务类型明细 -->
+      <view class="sec-header">
+        <text class="sec-title">按任务类型明细</text>
+        <text class="sec-tip">共 {{taskList.length}} 种能力</text>
+      </view>
+
+      <view class="task-list">
+        <view class="task-card" wx:for="{{taskList}}" wx:key="taskType">
+          <view class="task-left">
+            <view class="task-title-row">
+              <text class="task-name">{{item.name}}</text>
+              <text class="task-code">{{item.taskType}}</text>
+            </view>
+            <view class="task-meta">
+              <text class="meta-part">调用 {{item.calls}} 次</text>
+              <text class="meta-dot">·</text>
+              <text class="meta-part">消耗 {{item.tokensText}} Tokens</text>
+            </view>
+          </view>
+          <view class="task-right">
+            <view class="task-cost">{{item.costText}}</view>
+            <view class="task-cost-lbl">估算成本</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部刷新提示与生成时间 -->
+      <view class="footer-note" wx:if="{{generatedAtText}}">
+        <text>数据生成于 {{generatedAtText}} · 下拉即可刷新最新统计</text>
+      </view>
+
+    </view>
+  </view>
+</view>
