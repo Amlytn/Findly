@@ -106,6 +106,11 @@
   overflow: hidden;
 }
 
+/* 导航区补全局边距（内容区由内层 .screen 自行取 32rpx）：左右与其他页对齐，顶部对齐 .screen 的 12rpx 顶距 */
+.items-nav {
+  padding: 12rpx 32rpx 0;
+}
+
 .items-scroll {
   flex: 1;
   min-height: 0;
