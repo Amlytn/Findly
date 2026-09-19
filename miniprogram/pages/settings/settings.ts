@@ -1,5 +1,6 @@
-import { clearToken } from '../../services/token'
+import { clearToken } from '../../services/auth'
 import { clearHistory } from '../../utils/search-history'
+import type { IAppOption } from '../../app'
 
 /** storage currentSize 单位 KB → 展示文案 */
 function formatCache(kb: number): string {
@@ -15,8 +16,8 @@ Page({
   },
 
   onLoad() {
-    const app = getApp() as any
-    if (app.globalData.version) {
+    const app = getApp<IAppOption>()
+    if (app && app.globalData && app.globalData.version) {
       this.setData({ version: app.globalData.version })
     }
   },
@@ -65,8 +66,22 @@ Page({
       confirmColor: '#E06B6B',
       success(res: any) {
         if (!res.confirm) return
-        // 清 JWT 即游客态（PRD 6.1：游客可浏览，写操作触发重新静默登录）
+        // 清除本地凭证
         clearToken()
+        // 清理内存全局临时态
+        const app = getApp<IAppOption>()
+        if (app && app.globalData) {
+          app.globalData.locationPath = []
+          app.globalData.locationId = ''
+          app.globalData.recognizeImg = ''
+          app.globalData.recognizeImgFull = ''
+          app.globalData.recognizePending = false
+          app.globalData.focusSpaceId = ''
+        }
+        // 退出后保持游客态（PRD 6.1：游客可浏览，写操作时重新静默登录）。
+        // 无需在此立即重登：request 层的 401 拦截会在需要时自动
+        // ensureLogin(true) 并重放原请求；当前后端过渡期对无凭据
+        // 请求仍以 x-user-id: dev 兜底放行，浏览不受影响。
         wx.showToast({ title: '已退出', icon: 'success' })
         setTimeout(function () {
           wx.switchTab({ url: '/pages/index/index' })

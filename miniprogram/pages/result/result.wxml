@@ -21,6 +21,10 @@
         <text class="v">{{draft.brand}}</text>
       </view>
       <view class="r-row">
+        <text class="k">型号</text>
+        <text class="v">{{draft.model}}</text>
+      </view>
+      <view class="r-row">
         <text class="k">类别</text>
         <text class="v">{{draft.category}}</text>
       </view>

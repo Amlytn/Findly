@@ -253,6 +253,14 @@
   margin-left: 12rpx;
 }
 
+/* 列表被 pageSize 上限截断时的提示行 */
+.panel-truncate-tip {
+  text-align: center;
+  font-size: 22rpx;
+  color: #8FA8AD;
+  padding: 16rpx 0 4rpx;
+}
+
 /* 3. 递归子空间容器与层级导轨线 */
 .panel-children-section {
   margin-top: 20rpx;

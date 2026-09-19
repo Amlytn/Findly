@@ -33,8 +33,12 @@ export class AuthService {
     } catch (e: any) {
       throw new BadRequestException('微信登录失败：' + (e?.message || 'code 无效'));
     }
-    let user = await this.prisma.user.findUnique({ where: { openid } });
-    if (!user) user = await this.prisma.user.create({ data: { openid } });
+    // upsert 防并发首登触发 openid 唯一约束冲突
+    const user = await this.prisma.user.upsert({
+      where: { openid },
+      update: {},
+      create: { openid },
+    });
     const token = await this.jwt.signAsync({ sub: user.id });
     return { token, user: { id: user.id, nickname: user.nickname, avatar: user.avatar } };
   }

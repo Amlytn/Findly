@@ -68,10 +68,11 @@ export class AiService {
     }
   }
 
-  /** Vision 识图 → 结构化物品信息（usage 仅供落库统计，不返回给前端） */
-  async recognize(imageDataUrl: string) {
-    // 缓存命中：不调模型；result 带 cached 标记，usage 沿用原值（成本防线：同图零调用）
-    const key = createHash('sha256').update(imageDataUrl).digest('hex');
+  /** Vision 识图 → 结构化物品信息（usage 仅供落库统计，不返回给前端）。
+   * 缓存 key 掺入 userId：识图结果虽然只由图片内容决定，但按用户隔离
+   * 避免跨用户命中（隐私最小化，成本防线不受影响——同用户同图仍零调用） */
+  async recognize(userId: string, imageDataUrl: string) {
+    const key = createHash('sha256').update(userId + '|' + imageDataUrl).digest('hex');
     const hit = this.cache.get(key);
     if (hit && hit.expires > Date.now()) {
       return { result: { ...hit.result, cached: true }, usage: hit.usage };

@@ -2,17 +2,24 @@
  * 图片上传（契约 v1.3 §5.2）：multipart 字段 file，仅 png/jpeg/webp、≤4MB（后端 413）。
  * 识别页保存物品前调用，返回入库用的相对路径 /uploads/xxx.jpg。
  */
-import { API_BASE } from './request'
+import { getApiBase } from './config'
 import { getToken } from './auth'
 import type { UploadResponse } from '../types/api'
 
 export function uploadImage(filePath: string): Promise<UploadResponse> {
   const doUpload = (p: string) => new Promise<UploadResponse>(function (resolve, reject) {
+    const token = getToken()
+    const header: Record<string, string> = {}
+    if (token) {
+      header.Authorization = 'Bearer ' + token
+    } else {
+      header['x-user-id'] = 'dev'
+    }
     wx.uploadFile({
-      url: API_BASE + '/upload',
+      url: getApiBase() + '/upload',
       filePath: p,
       name: 'file',
-      header: getToken() ? { Authorization: 'Bearer ' + getToken() } : {},
+      header,
       timeout: 20000,
       success(res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {

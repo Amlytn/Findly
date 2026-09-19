@@ -8,5 +8,5 @@ declare function App(options: any): void
 declare function Page(options: any): void
 declare function Component(options: any): void
 declare function Behavior(options: any): any
-declare function getApp(): any
+declare function getApp<T = any>(): T
 declare function getCurrentPages(): any[]

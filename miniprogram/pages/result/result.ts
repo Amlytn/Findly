@@ -2,24 +2,105 @@ import { recognize } from '../../services/ai'
 import { createItem } from '../../services/items'
 import { isApiError } from '../../services/request'
 import { uploadImage } from '../../services/upload'
-import { RecognizeResult } from '../../types/api'
+import type { RecognizeResult } from '../../types/api'
+import type { IAppOption } from '../../app'
 
-/** 读临时文件转 dataURL；先压缩一次（quality 80）控制体积 */
-function toDataUrl(path: string): Promise<string> {
-  const doRead = (p: string) => new Promise<string>(function (resolve, reject) {
+function getMimeTypeFromPath(filePath: string, fallback?: string): string {
+  if (/\.png$/i.test(filePath)) return 'image/png'
+  if (/\.webp$/i.test(filePath)) return 'image/webp'
+  if (/\.jpe?g$/i.test(filePath)) return 'image/jpeg'
+  const fb = (fallback || '').toLowerCase()
+  if (fb === 'png') return 'image/png'
+  if (fb === 'webp') return 'image/webp'
+  if (fb === 'jpg' || fb === 'jpeg') return 'image/jpeg'
+  return 'image/jpeg'
+}
+
+function readFileBase64(filePath: string, mime: string): Promise<string> {
+  return new Promise<string>(function (resolve, reject) {
     wx.getFileSystemManager().readFile({
-      filePath: p,
+      filePath,
       encoding: 'base64',
-      success(res: any) { resolve('data:image/jpeg;base64,' + res.data) },
-      fail() { reject({ statusCode: 0, message: '图片读取失败' }) }
+      success(res: any) {
+        resolve('data:' + mime + ';base64,' + res.data)
+      },
+      fail() {
+        reject({ statusCode: 0, message: '图片读取失败' })
+      }
     })
   })
+}
+
+function compressOnce(
+  src: string,
+  quality: number,
+  compressedWidth?: number,
+  compressedHeight?: number
+): Promise<string> {
   return new Promise<string>(function (resolve) {
+    const opts: any = { src, quality }
+    if (compressedWidth) opts.compressedWidth = compressedWidth
+    if (compressedHeight) opts.compressedHeight = compressedHeight
     wx.compressImage({
+      ...opts,
+      success(r: any) {
+        resolve(r.tempFilePath || src)
+      },
+      fail() {
+        resolve(src)
+      }
+    })
+  })
+}
+
+function calcTargetSize(origW: number, origH: number, maxEdge: number) {
+  if (origW <= 0 || origH <= 0) return { width: undefined, height: undefined }
+  if (origW <= maxEdge && origH <= maxEdge) return { width: origW, height: origH }
+  if (origW >= origH) {
+    return {
+      width: maxEdge,
+      height: Math.max(1, Math.round((origH * maxEdge) / origW))
+    }
+  }
+  return {
+    width: Math.max(1, Math.round((origW * maxEdge) / origH)),
+    height: maxEdge
+  }
+}
+
+/**
+ * 读临时文件转 dataURL：
+ * 1. 依据输出文件的真实后缀与原图类型动态确定 MIME（jpeg/png/webp 等），不盲目硬编码；
+ * 2. 分辨率等比缩放至长边 ≤1200px 并进行画质压缩（符合 PRD 800~1200px 规格）。
+ * 早期版本曾为适配后端 100KB body 限制做过 720px 二次降级，后端上调限制后已移除。
+ */
+function toDataUrl(path: string): Promise<string> {
+  return new Promise<string>(function (resolve, reject) {
+    wx.getImageInfo({
       src: path,
-      quality: 80,
-      success: (r: any) => { resolve(doRead(r.tempFilePath)) },
-      fail: () => { resolve(doRead(path)) }
+      success(info: any) {
+        const origW = info.width || 0
+        const origH = info.height || 0
+        const { width: targetW, height: targetH } = calcTargetSize(origW, origH, 1200)
+
+        compressOnce(path, 65, targetW, targetH)
+          .then(function (compressedPath) {
+            const mime = getMimeTypeFromPath(compressedPath, compressedPath === path ? info.type : 'jpg')
+            return readFileBase64(compressedPath, mime)
+          })
+          .then(resolve)
+          .catch(reject)
+      },
+      fail() {
+        // getImageInfo 失败时的兜底：按基础质量压缩一次
+        compressOnce(path, 60)
+          .then(function (p) {
+            const mime = getMimeTypeFromPath(p)
+            return readFileBase64(p, mime)
+          })
+          .then(resolve)
+          .catch(reject)
+      }
     })
   })
 }
@@ -34,6 +115,7 @@ Page({
     draft: {
       name: '',
       brand: '',
+      model: '',
       category: '',
       color: '',
       desc: '',
@@ -45,17 +127,17 @@ Page({
   },
 
   onShow() {
-    const app = getApp() as any
-    const loc: string[] = app.globalData.locationPath || []
+    const app = getApp<IAppOption>()
+    const loc: string[] = (app && app.globalData && app.globalData.locationPath) || []
     if (loc.length) {
       this.setData({ locText: loc.join('  ›  ') })
     }
-    if (app.globalData.recognizeImgFull || app.globalData.recognizeImg) {
+    if (app && app.globalData && (app.globalData.recognizeImgFull || app.globalData.recognizeImg)) {
       // 结果页优先展示原图（aspectFit 完整显示），裁好的方图供保存后列表使用
       this.setData({ img: app.globalData.recognizeImgFull || app.globalData.recognizeImg })
     }
     // 仅从相机/添加页进入时发起识别；从位置选择页返回不重复调 AI
-    if (app.globalData.recognizePending && app.globalData.recognizeImg) {
+    if (app && app.globalData && app.globalData.recognizePending && app.globalData.recognizeImg) {
       app.globalData.recognizePending = false
       this.runRecognize(app.globalData.recognizeImgFull || app.globalData.recognizeImg)
     }
@@ -65,6 +147,8 @@ Page({
     const that = this
     this.setData({ recognizing: true, aiFailed: false, aiNote: '' })
     toDataUrl(imgPath).then(function (dataUrl) {
+      // 与后端 /ai/recognize 的 4MB 检查对齐（dataUrl 长度 × 3/4 = 二进制体积）；
+      // 超限时后端也会返回 413，此处提前拦截省一次请求
       if (dataUrl.length * 0.75 > 4 * 1024 * 1024) {
         that.setData({ recognizing: false, aiFailed: true, aiNote: '图片过大，请手动填写' })
         return undefined
@@ -84,6 +168,7 @@ Page({
           draft: {
             name: r.name || '',
             brand: r.brand || '',
+            model: r.model || '',
             category: r.category || '',
             color: r.color || '',
             desc: r.description || '',
@@ -145,12 +230,13 @@ Page({
 
   save() {
     const d = (this.data as any).draft
-    const app = getApp() as any
+    const app = getApp<IAppOption>()
+    const locationId = (app && app.globalData && app.globalData.locationId) || ''
     if (!d.name.trim()) {
       wx.showToast({ title: '请先点击名称填写', icon: 'none' })
       return
     }
-    if (!app.globalData.locationId) {
+    if (!locationId) {
       wx.showToast({ title: '请选择存放位置', icon: 'none' })
       return
     }
@@ -166,9 +252,10 @@ Page({
       name: d.name.trim(),
       category: d.category || '未分类',
       brand: d.brand || null,
+      model: d.model || null,
       color: d.color || null,
       description: d.desc || null,
-      spaceId: app.globalData.locationId,
+      spaceId: locationId,
       tags: tags
     }
     if (this.data.aiResultId) body.aiResultId = this.data.aiResultId
@@ -177,10 +264,12 @@ Page({
     const finishSave = function (imageUrl: string, uploadFailed: boolean) {
       if (imageUrl) body.imageUrl = imageUrl
       createItem(body).then(function () {
-        app.globalData.recognizeImg = ''
-        app.globalData.recognizeImgFull = ''
-        app.globalData.locationPath = []
-        app.globalData.locationId = ''
+        if (app && app.globalData) {
+          app.globalData.recognizeImg = ''
+          app.globalData.recognizeImgFull = ''
+          app.globalData.locationPath = []
+          app.globalData.locationId = ''
+        }
         that.setData({ saving: false })
         if (uploadFailed) {
           wx.showToast({ title: '已保存，但照片上传失败', icon: 'none', duration: 2500 })

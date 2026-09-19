@@ -32,7 +32,7 @@ export class AiController {
       throw new PayloadTooLargeException('图片超过 4MB，请先压缩再上传');
     }
 
-    const { result, usage } = await this.ai.recognize(dto.imageBase64);
+    const { result, usage } = await this.ai.recognize(userId, dto.imageBase64);
 
     // 记录每次 AI 调用（方案文档 AIResult 表；同时是面试量化点的数据来源）
     // 仅存关键字段控制体积：description/tags 体积大且对成本/准确率量化价值低

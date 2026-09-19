@@ -64,6 +64,13 @@
           </view>
           <image class="p-item-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
         </view>
+        <!-- 列表接口 pageSize 上限截断时的诚实提示 -->
+        <view
+          class="panel-truncate-tip"
+          wx:if="{{itemsCountMap[node.id] > itemsMap[node.id].length}}"
+        >
+          仅显示前 {{itemsMap[node.id].length}} 件，其余请在「物品」页查看
+        </view>
       </view>
     </view>
 

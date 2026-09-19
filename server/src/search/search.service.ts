@@ -7,6 +7,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
 import { pathOf } from '../common/path.util';
+import { isSqlite } from '../common/db.util';
 
 @Injectable()
 export class SearchService {
@@ -61,7 +62,9 @@ export class SearchService {
       const parsed = await this.parseForSearch(q);
       const keywords = parsed.keyword.split(/[|、,，\s]+/).filter(Boolean);
       if (!keywords.length) keywords.push(q);
-      const contains = (k: string) => ({ contains: k, mode: 'insensitive' as const });
+      // mode:'insensitive' 仅 PG/Mongo 支持，SQLite 下抛校验错误——按连接器降级（同 items.keywordWhere）
+      const contains = (k: string) =>
+        isSqlite() ? { contains: k } : { contains: k, mode: 'insensitive' as const };
       const and: Prisma.ItemWhereInput[] = [
         {
           OR: keywords.flatMap((k) => [

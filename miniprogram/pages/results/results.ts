@@ -2,6 +2,7 @@ import { fullUrl } from '../../services/request'
 import { getSearch, SearchType } from '../../services/search'
 import { pushHistory } from '../../utils/search-history'
 import { ItemListItem, SearchSpaceItem, ParsedQuery } from '../../types/api'
+import type { IAppOption } from '../../app'
 
 Page({
   data: {
@@ -71,7 +72,7 @@ Page({
   goSpaces(e: any) {
     const id = e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id
     if (id) {
-      const app = getApp() as any
+      const app = getApp<IAppOption>()
       if (app && app.globalData) app.globalData.focusSpaceId = id
     }
     wx.switchTab({ url: '/pages/spaces/spaces' })

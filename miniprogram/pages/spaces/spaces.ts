@@ -3,6 +3,7 @@ import { getItems } from '../../services/items'
 import { fullUrl } from '../../services/request'
 import { SpaceTree, ItemListItem } from '../../types/api'
 import { matchSpaceIcon, subtreeCount } from '../../utils/spaces'
+import type { IAppOption } from '../../app'
 
 export interface SpaceCardItem {
   id: string
@@ -60,7 +61,7 @@ Page({
       bar.setData({ selected: 2 })
     }
     // 从搜索结果或其他页面带着 focusSpaceId 切回时自动定位并唤起抽屉
-    const app = getApp() as any
+    const app = getApp<IAppOption>()
     const focusId = app && app.globalData && app.globalData.focusSpaceId
     if (focusId) {
       app.globalData.focusSpaceId = ''
@@ -231,7 +232,8 @@ Page({
     const that = this
     this.setData({ ['loadingMap.' + spaceId]: true })
 
-    getItems({ spaceId: spaceId, page: 1, pageSize: 50 }).then(function (res) {
+    // 后端 pageSize 上限 100；超出部分由组件内"仅显示前 N 件"提示兜底
+    getItems({ spaceId: spaceId, page: 1, pageSize: 100 }).then(function (res) {
       const items: PanelItem[] = res.items.map(function (it: ItemListItem) {
         const parts = [it.category, it.color, it.brand].filter(Boolean)
         return Object.assign({}, it, {
@@ -241,7 +243,7 @@ Page({
       })
       that.setData({
         ['itemsMap.' + spaceId]: items,
-        // 徽标显示后端直属总数（res.total），而非本页已加载条数（pageSize 50 会截断 items.length）
+        // 徽标显示后端直属总数（res.total），而非本页已加载条数（pageSize 上限会截断 items.length）
         ['itemsCountMap.' + spaceId]: typeof res.total === 'number' ? res.total : items.length,
         ['loadingMap.' + spaceId]: false
       })

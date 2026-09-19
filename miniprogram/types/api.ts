@@ -16,6 +16,15 @@ export interface SpaceTree {
 /** 空间平铺项（GET /spaces 的 list，实测与树节点同构） */
 export type SpaceListItem = SpaceTree
 
+/** POST /spaces、PATCH /spaces/:id 的返回：后端 Prisma 平铺行
+ *（无 itemCount/children，消费方只用 id/parentId/name/sortOrder） */
+export interface SpaceMutationResult {
+  id: string
+  parentId: string | null
+  name: string
+  sortOrder: number
+}
+
 /** GET /spaces */
 export interface SpaceListResponse {
   list: SpaceListItem[]
@@ -36,6 +45,7 @@ export interface ItemListItem {
   model: string | null
   category: string
   color: string | null
+  quantity: number
   tags: string[]
   space?: ItemSpaceRef
   path: string

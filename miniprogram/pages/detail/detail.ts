@@ -1,7 +1,6 @@
-import { fullUrl } from '../../services/request'
+import { fullUrl, isApiError } from '../../services/request'
 import { getItem, deleteItem, updateItem, getRelated } from '../../services/items'
 import { getSuggestions } from '../../services/search'
-import { isApiError } from '../../services/request'
 import { ItemDetail } from '../../types/api'
 
 Page({
@@ -230,7 +229,14 @@ Page({
             return
           }
           wx.showToast({ title: '已删除', icon: 'success' })
-          setTimeout(function () { wx.navigateBack({ delta: 1 }) }, 600)
+          // 延迟返回：若用户在等待期内手动返回过，本页已不在栈顶，跳过以免多退一页
+          setTimeout(function () {
+            const pages = getCurrentPages()
+            const top = pages[pages.length - 1]
+            if (top && top.route === 'pages/detail/detail') {
+              wx.navigateBack({ delta: 1 })
+            }
+          }, 600)
         })
       }
     })

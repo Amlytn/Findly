@@ -47,14 +47,14 @@ Page({
     const that = this
     const page = reset ? 1 : this.data.page + 1
     this.setData({ loading: true })
-    const query: { page: number; pageSize: number; keyword?: string } = { page: page, pageSize: PAGE_SIZE }
-    if (this.data.cat !== 'all') query.keyword = this.data.cat
+    const query: { page: number; pageSize: number; category?: string } = { page: page, pageSize: PAGE_SIZE }
+    if (this.data.cat !== 'all') query.category = this.data.cat
     getItems(query).then(function (res) {
       const items = res.items.map(function (it: ItemListItem) {
-        // quantity 列表接口未返回，默认 1；无图用 logo 占位（M4 上传后显示真图）
+        // quantity 已随契约 v1.4 返回；无图用 logo 占位
         // space 是 {id,name} 对象，取短名展示（修复卡片显示 [object Object]）
         return Object.assign({}, it, {
-          count: 1,
+          count: it.quantity || 1,
           img: fullUrl(it.imageUrl) || '/assets/logo.png',
           space: it.space ? it.space.name : '未归位'
         })
