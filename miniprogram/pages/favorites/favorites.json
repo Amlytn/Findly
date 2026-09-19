@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "收藏物品",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/index"
+  }
+}

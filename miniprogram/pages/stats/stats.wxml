@@ -1,0 +1,126 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="物品统计" />
+
+    <!-- 加载中 -->
+    <view class="empty" wx:if="{{loading}}">加载中…</view>
+
+    <!-- 错误重试 -->
+    <view class="empty" wx:elif="{{error}}" bindtap="loadStats">{{error}}，点击重试</view>
+
+    <block wx:else>
+      <!-- 概览大数字卡片（三列网格）：点击半屏下钻，不离开统计页 -->
+      <view class="stats-overview">
+        <view class="stat-box" bindtap="openDrill" data-type="items">
+          <view class="stat-num text-teal">{{totalItems}}</view>
+          <view class="stat-label">物品总数</view>
+        </view>
+        <view class="stat-box" bindtap="openDrill" data-type="spaces">
+          <view class="stat-num text-blue">{{totalSpaces}}</view>
+          <view class="stat-label">空间总数</view>
+        </view>
+        <view class="stat-box {{unassignedCount > 0 ? 'stat-box-warn' : ''}}" bindtap="openDrill" data-type="pending">
+          <view class="stat-num {{unassignedCount > 0 ? 'text-amber' : 'text-gray'}}">{{unassignedCount}}</view>
+          <view class="stat-label">待归位物品</view>
+        </view>
+      </view>
+
+      <!-- 全局待归位提醒卡（有未归位物品时展示），点击直达待归位清单 -->
+      <view class="unassigned-banner" wx:if="{{unassignedCount > 0}}" bindtap="openDrill" data-type="pending" hover-class="unassigned-hover">
+        <view class="unassigned-ico"></view>
+        <view class="unassigned-info">
+          <view class="unassigned-title">有 {{unassignedCount}} 件物品未指定收纳位置</view>
+          <view class="unassigned-sub">建议在物品详情中设置空间，便于日后查找</view>
+        </view>
+      </view>
+
+      <!-- 分类分布 Top 5 -->
+      <view class="section-card">
+        <view class="card-head">
+          <view class="card-title">分类分布 Top 5</view>
+          <text class="card-extra">{{categoryCount}} 个分类</text>
+        </view>
+        <view class="bar-list" wx:if="{{topCategories.length > 0}}">
+          <view class="bar-row" wx:for="{{topCategories}}" wx:key="name">
+            <view class="bar-info">
+              <text class="bar-name">{{item.name}}</text>
+              <text class="bar-val">{{item.count}}件 ({{item.percentage}}%)</text>
+            </view>
+            <view class="bar-track">
+              <view class="bar-fill bar-fill-teal" style="width: {{item.percentage}}%;"></view>
+            </view>
+          </view>
+        </view>
+        <view class="card-empty" wx:else>暂无分类数据</view>
+      </view>
+
+      <!-- 空间分布 Top 5 -->
+      <view class="section-card">
+        <view class="card-head">
+          <view class="card-title">空间收纳 Top 5</view>
+          <text class="card-extra">{{spaceWithItemsCount}} 个有效空间</text>
+        </view>
+        <view class="bar-list" wx:if="{{topSpaces.length > 0}}">
+          <view class="bar-row" wx:for="{{topSpaces}}" wx:key="id">
+            <view class="bar-info">
+              <text class="bar-name">{{item.name}}</text>
+              <text class="bar-val">{{item.count}}件 ({{item.percentage}}%)</text>
+            </view>
+            <view class="bar-track">
+              <view class="bar-fill bar-fill-blue" style="width: {{item.percentage}}%;"></view>
+            </view>
+          </view>
+        </view>
+        <view class="card-empty" wx:else>暂无空间存放数据</view>
+      </view>
+
+      <!-- 收纳小贴士 -->
+      <view class="tip-card">
+        <view class="tip-title">💡 收纳贴士</view>
+        <view class="tip-content">为每个物品指定详细的层级空间（例如：我的家 → 书房 → 书桌 → 右侧抽屉），日后通过自然语言搜索「我的白色耳机放在哪」即可一秒找回。</view>
+      </view>
+    </block>
+
+    <!-- 半屏下钻弹层：三个数字框共用，遮罩点击关闭 -->
+    <view class="drill-mask" wx:if="{{popup.open}}" bindtap="closePopup">
+      <view class="drill-sheet" catchtap="noop">
+        <view class="drill-head">
+          <text class="drill-title">{{popup.title}}</text>
+          <view class="drill-close" bindtap="closePopup">✕</view>
+        </view>
+
+        <view class="drill-body">
+          <view class="empty" wx:if="{{popup.loading}}">加载中…</view>
+          <view class="empty" wx:elif="{{popup.error}}" bindtap="loadPopup">{{popup.error}}，点击重试</view>
+          <block wx:else>
+            <view class="empty" wx:if="{{popup.rows.length === 0}}">
+              {{popup.type === 'pending' ? '太棒了，所有物品都已归位' : '暂无数据'}}
+            </view>
+            <view
+              class="drill-row"
+              wx:for="{{popup.rows}}"
+              wx:key="id"
+              bindtap="onRowTap"
+              data-id="{{item.id}}"
+              hover-class="drill-row-hover"
+            >
+              <image wx:if="{{item.img}}" class="drill-img" src="{{item.img}}" mode="aspectFill" />
+              <view class="drill-info">
+                <view class="drill-name">{{item.name}}</view>
+                <view class="drill-meta" wx:if="{{item.meta}}">{{item.meta}}</view>
+              </view>
+              <view
+                class="drill-action"
+                wx:if="{{popup.type === 'pending'}}"
+                catchtap="goAssign"
+                data-id="{{item.id}}"
+                hover-class="drill-action-hover"
+              >去归位</view>
+            </view>
+            <view class="drill-hint" wx:if="{{popup.truncated}}">仅显示最近 100 件</view>
+          </block>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

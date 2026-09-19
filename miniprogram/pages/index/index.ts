@@ -1,5 +1,6 @@
 import { fullUrl } from '../../services/request'
 import { getItems } from '../../services/items'
+import { getFavoriteIds } from '../../utils/favorites'
 import { ItemListItem } from '../../types/api'
 
 /** updatedAt → 相对时间文案 */
@@ -19,6 +20,7 @@ Page({
     statusBarHeight: 20,
     navBarHeight: 44,
     recentItems: [] as (ItemListItem & { time: string; img: string })[],
+    favoriteSub: '收藏常用物品',
     // 首次拉取完成前不渲染空态，避免加载中闪现「去添加」引导；失败态与真空态区分展示
     recentLoaded: false,
     recentFailed: false
@@ -36,6 +38,13 @@ Page({
     if (bar) {
       bar.setData({ selected: 0 })
     }
+
+    // 刷新收藏卡动态副标题（从本地 storage 直读，零延迟）
+    const favCount = getFavoriteIds().length
+    this.setData({
+      favoriteSub: favCount > 0 ? '已收藏 ' + favCount + ' 件' : '收藏常用物品'
+    })
+
     // 每次回首页刷新最近添加（保存物品后回首页即可看到），失败静默
     const that = this
     getItems({ page: 1, pageSize: 3 }).then(function (res) {
@@ -66,7 +75,8 @@ Page({
   },
 
   onHeroTap() {
-    wx.navigateTo({ url: '/pages/camera/camera' })
+    // 横幅圆钮改为新手教程（拍照主入口收敛至下方"拍照识别"卡）
+    wx.navigateTo({ url: '/pages/tutorial/tutorial' })
   },
 
   onItemTap(e: any) {
@@ -77,17 +87,26 @@ Page({
     wx.navigateTo({ url: '/pages/camera/camera' })
   },
 
-  goSpaces() {
-    wx.switchTab({ url: '/pages/spaces/spaces' })
+  goFavorites() {
+    wx.navigateTo({ url: '/pages/favorites/favorites' })
   },
 
-  goRecent() {
-    wx.switchTab({ url: '/pages/items/items' })
+  goStats() {
+    wx.navigateTo({ url: '/pages/stats/stats' })
+  },
+
+  goCommonSpaces() {
+    wx.navigateTo({ url: '/pages/common-spaces/common-spaces' })
+  },
+
+  goSpaces() {
+    wx.switchTab({ url: '/pages/spaces/spaces' })
   },
 
   goItems() {
     wx.switchTab({ url: '/pages/items/items' })
   },
+
 
   /** 空态引导：去添加第一件物品（与 ➕ Tab 同路径） */
   goAdd() {

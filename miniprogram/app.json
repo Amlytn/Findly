@@ -14,7 +14,11 @@
     "pages/settings/settings",
     "pages/profile-edit/profile-edit",
     "pages/usage/usage",
-    "pages/doc/doc"
+    "pages/doc/doc",
+    "pages/tutorial/tutorial",
+    "pages/favorites/favorites",
+    "pages/stats/stats",
+    "pages/common-spaces/common-spaces"
   ],
   "window": {
     "navigationStyle": "custom",

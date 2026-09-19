@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "全屋清单",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/index"
+  }
+}

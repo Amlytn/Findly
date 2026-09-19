@@ -1,0 +1,199 @@
+/* 顶部快捷空间胶囊 */
+.shelf-chips {
+  white-space: nowrap;
+  width: 100%;
+  margin: 12rpx 0 24rpx;
+}
+
+.shelf-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 12rpx 28rpx;
+  border-radius: 999rpx;
+  background: #F0F6F7;
+  color: #5E7A80;
+  font-size: 25rpx;
+  margin-right: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.shelf-chip.on {
+  background: linear-gradient(135deg, #31CBBB, #04869D);
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 4rpx 12rpx rgba(18, 165, 160, 0.25);
+}
+
+/* 货架流 */
+.shelf-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+}
+
+.shelf-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 28rpx 0 28rpx 24rpx;
+  border: 2rpx solid #EDF3F5;
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
+}
+
+.shelf-head {
+  padding-right: 24rpx;
+}
+
+.shelf-title-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.shelf-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0A1B29;
+}
+
+.shelf-badge {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #12A5A0;
+  background: #EAF9F7;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  margin-left: 16rpx;
+}
+
+.shelf-path {
+  font-size: 23rpx;
+  color: #8BA2A6;
+  margin-top: 8rpx;
+}
+
+/* 物品横向滚动视窗 */
+.shelf-items-scroll {
+  display: flex;
+  white-space: nowrap;
+  margin-top: 24rpx;
+  padding-right: 24rpx;
+}
+
+.shelf-item-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 190rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.shelf-item-card:active {
+  transform: scale(0.97);
+}
+
+.shelf-item-img {
+  width: 190rpx;
+  height: 190rpx;
+  border-radius: 20rpx;
+  background: #F5F7F8;
+  display: block;
+}
+
+.shelf-item-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #0F4C5A;
+  margin-top: 12rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shelf-item-meta {
+  font-size: 22rpx;
+  color: #7E979C;
+  margin-top: 4rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 存新物品快捷入口卡片 */
+.shelf-add-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 190rpx;
+  height: 190rpx;
+  border-radius: 20rpx;
+  border: 2rpx dashed #CBE5E2;
+  background: #F8FCFB;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.shelf-add-card:active {
+  background: #EAF7F5;
+}
+
+.shelf-add-ico {
+  font-size: 38rpx;
+  color: #12A5A0;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.shelf-add-txt {
+  font-size: 22rpx;
+  color: #12A5A0;
+  margin-top: 10rpx;
+}
+
+/* 空态样式 */
+.shelf-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 120rpx 40rpx 60rpx;
+}
+
+.shelf-empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 36rpx;
+  background: #EAF9F7;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 64rpx 64rpx;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2312A5A0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'/%3E%3Cpolyline points='3.27 6.96 12 12.01 20.73 6.96'/%3E%3Cline x1='12' y1='22.08' x2='12' y2='12'/%3E%3C/svg%3E");
+  margin-bottom: 32rpx;
+}
+
+.shelf-empty-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0A1B29;
+  margin-bottom: 16rpx;
+}
+
+.shelf-empty-desc {
+  font-size: 26rpx;
+  color: #7A9398;
+  line-height: 1.5;
+  max-width: 520rpx;
+  margin-bottom: 48rpx;
+}
+
+.shelf-empty-btn {
+  background: #12A5A0;
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 999rpx;
+  padding: 0 48rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  border: none;
+}

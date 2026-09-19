@@ -1,0 +1,32 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="使用教程" />
+
+    <view class="doc-container">
+      <!-- 头卡：与用户协议/隐私政策页同构 -->
+      <view class="doc-header-card">
+        <view class="doc-main-title">三步上手 Findly</view>
+        <view class="doc-meta-row">
+          <text class="doc-meta-tag">新手指南</text>
+          <text class="doc-meta-date">全程约需 30 秒</text>
+        </view>
+      </view>
+
+      <!-- 三步引导 -->
+      <view class="step-card" wx:for="{{steps}}" wx:key="no">
+        <view class="step-no">{{item.no}}</view>
+        <view class="step-body">
+          <view class="step-title">{{item.title}}</view>
+          <text class="step-desc">{{item.desc}}</text>
+        </view>
+      </view>
+
+      <!-- 尾部：转化按钮 + 常见问题入口 -->
+      <view class="doc-footer">
+        <view class="tut-btn" hover-class="tut-btn-active" bindtap="goCamera">立即拍第一件</view>
+        <view class="tut-link" bindtap="goFaq">还有疑问？查看常见问题</view>
+        <text class="doc-footer-txt">Findly 团队 · 专注打造清晰可靠的智能收纳体验</text>
+      </view>
+    </view>
+  </view>
+</view>

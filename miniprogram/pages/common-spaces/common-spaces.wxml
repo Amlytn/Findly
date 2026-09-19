@@ -1,0 +1,81 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="全屋清单" />
+
+    <!-- 加载态 -->
+    <view class="empty" wx:if="{{loading}}">加载中…</view>
+
+    <!-- 错误重试 -->
+    <view class="empty" wx:elif="{{error}}" bindtap="loadData">{{error}}，点击重试</view>
+
+    <!-- 空态 -->
+    <view class="shelf-empty" wx:elif="{{empty}}">
+      <view class="shelf-empty-icon"></view>
+      <view class="shelf-empty-title">还没有收纳物品的空间</view>
+      <view class="shelf-empty-desc">在空间管理中创建房间、书桌或收纳盒，并在录入物品时绑定空间，即可在这里按全屋清单全景浏览</view>
+      <button class="shelf-empty-btn" bindtap="goManageSpaces">前往空间管理</button>
+    </view>
+
+    <!-- 正常货架流 -->
+    <block wx:else>
+      <!-- 顶部快速空间筛选胶囊横滑 -->
+      <scroll-view class="shelf-chips" scroll-x enable-flex>
+        <view
+          class="shelf-chip {{activeSpaceId === 'all' ? 'on' : ''}}"
+          bindtap="onSelectChip"
+          data-id="all"
+        >全部 ({{shelves.length}})</view>
+        <view
+          class="shelf-chip {{activeSpaceId === shelf.id ? 'on' : ''}}"
+          wx:for="{{shelves}}"
+          wx:for-item="shelf"
+          wx:key="id"
+          bindtap="onSelectChip"
+          data-id="{{shelf.id}}"
+        >{{shelf.name}} {{shelf.count}}</view>
+      </scroll-view>
+
+      <!-- 货架列表 -->
+      <view class="shelf-stream">
+        <view
+          class="shelf-card"
+          wx:for="{{visibleShelves}}"
+          wx:for-item="shelf"
+          wx:key="id"
+        >
+          <!-- 货架顶栏：名称 + 路径 + 件数 -->
+          <view class="shelf-head">
+            <view class="shelf-title-wrap">
+              <view class="shelf-name">{{shelf.name}}</view>
+              <text class="shelf-badge">{{shelf.count}}件</text>
+            </view>
+            <view class="shelf-path" wx:if="{{shelf.path}}">{{shelf.path}}</view>
+          </view>
+
+          <!-- 货架内容：横向滑动展示物品 -->
+          <scroll-view class="shelf-items-scroll" scroll-x enable-flex>
+            <view
+              class="shelf-item-card"
+              wx:for="{{shelf.items}}"
+              wx:for-item="it"
+              wx:key="id"
+              bindtap="onItemTap"
+              data-id="{{it.id}}"
+            >
+              <image class="shelf-item-img" src="{{it.img}}" mode="aspectFill" />
+              <view class="shelf-item-name">{{it.name}}</view>
+              <view class="shelf-item-meta" wx:if="{{it.color || it.category}}">
+                {{it.color ? it.color : ''}}{{it.color && it.category ? ' · ' : ''}}{{it.category ? it.category : ''}}
+              </view>
+            </view>
+            <!-- 货架尾部占位/快捷存物 -->
+            <view class="shelf-add-card" bindtap="goAdd">
+              <view class="shelf-add-ico">＋</view>
+              <view class="shelf-add-txt">存新物品</view>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

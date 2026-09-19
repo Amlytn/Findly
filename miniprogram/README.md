@@ -19,6 +19,12 @@
 | 11 | 个人中心 | `pages/profile/profile` | TabBar 我的页，资料卡（点头像进编辑）+ 功能列表 |
 | 12 | 设置 | `pages/settings/settings` | 关于、缓存、退出登录 |
 | 13 | 资料编辑 | `pages/profile-edit/profile-edit` | 编辑头像（裁 1:1 转持久文件）与 ID，存本地缓存 |
+| 14 | AI用量统计 | `pages/usage/usage` | AI 调用次数、Token 消耗与成本分析看板 |
+| 15 | 合规帮助中心 | `pages/doc/doc` | 用户协议、隐私政策与常见问题帮助中心 |
+| 16 | 使用教程 | `pages/tutorial/tutorial` | 登记→位置→找回三步上手指南 |
+| 17 | 收藏物品 | `pages/favorites/favorites` | 常用收藏物品列表，支持一键取消与直达详情 |
+| 18 | 物品统计 | `pages/stats/stats` | 物品/空间/待归位总数与 Top 5 分类和空间占比条形图 |
+| 19 | 全屋清单 | `pages/common-spaces/common-spaces` | 全屋收纳货架视窗（Shelf View），按空间横滑翻找各常备物品 |
 
 ## 目录结构
 
