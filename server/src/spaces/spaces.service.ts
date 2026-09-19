@@ -87,16 +87,21 @@ export class SpacesService {
     return this.prisma.space.create({ data });
   }
 
-  async update(userId: string, id: string, dto: UpdateSpaceDto) {
-    await this.assertOwned(userId, id);
-    if (dto.parentId) await this.assertNoCycle(userId, id, dto.parentId);
+	async update(userId: string, id: string, dto: UpdateSpaceDto) {
+		await this.assertOwned(userId, id);
+		if (dto.parentId) await this.assertNoCycle(userId, id, dto.parentId);
 
-    const data: any = {};
-    if (dto.name !== undefined) data.name = dto.name;
-    if (dto.sortOrder !== undefined) data.sortOrder = dto.sortOrder;
-    if (dto.parentId) data.parent = { connect: { id: dto.parentId } };
-    return this.prisma.space.update({ where: { id }, data });
-  }
+		const data: any = {};
+		if (dto.name !== undefined) data.name = dto.name;
+		if (dto.sortOrder !== undefined) data.sortOrder = dto.sortOrder;
+		// parentId null/空串 = 移回根级（断开父级）；undefined = 不动
+		if (dto.parentId === null || dto.parentId === '') {
+			data.parent = { disconnect: true };
+		} else if (dto.parentId !== undefined) {
+			data.parent = { connect: { id: dto.parentId } };
+		}
+		return this.prisma.space.update({ where: { id }, data });
+	}
 
   /** 删除保护：有子空间或有未删物品时拒绝（契约 1，返回 400） */
   async remove(userId: string, id: string) {

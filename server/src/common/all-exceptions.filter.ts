@@ -41,6 +41,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const m = (body as { message?: string | string[] }).message;
         message = m !== undefined ? m : exception.message;
       }
+    } else if ((exception as { type?: string })?.type === 'entity.too.large') {
+      // body-parser 体积超限（express json）：此前落进未知异常被报成 500，前端无法诊断
+      status = HttpStatus.PAYLOAD_TOO_LARGE;
+      message = '请求体超过大小限制，请压缩后再试';
+      this.logger.warn(`${req.method} ${req.originalUrl} 请求体超限（413）`);
+    } else if ((exception as { code?: string })?.code === 'LIMIT_FILE_SIZE') {
+      // multer 体积超限（/upload 的 4MB 上限）
+      status = HttpStatus.PAYLOAD_TOO_LARGE;
+      message = '图片超过 4MB，请先压缩再上传';
+      this.logger.warn(`${req.method} ${req.originalUrl} 上传超限（413）`);
     } else {
       // 未知异常：详情只进服务端日志，客户端拿到统一文案
       const detail =

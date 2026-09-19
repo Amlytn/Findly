@@ -6,6 +6,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { pathOf } from '../common/path.util';
+import { isSqlite } from '../common/db.util';
 import { CreateItemDto, QueryItemsDto, UpdateItemDto } from './dto';
 
 // 卡片/列表/详情共用的关联装载
@@ -22,52 +23,71 @@ export class ItemsService {
     }));
   }
 
-  /** spaceId 若提供，必须存在且属于该用户 */
-  private async assertSpace(userId: string, spaceId?: string): Promise<string | undefined> {
-    if (!spaceId) return undefined;
-    const space = await this.prisma.space.findFirst({ where: { id: spaceId, userId } });
-    if (!space) throw new BadRequestException('空间不存在或不属于当前用户');
-    return spaceId;
-  }
+	/** spaceId 若提供，必须存在且属于该用户 */
+	private async assertSpace(userId: string, spaceId?: string): Promise<string | undefined> {
+		if (!spaceId) return undefined;
+		const space = await this.prisma.space.findFirst({ where: { id: spaceId, userId } });
+		if (!space) throw new BadRequestException('空间不存在或不属于当前用户');
+		return spaceId;
+	}
+
+	/** update 时的 spaceId 装载：null/空串 = 解绑（移回"未归位"），undefined = 不动 */
+	private async spaceFieldForUpdate(
+		userId: string,
+		spaceId?: string | null,
+	): Promise<Prisma.ItemUpdateInput['space']> {
+		if (spaceId === null || spaceId === '') return { disconnect: true };
+		if (spaceId === undefined) return undefined;
+		const id = await this.assertSpace(userId, spaceId);
+		return id ? { connect: { id } } : undefined;
+	}
+
 
   /** 列表/相关物品的统一卡片形状（契约 2：tags 统一为字符串数组 + 完整位置路径） */
   private toCard(r: any, allSpaces?: any[]) {
-    return {
-      id: r.id,
-      name: r.name,
-      brand: r.brand,
-      model: r.model,
-      category: r.category,
-      color: r.color,
-      tags: (r.tags || []).map((t: any) => t.tag.name),
-      space: r.space ? { id: r.space.id, name: r.space.name } : null,
-      path: allSpaces ? pathOf(allSpaces, r.spaceId) : undefined,
-      imageUrl: r.imageUrl,
-      updatedAt: r.updatedAt,
-    };
+		return {
+			id: r.id,
+			name: r.name,
+			brand: r.brand,
+			model: r.model,
+			category: r.category,
+			color: r.color,
+			quantity: r.quantity,
+			tags: (r.tags || []).map((t: any) => t.tag.name),
+			space: r.space ? { id: r.space.id, name: r.space.name } : null,
+			path: allSpaces ? pathOf(allSpaces, r.spaceId) : undefined,
+			imageUrl: r.imageUrl,
+			updatedAt: r.updatedAt,
+		};
   }
 
-  /** 关键词对 name/brand/model/category/description 五字段 insensitive contains */
-  private keywordWhere(keyword?: string): Prisma.ItemWhereInput {
-    const kw = (keyword || '').trim();
-    if (!kw) return {};
-    const contains = (k: string) => ({ contains: k, mode: 'insensitive' as const });
-    return {
-      OR: [
-        { name: contains(kw) },
-        { brand: contains(kw) },
-        { model: contains(kw) },
-        { category: contains(kw) },
-        { description: contains(kw) },
-      ],
-    };
-  }
+	/** 关键词对 name/brand/model/category/description 五字段模糊匹配。
+	 * mode:'insensitive' 仅 PG/Mongo 支持，SQLite 下抛校验错误——按连接器降级
+	 * （SQLite 的 LIKE 对 ASCII 本就不区分大小写，中文无大小写差异，行为几乎无损失） */
+	private keywordWhere(keyword?: string): Prisma.ItemWhereInput {
+		const kw = (keyword || '').trim();
+		if (!kw) return {};
+		const contains = (k: string) =>
+			isSqlite() ? { contains: k } : { contains: k, mode: 'insensitive' as const };
+		return {
+			OR: [
+				{ name: contains(kw) },
+				{ brand: contains(kw) },
+				{ model: contains(kw) },
+				{ category: contains(kw) },
+				{ description: contains(kw) },
+			],
+		};
+	}
 
-  async list(userId: string, q: QueryItemsDto) {
-    const page = q.page || 1;
-    const pageSize = q.pageSize || 20;
-    const where: Prisma.ItemWhereInput = { userId, deletedAt: null, ...this.keywordWhere(q.keyword) };
-    if (q.spaceId) where.spaceId = q.spaceId;
+
+	async list(userId: string, q: QueryItemsDto) {
+		const page = q.page || 1;
+		const pageSize = q.pageSize || 20;
+		const where: Prisma.ItemWhereInput = { userId, deletedAt: null, ...this.keywordWhere(q.keyword) };
+		if (q.spaceId) where.spaceId = q.spaceId;
+		// 分类 chips 的精确筛选（契约 v1.4）：等值匹配，不走 keyword 模糊，计数与列表口径一致
+		if (q.category) where.category = q.category;
 
     const [total, rows, allSpaces] = await this.prisma.$transaction([
       this.prisma.item.count({ where }),
@@ -83,9 +103,9 @@ export class ItemsService {
     return { total, page, pageSize, items: rows.map((r) => this.toCard(r, allSpaces)) };
   }
 
-  async create(userId: string, dto: CreateItemDto) {
-    await this.prisma.ensureUser(userId);
-    const spaceId = await this.assertSpace(userId, dto.spaceId);
+	async create(userId: string, dto: CreateItemDto) {
+		await this.prisma.ensureUser(userId);
+		const spaceId = dto.spaceId ? await this.assertSpace(userId, dto.spaceId) : undefined;
 
     const data: Prisma.ItemCreateInput = {
       user: { connect: { id: userId } },
@@ -132,21 +152,21 @@ export class ItemsService {
     };
   }
 
-  async update(userId: string, id: string, dto: UpdateItemDto) {
-    const existing = await this.prisma.item.findFirst({ where: { id, userId, deletedAt: null } });
-    if (!existing) throw new NotFoundException('物品不存在');
-    const spaceId = await this.assertSpace(userId, dto.spaceId);
+	async update(userId: string, id: string, dto: UpdateItemDto) {
+		const existing = await this.prisma.item.findFirst({ where: { id, userId, deletedAt: null } });
+		if (!existing) throw new NotFoundException('物品不存在');
+		const spaceField = await this.spaceFieldForUpdate(userId, dto.spaceId);
 
-    const data: Prisma.ItemUpdateInput = {};
-    if (dto.name !== undefined) data.name = dto.name;
-    if (dto.category !== undefined) data.category = dto.category;
-    if (dto.brand !== undefined) data.brand = dto.brand;
-    if (dto.model !== undefined) data.model = dto.model;
-    if (dto.color !== undefined) data.color = dto.color;
-    if (dto.description !== undefined) data.description = dto.description;
-    if (dto.quantity !== undefined) data.quantity = dto.quantity;
-    if (dto.imageUrl !== undefined) data.imageUrl = dto.imageUrl;
-    if (spaceId) data.space = { connect: { id: spaceId } };
+		const data: Prisma.ItemUpdateInput = {};
+		if (dto.name !== undefined) data.name = dto.name;
+		if (dto.category !== undefined) data.category = dto.category;
+		if (dto.brand !== undefined) data.brand = dto.brand;
+		if (dto.model !== undefined) data.model = dto.model;
+		if (dto.color !== undefined) data.color = dto.color;
+		if (dto.description !== undefined) data.description = dto.description;
+		if (dto.quantity !== undefined) data.quantity = dto.quantity;
+		if (dto.imageUrl !== undefined) data.imageUrl = dto.imageUrl;
+		if (spaceField) data.space = spaceField;
 
     // tags 整体替换：先解绑旧标签再绑定新标签，事务保证一致性（方案文档第二十二节）
     const item = await this.prisma.$transaction(async (tx) => {

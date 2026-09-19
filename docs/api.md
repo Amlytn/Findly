@@ -1,13 +1,13 @@
-# Findly API 接口契约（v1.3）
+# Findly API 接口契约（v1.4）
 
 > 前后端共同遵守的接口约定。改接口必须先改本文档，再动代码（PR 同步提交）。
 > 维护人：@james-wu66 ｜ 协作：@Amlytn
-> 评审状态：v1.3（M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义、M4 提案契约）
+> 评审状态：v1.4（M5 鉴权收紧：401 拦截生效、x-user-id 兜底移除；items 增加 category 精确筛选与 quantity 返回；items/spaces 支持 null 解绑语义；users 新增 PATCH /me；上传增加 magic bytes 校验。v1.3：M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义）
 
 ## 通用约定
 
 - Base URL：`http://localhost:3000`（联调期；上线后换 HTTPS 域名）
-- 认证：请求头 `Authorization: Bearer <token>`（v1.3 起支持，token 来自 `POST /auth/login`，7 天有效；未携带 token 时**过渡期**仍接受 `x-user-id`，缺省 `dev`，M5 移除该兜底）
+- 认证：请求头 `Authorization: Bearer <token>`（token 来自 `POST /auth/login`，7 天有效）。**除 auth/login、auth/dev-token 外所有接口均要求有效 token**：无 token 或 token 失效返回 401，前端据此静默重登并重放原请求（M5 起 `x-user-id` 兜底已移除，该头由服务端验签后覆写，不接受客户端伪造）
 - 时间格式：ISO 8601（如 `2026-09-14T09:00:00.000Z`）
 - 错误响应统一为 NestJS 默认格式：
 
@@ -15,7 +15,7 @@
 { "statusCode": 400, "message": "具体原因", "error": "Bad Request" }
 ```
 
-- 常用状态码：200 成功 / 400 参数错误 / 404 不存在 / 403 无权访问 / 413 文件过大 / 429 触发限流 / 503 AI 服务不可用
+- 常用状态码：200 成功 / 400 参数错误 / 401 未登录或登录过期 / 404 不存在 / 403 无权访问 / 413 文件过大 / 429 触发限流 / 503 AI 服务不可用
 - 限流：全局 120 次/分钟；`/ai/*` 10 次/分钟（超出返回 429）
 
 ---
@@ -28,7 +28,7 @@
 |---|---|---|
 | GET | `/api/v1/spaces` | 空间平铺 list + 组装好的 tree（含每层物品数） |
 | POST | `/api/v1/spaces` | 新建空间 |
-| PATCH | `/api/v1/spaces/:id` | 改名 / 挪父级 / 排序 |
+| PATCH | `/api/v1/spaces/:id` | 改名 / 挪父级 / 排序；**`parentId` 传 `null` 或空串 = 移回根级**（v1.4） |
 | DELETE | `/api/v1/spaces/:id` | 删除（有子空间或有物品时拒绝，返回 400） |
 
 GET 返回示例：
@@ -52,10 +52,10 @@ POST 请求体：
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| GET | `/api/v1/items?page=1&pageSize=20&spaceId=&keyword=` | 分页列表；keyword 模糊匹配 name/brand/model/category/description |
+| GET | `/api/v1/items?page=1&pageSize=20&spaceId=&keyword=&category=` | 分页列表；keyword 模糊匹配 name/brand/model/category/description；**`category` 精确等值筛选（v1.4，分类 chips 用，与 categories 接口计数口径一致）** |
 | POST | `/api/v1/items` | 新增（拍照确认后保存走这里） |
 | GET | `/api/v1/items/:id` | 详情（含 space、tags、最近 5 次 AI 识别记录） |
-| PATCH | `/api/v1/items/:id` | 编辑 / 移动位置（改 spaceId）/ 整体替换 tags |
+| PATCH | `/api/v1/items/:id` | 编辑 / 移动位置（改 spaceId）/ 整体替换 tags；**`spaceId` 传 `null` 或空串 = 解绑位置（移回"未归位"）**（v1.4） |
 | DELETE | `/api/v1/items/:id` | 软删除（deletedAt 置时间，列表不再出现）；重复删除返回 404，前端视为已成功 |
 | GET | `/api/v1/items/categories` | 分类筛选 chips（v1.1 新增，规范第 9 节）——**@Amlytn 实现** |
 | GET | `/api/v1/items/:id/related` | 同类物品（v1.1 新增，规范第 9 节）——**@Amlytn 实现** |
@@ -79,13 +79,13 @@ POST / PATCH 请求体：
 
 - `aiResultId` 仅 POST 时有效（v1.2 新增）：识别结果页保存时带回 recognize 流程生成的 AIResult id，后端回填 `AIResult.itemId`，供详情页「最近 5 次 AI 识别记录」查询；传空/无效值不影响保存。
 
-GET 列表返回（v1.2：tags 统一为字符串数组，前端不再解嵌套）：
+GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity）：
 
 ```json
 {
   "total": 3, "page": 1, "pageSize": 20,
   "items": [ { "id": "it1", "name": "白色无线鼠标", "brand": "Logitech", "model": "MX Master 3S",
-    "category": "电脑配件", "color": "白色", "tags": ["鼠标", "无线", "办公"],
+    "category": "电脑配件", "color": "白色", "quantity": 1, "tags": ["鼠标", "无线", "办公"],
     "space": { "id": "sp4", "name": "右侧抽屉" }, "path": "我的家 → 书房 → 书桌 → 右侧抽屉",
     "imageUrl": null, "updatedAt": "..." } ]
 }
@@ -208,8 +208,16 @@ GET 列表返回（v1.2：tags 统一为字符串数组，前端不再解嵌套�
 - 后续迁移对象存储时仅改实现，路径形态不变
 - 错误：400（格式不对）/ 413（超 4MB）
 
-### 5.3 当前用户 `GET /api/v1/users/me`
+### 5.3 当前用户 `GET /api/v1/users/me` + 资料更新 `PATCH /api/v1/users/me`（v1.4 新增）
 
 ```json
+// GET 200
 { "id": "u1", "nickname": null, "avatar": null, "itemCount": 12, "spaceCount": 5 }
+```
+
+```json
+// PATCH 请求体：字段均可选，缺省不更新；传 null 显式置空
+{ "nickname": "小明同学", "avatar": "" }
+// PATCH 200 返回
+{ "id": "u1", "nickname": "小明同学", "avatar": null }
 ```

@@ -66,8 +66,8 @@ describe('AiService', () => {
         .spyOn(service as any, 'chat')
         .mockResolvedValue({ content: modelOutput, usage: { total_tokens: 120 } });
 
-      const first: any = await service.recognize('data:image/jpeg;base64,AAAA');
-      const second: any = await service.recognize('data:image/jpeg;base64,AAAA');
+      const first: any = await service.recognize('dev', 'data:image/jpeg;base64,AAAA');
+      const second: any = await service.recognize('dev', 'data:image/jpeg;base64,AAAA');
 
       expect(chatSpy).toHaveBeenCalledTimes(1);
       expect(first.result.cached).toBeUndefined();
@@ -81,8 +81,8 @@ describe('AiService', () => {
         .spyOn(service as any, 'chat')
         .mockResolvedValue({ content: modelOutput, usage: null });
 
-      await service.recognize('data:image/jpeg;base64,AAAA');
-      await service.recognize('data:image/jpeg;base64,BBBB');
+      await service.recognize('dev', 'data:image/jpeg;base64,AAAA');
+      await service.recognize('dev', 'data:image/jpeg;base64,BBBB');
 
       expect(chatSpy).toHaveBeenCalledTimes(2);
     });
@@ -91,7 +91,7 @@ describe('AiService', () => {
       jest
         .spyOn(service as any, 'chat')
         .mockResolvedValue({ content: '{"name":"U盘"}', usage: null });
-      const res: any = await service.recognize('data:image/jpeg;base64,CCCC');
+      const res: any = await service.recognize('dev', 'data:image/jpeg;base64,CCCC');
       expect(res.result.confidence).toBe(0.5);
     });
   });

@@ -12,8 +12,8 @@ export class CreateItemDto {
   @IsOptional() @IsString() model?: string;
   @IsOptional() @IsString() color?: string;
   @IsOptional() @IsString() description?: string;
-  @IsOptional() @IsInt() @Min(0) quantity?: number;
-  @IsOptional() @IsString() spaceId?: string;
+  @IsOptional() @IsInt() @Min(1) quantity?: number;
+  @IsOptional() @IsString() spaceId?: string | null;
   @IsOptional() @IsString() imageUrl?: string;
   /** 整体设置标签（POST 时创建；userId+name 唯一防重复） */
   @IsOptional() @IsArray() @ArrayMaxSize(10) @IsString({ each: true }) tags?: string[];
@@ -28,8 +28,9 @@ export class UpdateItemDto {
   @IsOptional() @IsString() model?: string;
   @IsOptional() @IsString() color?: string;
   @IsOptional() @IsString() description?: string;
-  @IsOptional() @IsInt() @Min(0) quantity?: number;
-  @IsOptional() @IsString() spaceId?: string;
+  @IsOptional() @IsInt() @Min(1) quantity?: number;
+  /** null / 空串 = 解绑位置（移回"未归位"）；不传 = 不动 */
+  @IsOptional() @IsString() spaceId?: string | null;
   @IsOptional() @IsString() imageUrl?: string;
   /** 传了就整体替换（先解绑旧标签再绑定新标签，事务内完成）；不传不动标签 */
   @IsOptional() @IsArray() @ArrayMaxSize(10) @IsString({ each: true }) tags?: string[];
@@ -40,4 +41,6 @@ export class QueryItemsDto {
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) pageSize?: number;
   @IsOptional() @IsString() keyword?: string;
   @IsOptional() @IsString() spaceId?: string;
+  /** 分类精确筛选（分类 chips 用；区别于 keyword 模糊检索） */
+  @IsOptional() @IsString() category?: string;
 }
