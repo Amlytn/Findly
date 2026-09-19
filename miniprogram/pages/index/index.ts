@@ -66,7 +66,8 @@ Page({
   },
 
   onHeroTap() {
-    wx.navigateTo({ url: '/pages/camera/camera' })
+    // 横幅圆钮改为新手教程（拍照主入口收敛至下方"拍照识别"卡）
+    wx.navigateTo({ url: '/pages/tutorial/tutorial' })
   },
 
   onItemTap(e: any) {

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "使用教程",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/index"
+  }
+}

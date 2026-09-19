@@ -14,7 +14,8 @@
     "pages/settings/settings",
     "pages/profile-edit/profile-edit",
     "pages/usage/usage",
-    "pages/doc/doc"
+    "pages/doc/doc",
+    "pages/tutorial/tutorial"
   ],
   "window": {
     "navigationStyle": "custom",

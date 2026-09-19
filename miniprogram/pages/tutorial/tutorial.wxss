@@ -1,0 +1,137 @@
+page {
+  background-color: #F4F7F6;
+  min-height: 100vh;
+}
+
+.page {
+  background-color: #F4F7F6;
+  min-height: 100vh;
+}
+
+.screen {
+  padding-bottom: 60rpx;
+  box-sizing: border-box;
+}
+
+.doc-container {
+  padding: 16rpx 32rpx 40rpx;
+}
+
+/* ===== 头卡：复用用户协议页文档头样式 ===== */
+.doc-header-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
+  border: 1rpx solid rgba(18, 78, 91, 0.05);
+  margin-bottom: 20rpx;
+}
+
+.doc-main-title {
+  font-size: 38rpx;
+  font-weight: 800;
+  color: #124E5B;
+  letter-spacing: 0.5rpx;
+  margin-bottom: 16rpx;
+}
+
+.doc-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.doc-meta-tag {
+  font-size: 20rpx;
+  color: #12A5A0;
+  background: #EBF8F5;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+  font-weight: 600;
+}
+
+.doc-meta-date {
+  font-size: 22rpx;
+  color: #8FA8AD;
+}
+
+/* ===== 三步引导卡：序号章复用 FAQ 的渐变方章语言 ===== */
+.step-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 30rpx 26rpx;
+  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
+  border: 1rpx solid rgba(18, 78, 91, 0.05);
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 18rpx;
+}
+
+.step-no {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 15rpx;
+  background: linear-gradient(135deg, #31CBBB, #12A5A0);
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #124E5B;
+  line-height: 1.45;
+  margin-bottom: 10rpx;
+}
+
+.step-desc {
+  font-size: 25rpx;
+  color: #5E7A80;
+  line-height: 1.7;
+  text-align: justify;
+}
+
+/* ===== 尾部：转化按钮 + 常见问题入口 ===== */
+.doc-footer {
+  text-align: center;
+  padding: 30rpx 0 16rpx;
+}
+
+.tut-btn {
+  height: 92rpx;
+  line-height: 92rpx;
+  border-radius: 46rpx;
+  background: linear-gradient(135deg, #31CBBB, #04869D);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  box-shadow: 0 8rpx 20rpx rgba(18, 165, 160, 0.28);
+}
+
+.tut-btn-active {
+  opacity: 0.88;
+  transform: scale(0.985);
+}
+
+.tut-link {
+  font-size: 25rpx;
+  color: #12A5A0;
+  padding: 26rpx 0 22rpx;
+}
+
+.doc-footer-txt {
+  font-size: 22rpx;
+  color: #A4B8BC;
+}

@@ -20,7 +20,7 @@
       />
     </view>
 
-    <!-- 拍照识别横幅：文案与插画已烘焙进 banner_background.jpg（1407x752，比例与容器一致，无拉伸），代码仅保留点击圆钮。
+    <!-- 引导横幅：文案与插画已烘焙进 banner_background.jpg（1407x752，比例与容器一致，无拉伸），圆钮现指向使用教程页。
          注意：此处必须用 jpg/png，iOS 真机 <image> 不解码本地包内 .webp，会整块空白 -->
     <view class="hero">
       <image class="hero-bg" src="/assets/banner_background.jpg" mode="aspectFill" />
