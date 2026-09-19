@@ -82,13 +82,10 @@ Page({
     wx.switchTab({ url: '/pages/spaces/spaces' })
   },
 
-  goRecent() {
-    wx.switchTab({ url: '/pages/items/items' })
-  },
-
   goItems() {
     wx.switchTab({ url: '/pages/items/items' })
   },
+
 
   /** 空态引导：去添加第一件物品（与 ➕ Tab 同路径） */
   goAdd() {

@@ -42,27 +42,27 @@
         </view>
         <view class="quick-chev"></view>
       </view>
-      <view class="quick-card qc-items" bindtap="goItems">
-        <view class="quick-ico ico-items"></view>
+      <view class="quick-card qc-favorite" bindtap="goItems">
+        <view class="quick-ico ico-favorite"></view>
         <view class="quick-info">
-          <view class="quick-name">我的物品</view>
-          <view class="quick-sub">查看和管理物品</view>
+          <view class="quick-name">收藏物品</view>
+          <view class="quick-sub">收藏常用物品</view>
         </view>
         <view class="quick-chev"></view>
       </view>
       <view class="quick-card qc-space" bindtap="goSpaces">
         <view class="quick-ico ico-space"></view>
         <view class="quick-info">
-          <view class="quick-name">空间管理</view>
-          <view class="quick-sub">整理你的空间</view>
+          <view class="quick-name">常用空间</view>
+          <view class="quick-sub">按位置快速找物</view>
         </view>
         <view class="quick-chev"></view>
       </view>
-      <view class="quick-card qc-recent" bindtap="goRecent">
-        <view class="quick-ico ico-recent"></view>
+      <view class="quick-card qc-stats" bindtap="goSpaces">
+        <view class="quick-ico ico-stats"></view>
         <view class="quick-info">
-          <view class="quick-name">最近查看</view>
-          <view class="quick-sub">快速访问记录</view>
+          <view class="quick-name">物品统计</view>
+          <view class="quick-sub">查看收纳统计</view>
         </view>
         <view class="quick-chev"></view>
       </view>
