@@ -45,6 +45,7 @@ export interface ItemListItem {
   model: string | null
   category: string
   color: string | null
+  quantity: number
   tags: string[]
   space?: ItemSpaceRef
   path: string

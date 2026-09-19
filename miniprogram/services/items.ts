@@ -10,6 +10,8 @@ export interface ItemListQuery {
   pageSize?: number
   spaceId?: string
   keyword?: string
+  /** 分类精确筛选（契约 v1.4）：与 categories 接口计数口径一致 */
+  category?: string
 }
 
 export function getItems(query: ItemListQuery = {}): Promise<ItemListResponse> {
@@ -18,6 +20,7 @@ export function getItems(query: ItemListQuery = {}): Promise<ItemListResponse> {
   if (query.pageSize) parts.push('pageSize=' + query.pageSize)
   if (query.spaceId) parts.push('spaceId=' + encodeURIComponent(query.spaceId))
   if (query.keyword) parts.push('keyword=' + encodeURIComponent(query.keyword))
+  if (query.category) parts.push('category=' + encodeURIComponent(query.category))
   const qs = parts.length ? '?' + parts.join('&') : ''
   return request<ItemListResponse>('/items' + qs)
 }

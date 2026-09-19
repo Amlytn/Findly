@@ -2,8 +2,8 @@
 import request from './request'
 import { RecognizeResult } from '../types/api'
 
-/** imageBase64 必须为 data:image/png|jpeg|webp;base64, 前缀串；识别页预检 ≤95KB
- * （适配后端 body-parser 默认 100KB JSON 限制；后端 B2 调大限制后可放宽） */
+/** imageBase64 必须为 data:image/png|jpeg|webp;base64, 前缀串，压缩后 ≤4MB
+ * （后端 6MB body 限制 + 4MB 检查，超限返回 413） */
 export function recognize(imageBase64: string): Promise<RecognizeResult> {
   return request<RecognizeResult>('/ai/recognize', {
     method: 'POST',

@@ -71,8 +71,8 @@ function calcTargetSize(origW: number, origH: number, maxEdge: number) {
 /**
  * 读临时文件转 dataURL：
  * 1. 依据输出文件的真实后缀与原图类型动态确定 MIME（jpeg/png/webp 等），不盲目硬编码；
- * 2. 分辨率等比缩放至长边 ≤1200px 并进行画质压缩；
- * 3. 严格保障 base64 体积适配后端 body-parser 100KB 限制（必要时自适应二次降级）。
+ * 2. 分辨率等比缩放至长边 ≤1200px 并进行画质压缩（符合 PRD 800~1200px 规格）。
+ * 早期版本曾为适配后端 100KB body 限制做过 720px 二次降级，后端上调限制后已移除。
  */
 function toDataUrl(path: string): Promise<string> {
   return new Promise<string>(function (resolve, reject) {
@@ -88,36 +88,15 @@ function toDataUrl(path: string): Promise<string> {
             const mime = getMimeTypeFromPath(compressedPath, compressedPath === path ? info.type : 'jpg')
             return readFileBase64(compressedPath, mime)
           })
-          .then(function (dataUrl) {
-            // 若首轮压缩后体积仍逼近 85KB（后端 body-parser 严格限制 100KB JSON，预留安全边际）
-            // 则以 720px + 45 质量进行二次自适应降级压缩
-            if (dataUrl.length > 85 * 1024 && origW > 0 && origH > 0) {
-              const { width: secW, height: secH } = calcTargetSize(origW, origH, 720)
-              return compressOnce(path, 45, secW, secH).then(function (secondPath) {
-                const secondMime = getMimeTypeFromPath(secondPath, secondPath === path ? info.type : 'jpg')
-                return readFileBase64(secondPath, secondMime)
-              })
-            }
-            return dataUrl
-          })
           .then(resolve)
           .catch(reject)
       },
       fail() {
-        // getImageInfo 失败时的兜底：按基础质量压缩，若超限再降级一次
+        // getImageInfo 失败时的兜底：按基础质量压缩一次
         compressOnce(path, 60)
           .then(function (p) {
             const mime = getMimeTypeFromPath(p)
             return readFileBase64(p, mime)
-          })
-          .then(function (dataUrl) {
-            if (dataUrl.length > 85 * 1024) {
-              return compressOnce(path, 35).then(function (p2) {
-                const mime2 = getMimeTypeFromPath(p2)
-                return readFileBase64(p2, mime2)
-              })
-            }
-            return dataUrl
           })
           .then(resolve)
           .catch(reject)
@@ -168,10 +147,9 @@ Page({
     const that = this
     this.setData({ recognizing: true, aiFailed: false, aiNote: '' })
     toDataUrl(imgPath).then(function (dataUrl) {
-      // 后端 express body-parser 默认 100KB（102,400 字节）限制
-      // 请求体为 {"imageBase64": dataUrl}，Base64 字符串需严格控制在 ~95KB 以内
-      const MAX_DATA_URL_LEN = 95 * 1024
-      if (dataUrl.length > MAX_DATA_URL_LEN) {
+      // 与后端 /ai/recognize 的 4MB 检查对齐（dataUrl 长度 × 3/4 = 二进制体积）；
+      // 超限时后端也会返回 413，此处提前拦截省一次请求
+      if (dataUrl.length * 0.75 > 4 * 1024 * 1024) {
         that.setData({ recognizing: false, aiFailed: true, aiNote: '图片过大，请手动填写' })
         return undefined
       }
