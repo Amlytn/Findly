@@ -3,6 +3,11 @@ Component({
     title: {
       type: String,
       value: ''
+    },
+    /** tab 页等无上级页面的场景传 false 隐藏返回箭头（默认 true 不影响既有页面） */
+    showBack: {
+      type: Boolean,
+      value: true
     }
   },
   data: {

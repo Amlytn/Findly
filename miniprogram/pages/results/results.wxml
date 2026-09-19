@@ -8,9 +8,10 @@
       <view class="seg-item {{tab === 'space' ? 'on' : ''}}" bindtap="setTab" data-t="space">空间</view>
     </view>
 
-    <view class="cnt">找到 {{count}} 个相关结果</view>
+    <view class="cnt">{{loading ? '搜索中…' : '找到 ' + count + ' 个相关结果'}}</view>
+    <view class="parsed" wx:if="{{!loading && parsedText}}">{{parsedText}}</view>
 
-    <block wx:if="{{tab !== 'space'}}">
+    <block wx:if="{{!loading && tab !== 'space'}}">
       <view class="res-item" wx:for="{{items}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
         <image src="{{item.img}}" mode="aspectFit" />
         <view class="res-info">
@@ -22,7 +23,7 @@
       </view>
     </block>
 
-    <block wx:if="{{tab !== 'item'}}">
+    <block wx:if="{{!loading && tab !== 'item'}}">
       <view class="res-item" wx:for="{{spaces}}" wx:key="id" bindtap="goSpaces" data-id="{{item.id}}">
         <view class="sp-chip">
           <view class="ic ic-house"></view>
@@ -35,6 +36,8 @@
       </view>
     </block>
 
-    <view class="empty" wx:if="{{count === 0}}">没有找到相关结果，换个关键词试试～</view>
+    <view class="empty" wx:if="{{loading}}">搜索中…</view>
+    <view class="empty" wx:elif="{{error}}" bindtap="retry">{{error}}</view>
+    <view class="empty" wx:elif="{{count === 0}}">没有找到相关结果，换个关键词试试～</view>
   </view>
 </view>

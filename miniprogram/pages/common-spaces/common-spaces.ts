@@ -17,6 +17,8 @@ interface ShelfData {
   path: string
   count: number
   items: ShelfItem[]
+  /** 徽标数 > 已拉取物品数（超出 100 件窗口）时为 true，界面提示诚实截断 */
+  truncated: boolean
 }
 
 function computeSpacePath(spaceMap: Map<string, SpaceListItem>, id: string): string {
@@ -68,6 +70,9 @@ Page({
           spacesRes && Array.isArray(spacesRes.list) ? spacesRes.list : []
         const items: ItemListItem[] =
           itemsRes && Array.isArray(itemsRes.items) ? itemsRes.items : []
+        // 全量物品总数（后端 total，排除软删除）——用于与统计页同口径计算待归位
+        const totalItems: number =
+          itemsRes && typeof itemsRes.total === 'number' ? itemsRes.total : items.length
 
         // 构建空间映射字典与父子路径
         const spaceMap = new Map<string, SpaceListItem>()
@@ -111,23 +116,32 @@ Page({
         })
 
         const shelves: ShelfData[] = spacesWithItems.map(function (s) {
+          const count = s.itemCount || 0
+          const shelfItems = itemsBySpace.get(s.id) || []
           return {
             id: s.id,
             name: s.name,
             path: computeSpacePath(spaceMap, s.id),
-            count: s.itemCount || 0,
-            items: itemsBySpace.get(s.id) || []
+            count: count,
+            items: shelfItems,
+            truncated: count > shelfItems.length
           }
         })
 
-        // "待归位"虚拟分组：未指定空间的物品排在货架最前（它是待处理项）
-        if (unassigned.length > 0) {
+        // "待归位"虚拟分组：徽标与统计页同口径（total - ΣitemCount），
+        // 只要待归位数 > 0 就置顶展示；物品超出 100 件窗口时如实提示已显示数量
+        const sumItemCount = spaceList.reduce(function (acc, s) {
+          return acc + (s.itemCount || 0)
+        }, 0)
+        const pendingCount = Math.max(0, totalItems - sumItemCount)
+        if (pendingCount > 0 || unassigned.length > 0) {
           shelves.unshift({
             id: 'pending',
             name: '待归位',
             path: '未指定收纳位置',
-            count: unassigned.length,
-            items: unassigned
+            count: pendingCount > 0 ? pendingCount : unassigned.length,
+            items: unassigned,
+            truncated: pendingCount > unassigned.length
           })
         }
 

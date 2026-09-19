@@ -84,3 +84,14 @@
   font-size: 28rpx;
   color: #9AB0B4;
 }
+
+/* AI 解析意图一行说明（"怎么找到的"），样式随全局浅青辅助文本 */
+.parsed {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #4A7A80;
+  background: #F0F7F6;
+  border-radius: 12rpx;
+  padding: 12rpx 20rpx;
+  line-height: 1.6;
+}

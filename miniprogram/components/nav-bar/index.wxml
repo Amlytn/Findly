@@ -1,5 +1,5 @@
 <view class="nav" style="padding-top: {{statusBarHeight}}px; height: {{navTotal}}px;">
-  <view class="nav-back" bindtap="onBack">
+  <view class="nav-back" wx:if="{{showBack}}" bindtap="onBack">
     <view class="nav-arrow"></view>
   </view>
   <view class="nav-title">{{title}}</view>

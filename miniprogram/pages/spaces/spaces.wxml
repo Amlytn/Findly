@@ -95,6 +95,7 @@
           >
             <block wx:for="{{sec.children}}" wx:key="id" wx:for-item="childNode">
               <space-tree-card
+                id="space-{{childNode.id}}"
                 node="{{childNode}}"
                 expandedMap="{{expandedMap}}"
                 itemsMap="{{itemsMap}}"

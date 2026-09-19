@@ -202,6 +202,7 @@
   z-index: 100;
   display: flex;
   align-items: flex-end;
+  animation: drillFade 0.22s ease both;
 }
 
 .drill-sheet {
@@ -212,6 +213,7 @@
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
+  animation: drillUp 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 .drill-head {
@@ -240,7 +242,8 @@
 }
 
 .drill-body {
-  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
   max-height: calc(72vh - 100rpx);
   padding: 0 24rpx 24rpx;
   box-sizing: border-box;
@@ -309,4 +312,14 @@
   font-size: 22rpx;
   color: #8FA8AD;
   padding: 8rpx 0 4rpx;
+}
+
+@keyframes drillFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes drillUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }

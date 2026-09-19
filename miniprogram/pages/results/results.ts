@@ -13,7 +13,21 @@ Page({
     parsed: null as ParsedQuery | null,
     count: 0,
     loading: true,
-    error: ''
+    error: '',
+    parsedText: ''
+  },
+
+  /** parsed → 一句话解释"怎么找到的"（契约：keyword 可能含 | 分隔的同义词） */
+  buildParsedText(p: ParsedQuery | null): string {
+    if (!p) return ''
+    const parts: string[] = []
+    const kws = (p.keyword || '').split('|').map(function (s: string) { return s.trim() }).filter(function (s: string) { return !!s })
+    if (kws.length) parts.push('关键词「' + kws.join(' / ') + '」')
+    if (p.color) parts.push('颜色「' + p.color + '」')
+    if (p.features && p.features.length) parts.push('特征「' + p.features.join('、') + '」')
+    // 降级来源（"LLM 不可用…"）对用户是负面噪音，不上屏；正常解析来源照常展示
+    if (p.source && p.source.indexOf('降级') < 0 && p.source.indexOf('不可用') < 0) parts.push('来源：' + p.source)
+    return parts.join(' · ')
   },
 
   onLoad(query: any) {
@@ -49,11 +63,12 @@ Page({
         items: items,
         spaces: spaces,
         parsed: res.parsed || null,
+        parsedText: that.buildParsedText(res.parsed || null),
         count: items.length + spaces.length,
         loading: false
       })
     }).catch(function (e: any) {
-      that.setData({ loading: false, error: e.message || '搜索失败，点击重试', items: [], spaces: [], count: 0 })
+      that.setData({ loading: false, error: e.message || '搜索失败，点击重试', items: [], spaces: [], count: 0, parsedText: '' })
     })
   },
 

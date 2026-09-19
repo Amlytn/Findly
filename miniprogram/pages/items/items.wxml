@@ -1,31 +1,54 @@
-<view class="page">
-  <view class="screen">
-    <nav-bar title="我的物品" />
+<view class="page items-page">
+  <!-- 导航固定顶部（不随列表滚动），刷新指示器出现在导航栏下方而非屏幕最顶端 -->
+  <nav-bar title="我的物品" />
 
-    <view class="s-bar" bindtap="goSearch">
-      <view class="ic ic-search"></view>
-      <text class="s-ph-txt">搜索物品名称、品牌、标签...</text>
+  <scroll-view
+    class="items-scroll"
+    scroll-y
+    enhanced
+    show-scrollbar="{{false}}"
+    refresher-enabled
+    refresher-default-style="none"
+    refresher-background="transparent"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+    bindscrolltolower="onLoadMore"
+  >
+    <view slot="refresher" class="refresher-slot" style="height: {{refresherH}}px">
+      <view class="refresher-dot"></view>
+      <view class="refresher-dot refresher-dot-2"></view>
+      <view class="refresher-dot refresher-dot-3"></view>
     </view>
 
-    <scroll-view class="chips" scroll-x>
-      <view
-        class="chip {{cat === item.key ? 'on' : ''}}"
-        wx:for="{{cats}}"
-        wx:key="key"
-        bindtap="setCat"
-        data-k="{{item.key}}"
-      >{{item.name}} {{counts[index]}}</view>
-    </scroll-view>
-
-    <view class="grid">
-      <view class="g-card" wx:for="{{shown}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-        <image src="{{item.img}}" mode="aspectFill" />
-        <view class="g-name">{{item.name}}</view>
-        <view class="g-meta" wx:if="{{item.meta}}">{{item.meta}}</view>
-        <view class="g-loc">{{item.space}} · {{item.count}}件</view>
+    <view class="screen">
+      <view class="s-bar" bindtap="goSearch">
+        <view class="ic ic-search"></view>
+        <text class="s-ph-txt">搜索物品名称、品牌、标签...</text>
       </view>
-    </view>
 
-    <view class="empty" wx:if="{{shown.length === 0}}">该分类下暂无物品</view>
-  </view>
+      <scroll-view class="chips" scroll-x>
+        <view
+          class="chip {{cat === item.key ? 'on' : ''}}"
+          wx:for="{{cats}}"
+          wx:key="key"
+          bindtap="setCat"
+          data-k="{{item.key}}"
+        >{{item.name}} {{counts[index]}}</view>
+      </scroll-view>
+
+      <view class="list-loading" wx:if="{{loading && !refreshing && shown.length > 0}}">刷新中…</view>
+
+      <view class="grid">
+        <view class="g-card" wx:for="{{shown}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+          <image src="{{item.img}}" mode="aspectFill" />
+          <view class="g-name">{{item.name}}</view>
+          <view class="g-meta" wx:if="{{item.meta}}">{{item.meta}}</view>
+          <view class="g-loc">{{item.space}} · {{item.count}}件</view>
+        </view>
+      </view>
+
+      <view class="empty" wx:if="{{error}}" bindtap="retry">{{error}}</view>
+      <view class="empty" wx:elif="{{!loading && shown.length === 0}}">该分类下暂无物品</view>
+    </view>
+  </scroll-view>
 </view>

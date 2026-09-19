@@ -6,8 +6,11 @@ Page({
   data: {
     id: DEFAULT_ID,
     avatar: '',
-    itemCount: 0,
-    spaceCount: 0
+    /** 昵称：getMe 成功后用后端昵称，未设置/失败时回退展示 ID */
+    displayName: DEFAULT_ID,
+    /** 统计失败时展示 –，避免弱网下把真实物品数误显示为 0 */
+    itemCount: '–',
+    spaceCount: '–'
   },
 
   /** 点击头像 → 个人资料编辑 */
@@ -40,7 +43,8 @@ Page({
     const profile = loadProfile()
     this.setData({
       id: profile.id,
-      avatar: profile.avatar
+      avatar: profile.avatar,
+      displayName: profile.id
     })
     this.fetchMe()
   },
@@ -51,7 +55,11 @@ Page({
     getMe().then(function (res) {
       const me = res as UsersMe & { __error?: true }
       if (!me || me.__error) return
-      that.setData({ itemCount: me.itemCount, spaceCount: me.spaceCount })
-    }).catch(function () { /* 静默：保留兜底展示 */ })
+      that.setData({
+        displayName: me.nickname || that.data.id,
+        itemCount: me.itemCount,
+        spaceCount: me.spaceCount
+      })
+    }).catch(function () { /* 静默：统计保持 –，不把失败伪装成 0 */ })
   }
 })

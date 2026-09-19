@@ -197,3 +197,10 @@
   line-height: 80rpx;
   border: none;
 }
+
+/* 货架截断诚实提示（物品超出 100 件拉取窗口时） */
+.shelf-truncated {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8FA8AD;
+}

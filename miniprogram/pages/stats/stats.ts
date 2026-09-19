@@ -168,6 +168,14 @@ Page({
   /** 占位：拦截弹层主体的点击冒泡（点遮罩才关闭） */
   noop() {},
 
+  /** 占位：拦截弹层的触摸滚动穿透（背景统计页不随手势滚动） */
+  preventTouchMove() {},
+
+  /** 弹层加载失败重试：按当前弹层模式重新拉取（勿把 event 直接当 type 传入） */
+  onRetryPopup() {
+    this.loadPopup(this.data.popup.type)
+  },
+
   loadPopup(type: DrillType) {
     const that = this
     this.setData({ 'popup.loading': true, 'popup.error': '' })

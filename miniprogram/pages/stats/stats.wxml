@@ -82,16 +82,16 @@
     </block>
 
     <!-- 半屏下钻弹层：三个数字框共用，遮罩点击关闭 -->
-    <view class="drill-mask" wx:if="{{popup.open}}" bindtap="closePopup">
-      <view class="drill-sheet" catchtap="noop">
+    <view class="drill-mask" wx:if="{{popup.open}}" bindtap="closePopup" catchtouchmove="preventTouchMove">
+      <view class="drill-sheet" catchtap="noop" catchtouchmove="preventTouchMove">
         <view class="drill-head">
           <text class="drill-title">{{popup.title}}</text>
           <view class="drill-close" bindtap="closePopup">✕</view>
         </view>
 
-        <view class="drill-body">
+        <scroll-view class="drill-body" scroll-y>
           <view class="empty" wx:if="{{popup.loading}}">加载中…</view>
-          <view class="empty" wx:elif="{{popup.error}}" bindtap="loadPopup">{{popup.error}}，点击重试</view>
+          <view class="empty" wx:elif="{{popup.error}}" bindtap="onRetryPopup">{{popup.error}}，点击重试</view>
           <block wx:else>
             <view class="empty" wx:if="{{popup.rows.length === 0}}">
               {{popup.type === 'pending' ? '太棒了，所有物品都已归位' : '暂无数据'}}
@@ -119,7 +119,7 @@
             </view>
             <view class="drill-hint" wx:if="{{popup.truncated}}">仅显示最近 100 件</view>
           </block>
-        </view>
+        </scroll-view>
       </view>
     </view>
   </view>

@@ -88,3 +88,64 @@
   font-size: 28rpx;
   color: #9AB0B4;
 }
+
+/* 静默刷新的页面内反馈（下拉/返回触发时出现在分类 chips 与网格之间） */
+.list-loading {
+  margin: 16rpx 0 0;
+  text-align: center;
+  font-size: 24rpx;
+  color: #8FA8AD;
+}
+
+/* ============ scroll-view 自定义下拉刷新布局 ============ */
+/* 导航固定顶部，列表区占满剩余高度（异形屏由 nav-bar 内部实测值适配） */
+.items-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.items-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 自定义刷新槽：位于导航栏下方（比原生圆点的屏幕最顶端更低），三点轮播仿原生加载动画 */
+/* 高度由内联样式动态控制（跟随下拉距离）；width:100% 让槽位撑满屏宽——
+   自定义刷新槽默认收缩到内容宽，不补宽度会导致三点贴在屏幕最左侧 */
+.refresher-slot {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.refresher-dot {
+  width: 12rpx;
+  height: 12rpx;
+  margin: 0 6rpx;
+  border-radius: 50%;
+  background: #6A8C97;
+  animation: refDot 1.2s ease-in-out infinite;
+}
+
+.refresher-dot-2 {
+  animation-delay: 0.15s;
+}
+
+.refresher-dot-3 {
+  animation-delay: 0.3s;
+}
+
+@keyframes refDot {
+  0%, 60%, 100% {
+    opacity: 0.2;
+    transform: scale(0.75);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
