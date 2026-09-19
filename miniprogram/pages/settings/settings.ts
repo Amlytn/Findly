@@ -1,4 +1,4 @@
-import { clearToken, ensureLogin } from '../../services/auth'
+import { clearToken } from '../../services/auth'
 import { clearHistory } from '../../utils/search-history'
 import type { IAppOption } from '../../app'
 
@@ -78,8 +78,10 @@ Page({
           app.globalData.recognizePending = false
           app.globalData.focusSpaceId = ''
         }
-        // 退出后重新触发静默登录，建立干净的会话凭证，避免无凭据裸请求
-        ensureLogin(true).catch(function () {})
+        // 退出后保持游客态（PRD 6.1：游客可浏览，写操作时重新静默登录）。
+        // 无需在此立即重登：request 层的 401 拦截会在需要时自动
+        // ensureLogin(true) 并重放原请求；当前后端过渡期对无凭据
+        // 请求仍以 x-user-id: dev 兜底放行，浏览不受影响。
         wx.showToast({ title: '已退出', icon: 'success' })
         setTimeout(function () {
           wx.switchTab({ url: '/pages/index/index' })

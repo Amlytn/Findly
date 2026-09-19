@@ -54,8 +54,13 @@ Page({
     }
     saveProfile({ id: id, avatar: this.data.avatar })
     wx.showToast({ title: '已保存', icon: 'success' })
+    // 延迟返回：若用户在等待期内手动返回过，本页已不在栈顶，跳过以免多退一页
     setTimeout(function () {
-      wx.navigateBack({ delta: 1 })
+      const pages = getCurrentPages()
+      const top = pages[pages.length - 1]
+      if (top && top.route === 'pages/profile-edit/profile-edit') {
+        wx.navigateBack({ delta: 1 })
+      }
     }, 600)
   }
 })

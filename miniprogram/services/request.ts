@@ -8,9 +8,10 @@
 import { ApiError } from '../types/api'
 import { getToken, clearToken } from './token'
 import { ensureLogin } from './auth'
-import { getApiBase, getServerRoot, setServerRoot, fullUrl, SERVER_ROOT, API_BASE } from './config'
+import { getApiBase, getServerRoot, setServerRoot, fullUrl } from './config'
 
-export { getApiBase, getServerRoot, setServerRoot, fullUrl, SERVER_ROOT, API_BASE }
+// 只再导出动态函数；SERVER_ROOT/API_BASE 快照常量不在此转发，避免页面拿到陈旧地址
+export { getApiBase, getServerRoot, setServerRoot, fullUrl }
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'

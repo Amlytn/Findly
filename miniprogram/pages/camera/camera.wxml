@@ -42,6 +42,7 @@
     </view>
     <view class="flash {{flash === 'on' ? 'on' : ''}}" bindtap="toggleFlash">
       <view class="flash-ic"></view>
+      <text class="flash-tx">{{flash === 'auto' ? '自动' : (flash === 'on' ? '开' : '关')}}</text>
     </view>
   </view>
 </view>

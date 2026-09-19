@@ -60,5 +60,7 @@ export function fullUrl(path: string | null | undefined): string {
   return /^https?:\/\//.test(path) ? path : getServerRoot() + path
 }
 
+/** ⚠️ 快照常量：仅为本模块初次求值时的地址，setServerRoot 切换环境后不会更新。
+ * 请求/上传/图片拼接一律使用 getServerRoot() / getApiBase() / fullUrl() 动态函数。 */
 export const SERVER_ROOT = getServerRoot()
 export const API_BASE = getApiBase()

@@ -18,6 +18,9 @@ Page({
         // 原图留给详情页完整展示；方图走识别与列表
         app.globalData.recognizeImgFull = raw
         app.globalData.recognizePending = true
+        // 新登记流程开始时清空位置残留（location 页"移动位置"场景也会写这两个字段）
+        app.globalData.locationId = ''
+        app.globalData.locationPath = []
         const go = function () {
           wx.navigateTo({ url: '/pages/result/result' })
         }
@@ -41,6 +44,9 @@ Page({
     app.globalData.recognizeImg = ''
     app.globalData.recognizeImgFull = ''
     app.globalData.recognizePending = false
+    // 同拍照/相册流程：清空位置残留，避免继承上次流程的选择
+    app.globalData.locationId = ''
+    app.globalData.locationPath = []
     wx.navigateTo({ url: '/pages/result/result' })
   }
 })

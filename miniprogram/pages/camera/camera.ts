@@ -2,8 +2,8 @@ import { cropToSquare } from '../../utils/crop'
 
 Page({
   data: {
-    /** <camera> 闪光灯值：on / off（可扩展 torch 常亮） */
-    flash: 'off' as 'on' | 'off',
+    /** <camera> 闪光灯值：三态循环 自动 / 开 / 关（PRD 图 2） */
+    flash: 'auto' as 'auto' | 'on' | 'off',
     /** 相机授权失败等异常时降级为相册选择 */
     cameraOk: true,
     /** 快门防抖：拍照/裁切期间禁用 */
@@ -29,8 +29,10 @@ Page({
     wx.navigateBack({ delta: 1 })
   },
 
+  /** 三态循环：自动 → 开 → 关 → 自动（PRD 图 2） */
   toggleFlash() {
-    this.setData({ flash: this.data.flash === 'on' ? 'off' : 'on' })
+    const next = this.data.flash === 'auto' ? 'on' : (this.data.flash === 'on' ? 'off' : 'auto')
+    this.setData({ flash: next })
   },
 
   /** 相机组件异常（授权拒绝/被占用）：降级相册流程 */
@@ -77,6 +79,10 @@ Page({
     const app = getApp() as any
     app.globalData.recognizeImgFull = raw
     app.globalData.recognizePending = true
+    // 每次新登记流程开始时清空位置残留：location 页在"移动位置"等场景
+    // 也会写 globalData.locationId/locationPath，不清会把上次选择带进本次保存
+    app.globalData.locationId = ''
+    app.globalData.locationPath = []
     const go = function () {
       wx.navigateTo({ url: '/pages/result/result' })
     }

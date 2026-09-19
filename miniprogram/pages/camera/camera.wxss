@@ -189,17 +189,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .flash-ic {
   width: 40rpx;
   height: 40rpx;
+  margin-bottom: 12rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2z'/%3E%3C/svg%3E");
 }
 
+/* 闪光灯当前状态角标：自动(半透明白) / 开(品牌青) / 关(半透明白) */
+.flash-tx {
+  position: absolute;
+  bottom: 8rpx;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 16rpx;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.55);
+}
+
 .flash.on {
   background: rgba(49, 203, 187, 0.4);
+}
+
+.flash.on .flash-tx {
+  color: #31CBBB;
 }

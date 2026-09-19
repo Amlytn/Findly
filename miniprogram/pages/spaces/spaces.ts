@@ -232,7 +232,8 @@ Page({
     const that = this
     this.setData({ ['loadingMap.' + spaceId]: true })
 
-    getItems({ spaceId: spaceId, page: 1, pageSize: 50 }).then(function (res) {
+    // 后端 pageSize 上限 100；超出部分由组件内"仅显示前 N 件"提示兜底
+    getItems({ spaceId: spaceId, page: 1, pageSize: 100 }).then(function (res) {
       const items: PanelItem[] = res.items.map(function (it: ItemListItem) {
         const parts = [it.category, it.color, it.brand].filter(Boolean)
         return Object.assign({}, it, {
@@ -242,7 +243,7 @@ Page({
       })
       that.setData({
         ['itemsMap.' + spaceId]: items,
-        // 徽标显示后端直属总数（res.total），而非本页已加载条数（pageSize 50 会截断 items.length）
+        // 徽标显示后端直属总数（res.total），而非本页已加载条数（pageSize 上限会截断 items.length）
         ['itemsCountMap.' + spaceId]: typeof res.total === 'number' ? res.total : items.length,
         ['loadingMap.' + spaceId]: false
       })
