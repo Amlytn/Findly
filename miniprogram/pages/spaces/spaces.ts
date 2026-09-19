@@ -3,6 +3,7 @@ import { getItems } from '../../services/items'
 import { fullUrl } from '../../services/request'
 import { SpaceTree, ItemListItem } from '../../types/api'
 import { matchSpaceIcon, subtreeCount } from '../../utils/spaces'
+import type { IAppOption } from '../../app'
 
 export interface SpaceCardItem {
   id: string
@@ -60,7 +61,7 @@ Page({
       bar.setData({ selected: 2 })
     }
     // 从搜索结果或其他页面带着 focusSpaceId 切回时自动定位并唤起抽屉
-    const app = getApp() as any
+    const app = getApp<IAppOption>()
     const focusId = app && app.globalData && app.globalData.focusSpaceId
     if (focusId) {
       app.globalData.focusSpaceId = ''

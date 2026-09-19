@@ -99,7 +99,7 @@ Page({
           wx.showToast({ title: '空间名称不能为空', icon: 'none' })
           return
         }
-        createSpace({ name: name }).then(function (r: any) {
+        createSpace({ name: name }).then(function (r) {
           wx.showToast({ title: '已创建空间', icon: 'success' })
           that.fetch(r && r.id)
         }).catch(function () { /* request 层已统一 toast */ })

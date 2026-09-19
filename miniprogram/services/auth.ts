@@ -2,8 +2,8 @@
  * 登录态管理：wx.login code 换 JWT（7 天），本地缓存、提前 1 天续期。
  * 联调环境后端未配 WX_APPID 时降级 dev-token 测试通道（M5 随 x-user-id 兜底一并移除）。
  */
-import { API_BASE } from './request'
-import { getToken, setToken } from './token'
+import { getApiBase } from './config'
+import { getToken, setToken, clearToken } from './token'
 import type { DevTokenResponse, LoginResponse } from '../types/api'
 
 export { getToken, clearToken } from './token'
@@ -11,7 +11,7 @@ export { getToken, clearToken } from './token'
 function wxLogin(): Promise<string> {
   return new Promise<string>(function (resolve, reject) {
     wx.login({
-      success(res) {
+      success(res: any) {
         if (res.code) resolve(res.code)
         else reject({ statusCode: 0, message: 'wx.login 未返回 code' })
       },
@@ -24,12 +24,12 @@ function wxLogin(): Promise<string> {
 function rawRequest<T>(method: 'GET' | 'POST', path: string, data?: object): Promise<T> {
   return new Promise<T>(function (resolve, reject) {
     wx.request({
-      url: API_BASE + path,
+      url: getApiBase() + path,
       method,
       data,
       timeout: 10000,
       header: { 'Content-Type': 'application/json' },
-      success(res) {
+      success(res: any) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data as T)
           return
@@ -45,11 +45,22 @@ function rawRequest<T>(method: 'GET' | 'POST', path: string, data?: object): Pro
   })
 }
 
+// 登录 Promise 并发锁：避免多处并发调用 ensureLogin 时频繁触发 wx.login 造成 code 互相作废
+let inFlightLogin: Promise<string> | null = null
+
 /** 静默登录：拿到可用 token；失败时抛错（启动流程不阻塞，页面自行兜底） */
-export function ensureLogin(): Promise<string> {
+export function ensureLogin(force = false): Promise<string> {
+  if (force) {
+    clearToken()
+  }
   const cached = getToken()
   if (cached) return Promise.resolve(cached)
-  return wxLogin()
+
+  if (inFlightLogin) {
+    return inFlightLogin
+  }
+
+  inFlightLogin = wxLogin()
     .then(function (code) { return rawRequest<LoginResponse>('POST', '/auth/login', { code }) })
     .catch(function (e: { statusCode?: number }) {
       // 400 = 后端未配置 WX_APPID/WX_APPSECRET（联调环境）→ 测试通道兜底
@@ -61,6 +72,13 @@ export function ensureLogin(): Promise<string> {
     .then(function (res) {
       if (!res || !res.token) throw { statusCode: 0, message: '登录响应缺少 token' }
       setToken(res.token)
+      inFlightLogin = null
       return res.token
+    }, function (err) {
+      inFlightLogin = null
+      throw err
     })
+
+  return inFlightLogin
 }
+

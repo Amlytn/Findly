@@ -1,7 +1,6 @@
-import { fullUrl } from '../../services/request'
+import { fullUrl, isApiError } from '../../services/request'
 import { getItem, deleteItem, updateItem, getRelated } from '../../services/items'
 import { getSuggestions } from '../../services/search'
-import { isApiError } from '../../services/request'
 import { ItemDetail } from '../../types/api'
 
 Page({

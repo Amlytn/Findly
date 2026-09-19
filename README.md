@@ -13,7 +13,7 @@ design/           品牌资产
 docs/             协作文档（架构 / API / 数据库 / AI，随代码演进维护）
 miniprogram/      微信小程序端（原生 + TypeScript）
   app.json 等       工程入口（project.private.config.json 不入库）
-  pages/            页面（index / items / spaces / profile / camera / add / result / location / detail / search / results / settings / profile-edit，共 13 屏）
+  pages/            页面（index / items / spaces / profile / camera / add / result / location / detail / search / results / settings / profile-edit / usage / doc，共 15 屏）
   components/nav-bar/  +  custom-tab-bar/（自定义底部导航，中间凸起 ➕）
   services/         统一接口层（request / items / spaces / ai / search / auth / upload / users）
 server/           后端（NestJS + Prisma + PostgreSQL/SQLite）
@@ -21,7 +21,7 @@ server/           后端（NestJS + Prisma + PostgreSQL/SQLite）
   prisma/           schema.prisma（六表）+ seed.ts
 ```
 
-小程序端 13 屏界面已全部落地并接入真实后端 API（JWT 鉴权、图片上传、AI 识物与智能搜索）；后端业务模块与 30 例自动化单元测试均已完成并接入 CI 流水线。
+小程序端 15 屏界面已全部落地并接入真实后端 API（JWT 鉴权、图片上传、AI 识物与智能搜索）；后端业务模块与 30 例自动化单元测试均已完成并接入 CI 流水线。
 
 ## 设计资产维护
 

@@ -1,6 +1,6 @@
 import { ensureLogin } from './services/auth'
 
-interface GlobalData {
+export interface GlobalData {
   version: string
   statusBarHeight: number
   navBarHeight: number
@@ -11,6 +11,12 @@ interface GlobalData {
   locationId: string
   /** 本次识图是否待发起（result 页消费后清除，防 onShow 重复调 AI） */
   recognizePending: boolean
+  /** 跨页面传递的焦点空间 ID（spaces 页自动展开抽屉用） */
+  focusSpaceId?: string
+}
+
+export interface IAppOption {
+  globalData: GlobalData
 }
 
 App({
@@ -45,6 +51,7 @@ App({
     // 位置选择 → 识别结果 回填的位置路径
     locationPath: [],
     locationId: '',
-    recognizePending: false
+    recognizePending: false,
+    focusSpaceId: ''
   } as GlobalData
 })
