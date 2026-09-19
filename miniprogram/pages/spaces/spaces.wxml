@@ -1,6 +1,9 @@
 <view class="page">
   <view class="screen">
-    <nav-bar title="空间管理" />
+    <!-- 本页 .screen 横向 padding 置 0（通栏卡片自管边距），导航区单独补 32rpx/12rpx 与其他页对齐；tab 页无上级页面，不显示返回箭头 -->
+    <view class="spaces-nav">
+      <nav-bar title="空间管理" show-back="{{false}}" />
+    </view>
 
     <!-- 顶部规划提示通栏 -->
     <view class="tip-bar" bindtap="onTipTap">

@@ -1,6 +1,9 @@
 <view class="page items-page">
   <!-- 导航固定顶部（不随列表滚动），刷新指示器出现在导航栏下方而非屏幕最顶端 -->
-  <nav-bar title="我的物品" />
+  <!-- 本页未走 .screen 全局容器，导航区单独补 32rpx/12rpx 边距与其他页对齐；tab 页无上级页面，不显示返回箭头 -->
+  <view class="items-nav">
+    <nav-bar title="我的物品" show-back="{{false}}" />
+  </view>
 
   <scroll-view
     class="items-scroll"

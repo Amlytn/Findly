@@ -22,6 +22,11 @@ page {
   box-sizing: border-box;
 }
 
+/* 导航区补全局边距（.screen 的横向 padding 在本页被置 0，由各内容块自管 32rpx）：左右与其他页对齐，顶部对齐 .screen 的 12rpx 顶距 */
+.spaces-nav {
+  padding: 12rpx 32rpx 0;
+}
+
 /* 2. 顶部规划通栏（对齐首页顶部搜索栏大圆角风格 24rpx） */
 .tip-bar {
   margin: 16rpx 32rpx 20rpx;
