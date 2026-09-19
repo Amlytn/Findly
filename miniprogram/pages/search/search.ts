@@ -59,7 +59,7 @@ Page({
   /** 点击历史记录直接检索 */
   goHist(e: any) {
     const kw = e.currentTarget.dataset.kw
-    this.setData({ kw: kw, history: pushHistory(kw) })
+    this.setData({ history: pushHistory(kw) })
     wx.navigateTo({ url: '/pages/results/results?kw=' + encodeURIComponent(kw) })
   },
 

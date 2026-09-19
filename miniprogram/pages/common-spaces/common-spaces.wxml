@@ -50,6 +50,7 @@
               <text class="shelf-badge">{{shelf.count}}件</text>
             </view>
             <view class="shelf-path" wx:if="{{shelf.path}}">{{shelf.path}}</view>
+            <view class="shelf-truncated" wx:if="{{shelf.truncated}}">共 {{shelf.count}} 件，已显示 {{shelf.items.length}} 件</view>
           </view>
 
           <!-- 货架内容：横向滑动展示物品 -->
@@ -74,6 +75,11 @@
               <view class="shelf-add-txt">存新物品</view>
             </view>
           </scroll-view>
+        </view>
+
+        <!-- 筛选后分组不存在（如 filter=pending 但全部已归位）的兜底 -->
+        <view class="empty" wx:if="{{visibleShelves.length === 0}}">
+          {{activeSpaceId === 'pending' ? '太棒了，所有物品都已归位' : '该分组暂无可展示内容'}}
         </view>
       </view>
     </block>

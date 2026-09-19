@@ -160,6 +160,16 @@ Page({
         expandedMap: expandedMap,
         loading: false,
         loaded: true
+      }, function () {
+        // focusId 定位：渲染完成后滚到目标空间卡片，否则它可能停在屏幕外
+        if (focusId) {
+          wx.nextTick(function () {
+            wx.pageScrollTo({
+              selector: '#space-' + focusId,
+              duration: 300
+            })
+          })
+        }
       })
 
       // 对所有当前已展开的空间刷新或拉取物品列表
@@ -229,6 +239,8 @@ Page({
 
   /** 加载指定空间下的直属物品列表 */
   loadSpaceItems(spaceId: string) {
+    // 在途去重：同一空间的物品请求不重复发起（快速收起→再展开等场景）
+    if (this.data.loadingMap && this.data.loadingMap[spaceId]) return
     const that = this
     this.setData({ ['loadingMap.' + spaceId]: true })
 

@@ -3,5 +3,7 @@
   "enablePullDownRefresh": true,
   "usingComponents": {
     "nav-bar": "/components/nav-bar/index"
-  }
+  },
+  "backgroundTextStyle": "dark",
+  "backgroundColorTop": "#FFFFFF"
 }

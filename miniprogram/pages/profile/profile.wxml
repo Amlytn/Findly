@@ -1,6 +1,6 @@
 <view class="page">
   <view class="screen">
-    <nav-bar title="个人中心" />
+    <nav-bar title="个人中心" show-back="{{false}}" />
 
     <view class="p-card">
       <!-- 点击头像进入个人资料编辑 -->
@@ -9,7 +9,7 @@
         <view wx:else class="p-avatar avatar"></view>
       </view>
       <view class="p-info">
-        <view class="p-name">小明同学</view>
+        <view class="p-name">{{displayName}}</view>
         <view class="p-sub">ID:{{id}}</view>
       </view>
     </view>
