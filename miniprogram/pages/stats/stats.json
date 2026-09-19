@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "物品统计",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/index"
+  }
+}

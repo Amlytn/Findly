@@ -1,6 +1,7 @@
 import { fullUrl, isApiError } from '../../services/request'
 import { getItem, deleteItem, updateItem, getRelated } from '../../services/items'
 import { getSuggestions } from '../../services/search'
+import { isFavorite, toggleFavorite } from '../../utils/favorites'
 import { ItemDetail } from '../../types/api'
 
 Page({
@@ -12,6 +13,7 @@ Page({
     suggestions: [] as string[],
     loading: true,
     error: '',
+    isFavorite: false,
     /** 编辑弹层开关 / 提交中标记 / 表单值（字段与 PATCH /items/:id 契约一一对应） */
     editing: false,
     saving: false,
@@ -32,6 +34,12 @@ Page({
     this.fetch()
   },
 
+  onShow() {
+    if (this.data.id) {
+      this.setData({ isFavorite: isFavorite(this.data.id) })
+    }
+  },
+
   fetch() {
     const that = this
     this.setData({ loading: true, error: '' })
@@ -44,7 +52,12 @@ Page({
         space: res.space ? res.space.name : '未归位',
         zone: res.path || ''
       })
-      that.setData({ obj: obj, tags: res.tags || [], loading: false })
+      that.setData({
+        obj: obj,
+        tags: res.tags || [],
+        loading: false,
+        isFavorite: isFavorite(that.data.id)
+      })
     }).catch(function (e: any) {
       that.setData({ loading: false, error: e.message || '加载失败' })
     })
@@ -76,6 +89,18 @@ Page({
     const url = (this.data as any).obj && (this.data as any).obj.previewUrl
     if (!url) return
     wx.previewImage({ urls: [url] })
+  },
+
+  /** 切换收藏状态 */
+  onToggleFavorite() {
+    if (!this.data.id) return
+    const next = toggleFavorite(this.data.id)
+    this.setData({ isFavorite: next })
+    wx.showToast({
+      title: next ? '已加入收藏' : '已取消收藏',
+      icon: next ? 'success' : 'none',
+      duration: 1500
+    })
   },
 
   /** 编辑入口：选择「编辑资料 / 移动位置」（删除在页面底部有独立按钮，不重复放这里） */

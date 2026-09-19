@@ -1,0 +1,60 @@
+<view class="page">
+  <view class="screen">
+    <nav-bar title="收藏物品" />
+
+    <!-- 加载中 -->
+    <view class="empty" wx:if="{{loading}}">加载中…</view>
+
+    <!-- 失败态：与真空态严格区分（PRD 6.4），点击重试 -->
+    <view class="empty" wx:elif="{{error}}" bindtap="loadFavorites">{{error}}</view>
+
+    <!-- 空态 -->
+    <view class="fav-empty" wx:elif="{{empty}}">
+      <view class="fav-empty-icon"></view>
+      <view class="fav-empty-title">还没有收藏物品</view>
+      <view class="fav-empty-desc">在物品详情页点击右上角星标，即可将常用物品收藏在这里快速查找</view>
+      <button class="fav-empty-btn" bindtap="goShelf">去全屋清单挑一件</button>
+      <view class="fav-empty-link" bindtap="goAdd">先去登记一件物品</view>
+    </view>
+
+    <!-- 列表展示 -->
+    <block wx:else>
+      <view class="fav-header">
+        <text class="fav-count-badge">已收藏 {{totalFav}} 件</text>
+        <text class="fav-hint">点击卡片查看详情</text>
+      </view>
+
+      <view class="fav-list">
+        <view class="fav-card" wx:for="{{items}}" wx:key="id" bindtap="onItemTap" data-id="{{item.id}}">
+          <image class="fav-img" src="{{item.img}}" mode="aspectFill" />
+          <view class="fav-info">
+            <view class="fav-row">
+              <view class="fav-name">{{item.name}}</view>
+              <view
+                class="fav-action-star"
+                catchtap="onUnfavorite"
+                data-id="{{item.id}}"
+                data-name="{{item.name}}"
+                hover-class="fav-action-hover"
+                aria-label="取消收藏"
+              >
+                <view class="fav-star-icon"></view>
+              </view>
+            </view>
+            <view class="fav-meta" wx:if="{{item.color || item.brand}}">
+              {{item.color ? item.color : ''}}{{item.color && item.brand ? ' · ' : ''}}{{item.brand ? item.brand : ''}}
+            </view>
+            <view class="fav-tags" wx:if="{{item.tags && item.tags.length}}">
+              <text class="fav-tag" wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+            </view>
+            <view class="fav-loc">
+              <view class="ic ic-pin"></view>
+              <text class="fav-loc-text">{{item.path || item.spaceName}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="fav-truncate" wx:if="{{truncated}}">部分收藏物品未在最近 100 件内，未全部显示</view>
+    </block>
+  </view>
+</view>

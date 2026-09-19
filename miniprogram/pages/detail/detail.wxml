@@ -8,7 +8,12 @@
 
     <block wx:if="{{!loading && !error}}">
       <view class="d-top">
-        <image class="d-img" src="{{obj.img}}" mode="aspectFit" bindtap="previewImg" />
+        <view class="d-img-wrap">
+          <image class="d-img" src="{{obj.img}}" mode="aspectFit" bindtap="previewImg" />
+          <view class="fav-star-btn {{isFavorite ? 'active' : ''}}" catchtap="onToggleFavorite" hover-class="fav-star-hover" aria-label="收藏">
+            <view class="fav-star-icon"></view>
+          </view>
+        </view>
         <view class="d-info">
           <view class="d-name">{{obj.name}}</view>
           <view class="d-tags">
