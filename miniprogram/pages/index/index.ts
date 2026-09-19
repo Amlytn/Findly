@@ -1,6 +1,5 @@
 import { fullUrl } from '../../services/request'
 import { getItems } from '../../services/items'
-import { getFavoriteIds } from '../../utils/favorites'
 import { ItemListItem } from '../../types/api'
 
 /** updatedAt → 相对时间文案 */
@@ -20,7 +19,6 @@ Page({
     statusBarHeight: 20,
     navBarHeight: 44,
     recentItems: [] as (ItemListItem & { time: string; img: string })[],
-    favoriteSub: '收藏常用物品',
     // 首次拉取完成前不渲染空态，避免加载中闪现「去添加」引导；失败态与真空态区分展示
     recentLoaded: false,
     recentFailed: false
@@ -38,12 +36,6 @@ Page({
     if (bar) {
       bar.setData({ selected: 0 })
     }
-
-    // 刷新收藏卡动态副标题（从本地 storage 直读，零延迟）
-    const favCount = getFavoriteIds().length
-    this.setData({
-      favoriteSub: favCount > 0 ? '已收藏 ' + favCount + ' 件' : '收藏常用物品'
-    })
 
     // 每次回首页刷新最近添加（保存物品后回首页即可看到），失败静默
     const that = this

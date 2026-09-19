@@ -7,7 +7,7 @@ export interface SpaceIconInfo {
 
 /**
  * 根据空间名称及类型智能匹配图标与配色方案
- * 完美对应设计稿中的 7 大收纳空间体系
+ * 覆盖 7 大收纳空间体系
  */
 export function matchSpaceIcon(name: string, type?: string | null): SpaceIconInfo {
   const n = (name || '').toLowerCase()

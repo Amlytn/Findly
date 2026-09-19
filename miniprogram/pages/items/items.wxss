@@ -3,7 +3,7 @@
   align-items: center;
   height: 80rpx;
   background: #F0F6F7;
-  /* 与首页搜索栏一致：设计稿圆角比 ≈ 0.29 × 栏高 */
+  /* 与首页搜索栏一致：圆角比 ≈ 0.29 × 栏高 */
   border-radius: 24rpx;
   padding: 0 28rpx;
   margin-top: 8rpx;

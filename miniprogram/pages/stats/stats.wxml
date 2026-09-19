@@ -76,7 +76,7 @@
 
       <!-- 收纳小贴士 -->
       <view class="tip-card">
-        <view class="tip-title">💡 收纳贴士</view>
+        <view class="tip-title">收纳贴士</view>
         <view class="tip-content">为每个物品指定详细的层级空间（例如：我的家 → 书房 → 书桌 → 右侧抽屉），日后通过自然语言搜索「我的白色耳机放在哪」即可一秒找回。</view>
       </view>
     </block>

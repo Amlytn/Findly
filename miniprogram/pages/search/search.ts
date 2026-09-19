@@ -17,13 +17,14 @@ Page({
     getItems({ page: 1, pageSize: 1 }).then(function (res) {
       const first = res.items[0]
       if (!first) return
-      // 热门物品卡：适配本页字段（无图用 logo 占位）
+      // 热门物品卡：适配本页字段（无图用 logo 占位）；color/brand 为 null 时拼 meta 过滤
       that.setData({
         hot: [Object.assign({}, first, {
           img: fullUrl(first.imageUrl) || '/assets/logo.png',
           space: first.space ? first.space.name : '未归位',
           zone: first.path || '',
-          count: 1
+          count: 1,
+          meta: [first.color, first.brand].filter(Boolean).join(' · ')
         })]
       })
     }).catch(function () { /* 首页展示失败不阻塞搜索 */ })

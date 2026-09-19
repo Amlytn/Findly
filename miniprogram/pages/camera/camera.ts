@@ -2,8 +2,10 @@ import { cropToSquare } from '../../utils/crop'
 
 Page({
   data: {
-    /** <camera> 闪光灯值：三态循环 自动 / 开 / 关（PRD 图 2） */
+    /** <camera> 闪光灯值：点左上角闪光灯展开面板，选 关闭/自动/打开 */
     flash: 'auto' as 'auto' | 'on' | 'off',
+    /** 闪光灯选择面板展开态 */
+    flashOpen: false,
     /** 相机授权失败等异常时降级为相册选择 */
     cameraOk: true,
     /** 快门防抖：拍照/裁切期间禁用 */
@@ -29,10 +31,21 @@ Page({
     wx.navigateBack({ delta: 1 })
   },
 
-  /** 三态循环：自动 → 开 → 关 → 自动（PRD 图 2） */
-  toggleFlash() {
-    const next = this.data.flash === 'auto' ? 'on' : (this.data.flash === 'on' ? 'off' : 'auto')
-    this.setData({ flash: next })
+  /** 闪光灯按钮：展开/收起选择面板；点选项套用并收起 */
+  toggleFlashPanel() {
+    this.setData({ flashOpen: !this.data.flashOpen })
+  },
+
+  /** 选择闪光灯模式并收起面板 */
+  setFlash(e: any) {
+    const v = e.currentTarget.dataset.v
+    if (v !== 'off' && v !== 'on' && v !== 'auto') return
+    this.setData({ flash: v, flashOpen: false })
+  },
+
+  /** 点取景区域收起面板 */
+  closeFlashPanel() {
+    if (this.data.flashOpen) this.setData({ flashOpen: false })
   },
 
   /** 相机组件异常（授权拒绝/被占用）：降级相册流程 */
@@ -44,6 +57,7 @@ Page({
   /** 快门：取景拍照 → 居中裁 1:1 → 识别结果页 */
   shoot() {
     if (this.data.shooting || !this.data.cameraOk) return
+    if (this.data.flashOpen) this.setData({ flashOpen: false })
     this.setData({ shooting: true })
     const ctx = wx.createCameraContext()
     const that = this

@@ -14,7 +14,7 @@ Page({
     cats: [{ key: 'all', name: '全部' }] as CatChip[],
     counts: [] as number[],
     cat: 'all',
-    shown: [] as (ItemListItem & { img: string; count: number })[],
+    shown: [] as (ItemListItem & { img: string; count: number; meta: string })[],
     page: 1,
     total: 0,
     loading: false,
@@ -53,10 +53,13 @@ Page({
       const items = res.items.map(function (it: ItemListItem) {
         // quantity 已随契约 v1.4 返回；无图用 logo 占位
         // space 是 {id,name} 对象，取短名展示（修复卡片显示 [object Object]）
+        // color/brand 后端可能返回 null（WXML 会把 null 渲染成 "null" 文字）：拼 meta 前先过滤
+        const meta = [it.color, it.brand].filter(Boolean).join(' · ')
         return Object.assign({}, it, {
           count: it.quantity || 1,
           img: fullUrl(it.imageUrl) || '/assets/logo.png',
-          space: it.space ? it.space.name : '未归位'
+          space: it.space ? it.space.name : '未归位',
+          meta: meta
         })
       })
       const shown = reset ? items : that.data.shown.concat(items)

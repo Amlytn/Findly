@@ -44,7 +44,7 @@
   margin-top: 36rpx;
   height: 84rpx;
   background: #F0F6F7;
-  /* 设计稿圆角比 ≈ 0.29 × 栏高（大圆角矩形，非半圆胶囊） */
+  /* 圆角比 ≈ 0.29 × 栏高（大圆角矩形，非半圆胶囊） */
   border-radius: 24rpx;
   display: flex;
   align-items: center;
@@ -90,7 +90,7 @@
   height: 100%;
 }
 
-/* 白色圆钮：唯一代码叠加层；坐标复刻改造前布局（原 flex 流实测 top 276rpx / left 28rpx，
+/* 白色圆钮：唯一代码叠加层；坐标沿用改造前实测（原 flex 流 top 276rpx / left 28rpx，
    恰位于烘焙副标题下缘 256rpx 之下），保留按压回弹微动效 */
 .hero-go {
   position: absolute;
@@ -117,7 +117,7 @@
   transform: scale(0.92);
 }
 
-/* > 箭头：SVG 描边复刻（实测墨迹 10.4x18.8rpx，色 #014156，圆头描边） */
+/* > 箭头：SVG 描边（实测墨迹 10.4x18.8rpx，色 #014156，圆头描边） */
 .hero-arrow {
   width: 11rpx;
   height: 19rpx;
@@ -171,7 +171,7 @@
   display: flex;
 }
 
-/* 空态/错误态引导卡（PRD 图 1 + 6.4） */
+/* 空态/错误态引导卡 */
 .recent-state {
   display: flex;
   flex-direction: column;
@@ -257,7 +257,7 @@
   text-overflow: ellipsis;
 }
 
-/* ================= 常用功能（设计稿实测 1:1） ================= */
+/* ================= 常用功能 ================= */
 /* 标题行：上间距 44rpx 与「最近添加」等节标题统一节奏 */
 .q-head {
   margin: 44rpx 0 20rpx;
@@ -269,7 +269,7 @@
   color: #0C1B2A;
 }
 
-/* 2×2 彩色卡：设计稿 1:1 实测（高度 166rpx、圆角 28rpx、行距 18rpx、间隙 20rpx） */
+/* 2×2 彩色卡（高度 166rpx、圆角 28rpx、行距 18rpx、间隙 20rpx） */
 .quick {
   display: flex;
   flex-wrap: wrap;

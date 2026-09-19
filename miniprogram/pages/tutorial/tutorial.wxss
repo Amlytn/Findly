@@ -9,12 +9,15 @@ page {
 }
 
 .screen {
+  /* 本页为灰底白卡设计：覆写全局白底，让卡片边界与两侧留白可感知 */
+  background: transparent;
   padding-bottom: 60rpx;
   box-sizing: border-box;
 }
 
 .doc-container {
-  padding: 16rpx 32rpx 40rpx;
+  /* 横向不再叠加内边距：全局 .screen 已有 32rpx，与首页内容宽度一致 */
+  padding: 16rpx 0 40rpx;
 }
 
 /* ===== 头卡：复用用户协议页文档头样式 ===== */

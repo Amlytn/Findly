@@ -2,7 +2,7 @@
   <view class="screen">
     <nav-bar title="空间管理" />
 
-    <!-- 顶部规划提示通栏（对齐设计稿） -->
+    <!-- 顶部规划提示通栏 -->
     <view class="tip-bar" bindtap="onTipTap">
       <view class="tip-left">
         <image class="tip-icon" src="/assets/spaces/glyphs/home.svg" mode="aspectFit" />

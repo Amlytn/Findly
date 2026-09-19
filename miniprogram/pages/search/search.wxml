@@ -16,7 +16,7 @@
       />
     </view>
 
-    <!-- 搜索历史：仅未输入状态展示（PRD 图 6） -->
+    <!-- 搜索历史：仅未输入状态展示 -->
     <view class="hist-head" wx:if="{{!kw && history.length > 0}}">
       <text class="hist-title">搜索历史</text>
       <text class="hist-clear" catchtap="clearHist">清空</text>
@@ -30,7 +30,7 @@
       <image src="{{item.img}}" mode="aspectFit" />
       <view class="rel-info">
         <view class="rel-name">{{item.name}}</view>
-        <view class="rel-meta">{{item.color}} · {{item.brand}} · {{item.count}}件</view>
+        <view class="rel-meta">{{item.meta ? item.meta + ' · ' : ''}}{{item.count}}件</view>
         <view class="rel-loc">{{item.space}} · {{item.zone}}</view>
       </view>
       <view class="chev"></view>

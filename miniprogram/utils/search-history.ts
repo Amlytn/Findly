@@ -1,5 +1,5 @@
 /**
- * 搜索历史（PRD 图 6）：本地缓存最近 10 条查询，最新在前、去重。
+ * 搜索历史：本地缓存最近 10 条查询，最新在前、去重。
  * 设置页「清除缓存」通过 clearHistory() 联动清理，勿在他处直接操作该 key。
  */
 const HISTORY_KEY = 'findly_search_history'

@@ -1,12 +1,21 @@
 <view class="page">
   <view class="screen">
-    <nav-bar title="识别结果" />
+    <nav-bar title="{{manual ? '添加物品' : '识别结果'}}" />
 
     <view class="r-top">
-      <image class="r-img" src="{{img}}" mode="aspectFit" />
-      <view class="r-acc" wx:if="{{recognizing}}">AI 识别中…</view>
-      <view class="r-acc" wx:elif="{{aiFailed}}">识别不可用</view>
-      <view class="r-acc" wx:else>识别准确 {{score}}%</view>
+      <block wx:if="{{manual}}">
+        <view class="r-img {{img ? '' : 'r-img-pick'}}" bindtap="pickFromAlbum">
+          <image wx:if="{{img}}" class="r-img-pic" src="{{img}}" mode="aspectFit" />
+          <view wx:else class="r-img-plus"></view>
+        </view>
+        <view class="r-acc">手动添加</view>
+      </block>
+      <block wx:else>
+        <image class="r-img" src="{{img}}" mode="aspectFit" />
+        <view class="r-acc" wx:if="{{recognizing}}">AI 识别中…</view>
+        <view class="r-acc" wx:elif="{{aiFailed}}">识别不可用</view>
+        <view class="r-acc" wx:else>识别准确 {{score}}%</view>
+      </block>
     </view>
 
     <view class="r-note" wx:if="{{aiNote}}">{{aiNote}}</view>

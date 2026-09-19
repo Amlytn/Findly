@@ -18,7 +18,7 @@ Page({
 
   onLoad(query: any) {
     const kw = decodeURIComponent(query.kw || '')
-    // 首页搜索框直达本页的查询也计入历史（PRD 图 6）
+    // 首页搜索框直达本页的查询也计入历史
     if (kw) {
       pushHistory(kw)
       this.apply(kw, 'all')

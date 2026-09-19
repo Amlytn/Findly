@@ -29,7 +29,7 @@
       </view>
     </view>
 
-    <!-- 常用功能（设计稿 1:1：彩色卡 + SVG 图标盒 + 标题/副标题 + 右箭头） -->
+    <!-- 常用功能：彩色卡 + SVG 图标盒 + 标题/副标题 + 右箭头） -->
     <view class="section-head q-head">
       <view class="q-title">常用功能</view>
     </view>
@@ -46,7 +46,7 @@
         <view class="quick-ico ico-favorite"></view>
         <view class="quick-info">
           <view class="quick-name">收藏物品</view>
-          <view class="quick-sub">{{favoriteSub}}</view>
+          <view class="quick-sub">收藏常用物品</view>
         </view>
         <view class="quick-chev"></view>
       </view>
@@ -96,7 +96,7 @@
       <view class="recent-state-btn" bindtap="retryRecent">重试</view>
     </view>
 
-    <!-- 空态：首次使用引导（PRD 图 1） -->
+    <!-- 空态：首次使用引导 -->
     <view class="recent-state" wx:elif="{{recentLoaded}}">
       <text class="recent-state-txt">还没有物品，拍张照片试试</text>
       <view class="recent-state-btn recent-state-btn-primary" bindtap="goAdd">去添加第一件物品</view>
