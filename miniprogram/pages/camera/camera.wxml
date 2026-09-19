@@ -13,18 +13,34 @@
     <view class="fb-tx">相机不可用，点击从相册选择物品照片</view>
   </view>
 
+  <!-- 顶栏：返回 + 左上角闪光灯（点击展开 关闭/自动/打开） -->
   <view class="cam-nav" style="padding-top: {{statusBarHeight}}px; height: {{navTotal}}px;">
     <view class="cam-back" bindtap="goBack">
       <view class="cam-arrow"></view>
     </view>
-    <view class="cam-title">
-      <view class="cam-ic"></view>
-      <text>拍照识别</text>
+    <view class="flash-wrap">
+      <view class="flash-btn {{flash === 'on' ? 'active' : ''}}" bindtap="toggleFlashPanel">
+        <view class="flash-ic flash-ic-{{flash}}"></view>
+      </view>
+      <view class="flash-panel {{flashOpen ? 'open' : ''}}">
+        <view class="fp-opt {{flash === 'off' ? 'cur' : ''}}" bindtap="setFlash" data-v="off">
+          <view class="fp-ic fp-ic-off"></view>
+          <text class="fp-tx">关闭</text>
+        </view>
+        <view class="fp-opt {{flash === 'auto' ? 'cur' : ''}}" bindtap="setFlash" data-v="auto">
+          <view class="fp-ic fp-ic-auto"></view>
+          <text class="fp-tx">自动</text>
+        </view>
+        <view class="fp-opt {{flash === 'on' ? 'cur' : ''}}" bindtap="setFlash" data-v="on">
+          <view class="fp-ic fp-ic-on"></view>
+          <text class="fp-tx">打开</text>
+        </view>
+      </view>
     </view>
   </view>
 
-  <!-- 1:1 取景框（与识别用方图比例一致） -->
-  <view class="vf">
+  <!-- 1:1 取景框（与识别用方图比例一致）；点击空白处收起闪光灯面板 -->
+  <view class="vf" bindtap="closeFlashPanel">
     <view class="vf-box">
       <view class="corner tl"></view>
       <view class="corner tr"></view>
@@ -33,6 +49,7 @@
     </view>
   </view>
 
+  <!-- 底部：相册 / 快门 -->
   <view class="ctrls">
     <view class="album" bindtap="pickFromAlbum">
       <view class="album-ic"></view>
@@ -40,9 +57,6 @@
     <view class="shutter {{shooting ? 'busy' : ''}}" bindtap="shoot">
       <view class="shutter-in"></view>
     </view>
-    <view class="flash {{flash === 'on' ? 'on' : ''}}" bindtap="toggleFlash">
-      <view class="flash-ic"></view>
-      <text class="flash-tx">{{flash === 'auto' ? '自动' : (flash === 'on' ? '开' : '关')}}</text>
-    </view>
+    <view class="side-spacer"></view>
   </view>
 </view>

@@ -108,6 +108,8 @@ function toDataUrl(path: string): Promise<string> {
 Page({
   data: {
     img: '',
+    /** 手动添加模式：无照片且不触发 AI，照片区显示"从相册选择"占位（onLoad 判定一次，跨页返回不翻转） */
+    manual: false,
     score: 0,
     recognizing: false,
     aiFailed: false,
@@ -124,6 +126,38 @@ Page({
     locText: '未选择位置',
     aiResultId: '',
     saving: false
+  },
+
+  onLoad() {
+    // 相机/相册识别流程进入时必带照片且 recognizePending=true；两者皆空即手动添加
+    const app = getApp<IAppOption>()
+    const gd = app && app.globalData
+    if (gd && !gd.recognizeImg && !gd.recognizeImgFull && !gd.recognizePending) {
+      this.setData({ manual: true })
+    }
+  },
+
+  /** 手动添加：从相册选一张照片作为物品图（仅记录，不发起 AI 识别），可重复点击更换 */
+  pickFromAlbum() {
+    const that = this
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album'],
+      success(res: any) {
+        const raw = res.tempFiles[0].tempFilePath
+        if (!raw) return
+        const app = getApp<IAppOption>()
+        if (app && app.globalData) {
+          // 与页面 data 双写：去位置选择页返回后（onShow）照片仍在
+          app.globalData.recognizeImg = raw
+          app.globalData.recognizeImgFull = raw
+          app.globalData.recognizePending = false
+        }
+        that.setData({ img: raw })
+      },
+      fail() { /* 用户取消，静默 */ }
+    })
   },
 
   onShow() {

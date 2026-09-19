@@ -1,67 +1,121 @@
-.add-screen {
-  padding-top: 24rpx;
-  display: flex;
-  flex-direction: column;
+page {
+  /* 页面级背景：橡皮筋回弹时不露白 */
+  background: #EAF5EF;
 }
 
-.add-card {
-  flex: 1;
+/* 整页浅薄荷渐变打底，装饰元素绝对定位四角与底部 */
+.add-screen {
   position: relative;
-  background: linear-gradient(180deg, #F2FAF9 0%, #DFF3EC 100%);
-  border-radius: 32rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 96rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 12rpx 32rpx 0;
+  background: linear-gradient(180deg, #F2FAF6 0%, #E7F4EE 100%);
   overflow: hidden;
 }
 
-.add-cam {
-  width: 168rpx;
-  height: 168rpx;
-  border-radius: 56rpx;
-  background: linear-gradient(135deg, #31CBBB, #04869D);
+.add-hero {
+  position: relative;
+  z-index: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 16rpx 36rpx rgba(4, 134, 157, 0.30);
+  padding-top: 88rpx;
 }
 
-.add-cam-ic {
-  width: 84rpx;
-  height: 84rpx;
+/* 图标后方的柔和光斑（径向渐变软边，不依赖 filter: blur） */
+.add-blob {
+  position: absolute;
+  top: 20rpx;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.add-blob-l {
+  left: 50%;
+  width: 320rpx;
+  height: 280rpx;
+  transform: translateX(-92%);
+  background: radial-gradient(closest-side, rgba(49, 203, 187, 0.16), rgba(49, 203, 187, 0));
+}
+
+.add-blob-r {
+  left: 50%;
+  width: 360rpx;
+  height: 320rpx;
+  transform: translateX(6%);
+  background: radial-gradient(closest-side, rgba(23, 160, 188, 0.12), rgba(23, 160, 188, 0));
+}
+
+.add-cam-wrap {
+  position: relative;
+}
+
+/* 图标外圈柔光 */
+.add-cam-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 300rpx;
+  height: 300rpx;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.add-cam {
+  position: relative;
+  width: 220rpx;
+  height: 220rpx;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h3l2-3h6l2 3h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20.5H4A1.5 1.5 0 0 1 2.5 19v-9A1.5 1.5 0 0 1 4 8.5z'/%3E%3Ccircle cx='12' cy='14' r='4'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 20rpx 36rpx rgba(15, 110, 160, 0.30));
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20536%20520'%20width='536'%20height='520'%3E%20%3Cdefs%3E%20%3ClinearGradient%20id='bg'%20gradientUnits='userSpaceOnUse'%20x1='78.8'%20y1='57.1'%20x2='457.2'%20y2='462.9'%3E%20%3Cstop%20offset='0%25'%20stop-color='%2382dec8'/%3E%20%3Cstop%20offset='12%25'%20stop-color='%2368d0be'/%3E%20%3Cstop%20offset='28%25'%20stop-color='%235ec4bc'/%3E%20%3Cstop%20offset='45%25'%20stop-color='%2358b9bb'/%3E%20%3Cstop%20offset='62%25'%20stop-color='%2350a8b9'/%3E%20%3Cstop%20offset='78%25'%20stop-color='%23489bba'/%3E%20%3Cstop%20offset='90%25'%20stop-color='%23428fbc'/%3E%20%3Cstop%20offset='100%25'%20stop-color='%233c82bd'/%3E%20%3C/linearGradient%3E%20%3ClinearGradient%20id='viewfinderGrad'%20x1='0%25'%20y1='0%25'%20x2='0%25'%20y2='100%25'%3E%20%3Cstop%20offset='0%25'%20stop-color='%2303333d'%20stop-opacity='0.22'/%3E%20%3Cstop%20offset='18%25'%20stop-color='%2303333d'%20stop-opacity='0.06'/%3E%20%3Cstop%20offset='36%25'%20stop-color='%23ffffff'%20stop-opacity='0.40'/%3E%20%3Cstop%20offset='100%25'%20stop-color='%23ffffff'%20stop-opacity='0.62'/%3E%20%3C/linearGradient%3E%20%3C/defs%3E%20%3Cpath%20d='M%20268.00%200.00%20C%20297.28%200.00,%20358.87%20-1.33,%20405.47%2010.01%20C%20433.39%2016.81,%20461.26%2028.76,%20483.81%2050.64%20C%20506.05%2072.21,%20518.56%2099.02,%20525.73%20126.82%20C%20537.34%20171.88,%20536.00%20231.18,%20536.00%20260.00%20C%20536.00%20288.82,%20537.34%20348.12,%20525.73%20393.18%20C%20518.56%20420.98,%20506.05%20447.79,%20483.81%20469.36%20C%20461.26%20491.24,%20433.39%20503.19,%20405.47%20509.99%20C%20358.87%20521.33,%20297.28%20520.00,%20268.00%20520.00%20C%20238.72%20520.00,%20177.13%20521.33,%20130.53%20509.99%20C%20102.61%20503.19,%2074.74%20491.24,%2052.19%20469.36%20C%2029.95%20447.79,%2017.44%20420.98,%2010.27%20393.18%20C%20-1.34%20348.12,%200.00%20288.82,%200.00%20260.00%20C%200.00%20231.18,%20-1.34%20171.88,%2010.27%20126.82%20C%2017.44%2099.02,%2029.95%2072.21,%2052.19%2050.64%20C%2074.74%2028.76,%20102.61%2016.81,%20130.53%2010.01%20C%20177.13%20-1.33,%20238.72%200.00,%20268.00%200.00%20Z'%20fill='url(%23bg)'/%3E%20%3Cpath%20d='M%20240%20177.5%20L%20296%20177.5%20C%20304%20177.5,%20309%20183,%20312%20191%20L%20315%20199.5%20C%20315.5%20200.5,%20314.5%20201,%20312.5%20201%20L%20223.5%20201%20C%20221.5%20201,%20220.5%20200.5,%20221%20199.5%20L%20224%20191%20C%20227%20183,%20232%20177.5,%20240%20177.5%20Z'%20fill='url(%23viewfinderGrad)'/%3E%20%3Cpath%20d='M%20246%20167%20L%20290%20167%20C%20298%20167,%20305%20171,%20309%20181%20L%20318%20198%20C%20322%20206,%20328%20210.5,%20336%20210.5%20L%20352.5%20210.5%20A%2025.5%2025.5%200%200%201%20378%20236%20L%20378%20328%20A%2025.5%2025.5%200%200%201%20352.5%20353.5%20L%20183.5%20353.5%20A%2025.5%2025.5%200%200%201%20158%20328%20L%20158%20236%20A%2025.5%2025.5%200%200%201%20183.5%20210.5%20L%20200%20210.5%20C%20208%20210.5,%20214%20206,%20218%20198%20L%20227%20181%20C%20231%20171,%20238%20167,%20246%20167%20Z'%20fill='none'%20stroke='rgba(255,%20255,%20255,%200.94)'%20stroke-width='21'%20stroke-linejoin='round'%20stroke-linecap='round'/%3E%20%3Ccircle%20cx='268'%20cy='273'%20r='42.5'%20fill='none'%20stroke='rgba(255,%20255,%20255,%200.94)'%20stroke-width='21'/%3E%20%3C/svg%3E");
 }
 
 .add-title {
-  margin-top: 44rpx;
-  font-size: 40rpx;
+  margin-top: 48rpx;
+  font-size: 44rpx;
   font-weight: 800;
   color: #0F4C5A;
 }
 
 .add-sub {
-  margin-top: 16rpx;
-  font-size: 28rpx;
+  margin-top: 14rpx;
+  font-size: 30rpx;
   color: #9AB0B4;
 }
 
 .add-btn {
-  width: 520rpx;
+  width: 560rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.add-btn:first-of-type {
-  margin-top: 96rpx;
+/* 副标题与主按钮相邻，用相邻选择器控制首行间距（:first-of-type 在全 view 子元素中不可靠） */
+.add-sub + .add-btn {
+  margin-top: 76rpx;
 }
 
 .add-btn + .add-btn {
-  margin-top: 28rpx;
+  margin-top: 32rpx;
+}
+
+/* 按钮比全局规格(96rpx)上下略加厚一点；覆写只作用于本页 */
+.add-screen .btn-primary {
+  height: 104rpx;
+  line-height: 104rpx;
+  border-radius: 52rpx;
+  background: linear-gradient(90deg, #3ED0C3 0%, #17A0BC 100%);
+  box-shadow: 0 14rpx 32rpx rgba(23, 160, 188, 0.32);
+}
+
+.add-screen .btn-outline {
+  height: 104rpx;
+  line-height: 104rpx;
+  border-radius: 52rpx;
 }
 
 .btn-ic {
@@ -74,37 +128,17 @@
 }
 
 .btn-ic-w {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h3l2-3h6l2 3h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20.5H4A1.5 1.5 0 0 1 2.5 19v-9A1.5 1.5 0 0 1 4 8.5z'/%3E%3Ccircle cx='12' cy='14' r='4'/%3E%3C/svg%3E");
+  width: 42rpx;
+  height: 42rpx;
+  /* 图形重心在视框中线偏下 1 单位，上提 2rpx 与文字视觉居中 */
+  position: relative;
+  top: -2rpx;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h3l2-3h6l2 3h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20.5H4A1.5 1.5 0 0 1 2.5 19v-9A1.5 1.5 0 0 1 4 8.5z'/%3E%3Ccircle cx='12' cy='14' r='3.6'/%3E%3C/svg%3E");
 }
 
+/* 加号字形稀疏、视觉占比小：盒子放大到 40rpx 并外扩路径，使墨迹范围与相机图标一致 */
 .btn-ic-t {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2312A5A0' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
-}
-
-/* 相册（青）：叠两张圆角"照片"表示图库 */
-.btn-ic-album {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2312A5A0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6' y='4' width='15' height='12' rx='2'/%3E%3Ccircle cx='10.5' cy='8.5' r='1.6'/%3E%3Cpath d='M6 13.5l3.5-3 4 3.5 3-2.5 4.5 4'/%3E%3Cpath d='M3 7.5v11A2.5 2.5 0 0 0 5.5 21h11'/%3E%3C/svg%3E");
-}
-
-/* 底部叶片装饰 */
-.add-leaf {
-  position: absolute;
-  bottom: -24rpx;
-  width: 300rpx;
-  height: 220rpx;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: bottom;
-  opacity: 0.9;
-}
-
-.leaf-l {
-  left: -50rpx;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 140'%3E%3Cellipse cx='50' cy='95' rx='14' ry='34' transform='rotate(-22 50 95)' fill='%238FD3A8'/%3E%3Cellipse cx='85' cy='82' rx='13' ry='38' transform='rotate(-2 85 82)' fill='%23A8DEBB'/%3E%3Cellipse cx='120' cy='98' rx='12' ry='32' transform='rotate(20 120 98)' fill='%238FD3A8'/%3E%3Cellipse cx='152' cy='90' rx='11' ry='34' transform='rotate(36 152 90)' fill='%23A8DEBB'/%3E%3C/svg%3E");
-}
-
-.leaf-r {
-  right: -50rpx;
-  transform: scaleX(-1);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 140'%3E%3Cellipse cx='50' cy='95' rx='14' ry='34' transform='rotate(-22 50 95)' fill='%238FD3A8'/%3E%3Cellipse cx='85' cy='82' rx='13' ry='38' transform='rotate(-2 85 82)' fill='%23A8DEBB'/%3E%3Cellipse cx='120' cy='98' rx='12' ry='32' transform='rotate(20 120 98)' fill='%238FD3A8'/%3E%3Cellipse cx='152' cy='90' rx='11' ry='34' transform='rotate(36 152 90)' fill='%23A8DEBB'/%3E%3C/svg%3E");
+  width: 40rpx;
+  height: 40rpx;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2312A5A0' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 4.5v15M4.5 12h15'/%3E%3C/svg%3E");
 }

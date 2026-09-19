@@ -46,7 +46,7 @@
         <view class="quick-ico ico-favorite"></view>
         <view class="quick-info">
           <view class="quick-name">收藏物品</view>
-          <view class="quick-sub">{{favoriteSub}}</view>
+          <view class="quick-sub">收藏常用物品</view>
         </view>
         <view class="quick-chev"></view>
       </view>

@@ -158,10 +158,21 @@
   color: #124E5B;
 }
 
-/* 底部操作 */
+/* 编辑/删除固定底栏：全程可见；内容区补足留白避免被遮挡 */
+.screen {
+  padding-bottom: calc(220rpx + env(safe-area-inset-bottom));
+}
+
 .d-actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
   display: flex;
-  margin-top: 48rpx;
+  padding: 20rpx 32rpx calc(env(safe-area-inset-bottom) + 20rpx);
+  background: #FFFFFF;
+  box-shadow: 0 -6rpx 20rpx rgba(15, 76, 90, 0.08);
 }
 
 .act {

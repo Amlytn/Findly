@@ -30,7 +30,7 @@
       <image src="{{item.img}}" mode="aspectFit" />
       <view class="rel-info">
         <view class="rel-name">{{item.name}}</view>
-        <view class="rel-meta">{{item.color}} · {{item.brand}} · {{item.count}}件</view>
+        <view class="rel-meta">{{item.meta ? item.meta + ' · ' : ''}}{{item.count}}件</view>
         <view class="rel-loc">{{item.space}} · {{item.zone}}</view>
       </view>
       <view class="chev"></view>
