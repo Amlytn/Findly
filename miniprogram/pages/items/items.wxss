@@ -82,13 +82,6 @@
   color: #B5C4C7;
 }
 
-.empty {
-  padding: 80rpx 0;
-  text-align: center;
-  font-size: 28rpx;
-  color: #9AB0B4;
-}
-
 /* 静默刷新的页面内反馈（下拉/返回触发时出现在分类 chips 与网格之间） */
 .list-loading {
   margin: 16rpx 0 0;

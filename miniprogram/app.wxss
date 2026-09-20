@@ -221,3 +221,11 @@ view, text, image {
   color: #9AB0B4;
   margin-right: 12rpx;
 }
+
+/* 通用空态 / 加载中 / 错误提示行（列表内联提示，区别于 .empty-state 引导空态） */
+.empty {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #9AB0B4;
+}

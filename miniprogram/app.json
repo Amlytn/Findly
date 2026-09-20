@@ -38,6 +38,7 @@
       { "pagePath": "pages/profile/profile", "text": "我的" }
     ]
   },
+  "lazyCodeLoading": "requiredComponents",
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }
