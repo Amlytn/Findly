@@ -4,6 +4,8 @@ import { isApiError } from '../../services/request'
 import { uploadImage } from '../../services/upload'
 import type { RecognizeResult } from '../../types/api'
 import type { IAppOption } from '../../app'
+import { checkName, checkTag } from '../../utils/validate'
+import { joinPath } from '../../utils/space-path'
 
 function getMimeTypeFromPath(filePath: string, fallback?: string): string {
   if (/\.png$/i.test(filePath)) return 'image/png'
@@ -164,7 +166,7 @@ Page({
     const app = getApp<IAppOption>()
     const loc: string[] = (app && app.globalData && app.globalData.locationPath) || []
     if (loc.length) {
-      this.setData({ locText: loc.join('  ›  ') })
+      this.setData({ locText: joinPath(loc) })
     }
     if (app && app.globalData && (app.globalData.recognizeImgFull || app.globalData.recognizeImg)) {
       // 结果页优先展示原图（aspectFit 完整显示），裁好的方图供保存后列表使用
@@ -230,6 +232,14 @@ Page({
           wx.showToast({ title: '名称不能为空', icon: 'none' })
           return
         }
+        // AI 草稿可能超长：未改动时放行，用户手输超长才拦截
+        if (name !== ((that.data as any).draft.name || '')) {
+          const lenErr = checkName(name, '物品名称')
+          if (lenErr) {
+            wx.showToast({ title: lenErr, icon: 'none' })
+            return
+          }
+        }
         that.setData({ 'draft.name': name })
       }
     })
@@ -251,6 +261,11 @@ Page({
         if (!res.confirm) return
         const t = (res.content || '').trim()
         if (!t) return
+        const tagErr = checkTag(t)
+        if (tagErr) {
+          wx.showToast({ title: tagErr, icon: 'none' })
+          return
+        }
         const tags = ((that.data as any).draft.tags || []).slice()
         if (tags.indexOf(t) < 0) tags.push(t)
         that.setData({ 'draft.tags': tags })

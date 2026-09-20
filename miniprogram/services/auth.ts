@@ -1,6 +1,6 @@
 /**
  * 登录态管理：wx.login code 换 JWT（7 天），本地缓存、提前 1 天续期。
- * 联调环境后端未配 WX_APPID 时降级 dev-token 测试通道（M5 随 x-user-id 兜底一并移除）。
+ * 联调环境后端未配 WX_APPID 时降级 dev-token 测试通道（开发设施，上线前移除）。
  */
 import { getApiBase } from './config'
 import { getToken, setToken, clearToken } from './token'

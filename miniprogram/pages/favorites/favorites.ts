@@ -1,12 +1,7 @@
 import { getItems } from '../../services/items'
-import { fullUrl } from '../../services/request'
 import { getFavoriteIds, removeFavorite } from '../../utils/favorites'
 import { ItemListItem } from '../../types/api'
-
-interface FavItemDisplay extends ItemListItem {
-  img: string
-  spaceName: string
-}
+import { ItemCardVM, fallbackImg, mapItemCard } from '../../utils/item-vm'
 
 Page({
   data: {
@@ -16,7 +11,7 @@ Page({
     error: '',
     /** 收藏 id 数超过一次拉取范围（pageSize 100）时提示未全部显示 */
     truncated: false,
-    items: [] as FavItemDisplay[],
+    items: [] as ItemCardVM[],
     totalFav: 0
   },
 
@@ -48,15 +43,11 @@ Page({
           itemMap.set(it.id, it)
         }
 
-        const matched: FavItemDisplay[] = []
+        const matched: ItemCardVM[] = []
         for (const id of favIds) {
           const it = itemMap.get(id)
           if (it) {
-            matched.push({
-              ...it,
-              img: fullUrl(it.imageUrl) || '/assets/logo.png',
-              spaceName: it.space ? it.space.name : '未归位'
-            })
+            matched.push(mapItemCard(it))
           }
         }
 
@@ -78,6 +69,12 @@ Page({
           totalFav: 0
         })
       })
+  },
+
+  /** 图片加载失败兜底：替换该条的展示图（fallbackImg 内留 console 痕，不静默掩盖） */
+  onImgError(e: any) {
+    const idx = Number(e.currentTarget.dataset.idx)
+    this.setData({ items: fallbackImg(this.data.items, idx) })
   },
 
   onItemTap(e: any) {

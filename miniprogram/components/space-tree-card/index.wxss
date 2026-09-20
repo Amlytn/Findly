@@ -50,6 +50,7 @@
   display: flex;
   align-items: baseline;
   gap: 12rpx;
+  min-width: 0;
 }
 
 .card-name {
@@ -57,12 +58,17 @@
   font-weight: 700;
   color: #124E5B;
   letter-spacing: 0.5rpx;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .card-count {
   font-size: 24rpx;
   color: #8FA8AD;
   font-weight: 400;
+  flex-shrink: 0;
 }
 
 .card-arrow-box {

@@ -1,6 +1,6 @@
-import { fullUrl } from '../../services/request'
 import { getItems, getCategories } from '../../services/items'
 import { ItemListItem } from '../../types/api'
+import { ItemCardVM, fallbackImg, mapItemCard } from '../../utils/item-vm'
 
 const PAGE_SIZE = 20
 
@@ -9,23 +9,12 @@ interface CatChip {
   name: string
 }
 
-/** 列表卡片字段适配:无图 logo 占位、meta 过滤 null(避免 WXML 渲染出 "null")、space 取短名 */
-function mapListItem(it: ItemListItem) {
-  const meta = [it.color, it.brand].filter(Boolean).join(' · ')
-  return Object.assign({}, it, {
-    count: it.quantity || 1,
-    img: fullUrl(it.imageUrl) || '/assets/logo.png',
-    space: it.space ? it.space.name : '未归位',
-    meta: meta
-  })
-}
-
 Page({
   data: {
     cats: [{ key: 'all', name: '全部' }] as CatChip[],
     counts: [] as number[],
     cat: 'all',
-    shown: [] as (ItemListItem & { img: string; count: number; meta: string })[],
+    shown: [] as ItemCardVM[],
     page: 1,
     total: 0,
     loading: false,
@@ -74,7 +63,7 @@ Page({
         if (onDone) onDone()
         return
       }
-      const items = res.items.map(mapListItem)
+      const items = res.items.map(mapItemCard)
       const shown = reset ? items : that.data.shown.concat(items)
       that.setData({
         shown: shown,
@@ -110,14 +99,14 @@ Page({
     Promise.all(reqs).then(function (responses) {
       if (seq !== that.reqSeq) return
       const seen: Record<string, boolean> = {}
-      const merged: (ItemListItem & { img: string; count: number; meta: string })[] = []
+      const merged: ItemCardVM[] = []
       let total = 0
       responses.forEach(function (res: any, idx: number) {
         if (idx === 0) total = typeof res.total === 'number' ? res.total : total
         res.items.forEach(function (it: ItemListItem) {
           if (seen[it.id]) return
           seen[it.id] = true
-          merged.push(mapListItem(it))
+          merged.push(mapItemCard(it))
         })
       })
       that.setData({
@@ -150,6 +139,12 @@ Page({
 
   retry() {
     this.fetchList(true)
+  },
+
+  /** 图片加载失败兜底：替换该条的展示图（fallbackImg 内留 console 痕，不静默掩盖） */
+  onImgError(e: any) {
+    const idx = Number(e.currentTarget.dataset.idx)
+    this.setData({ shown: fallbackImg(this.data.shown, idx) })
   },
 
   /** 下拉过程中：刷新槽高度跟随下拉距离，圆点保持垂直居中 */

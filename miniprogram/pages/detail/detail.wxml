@@ -96,7 +96,7 @@
       <scroll-view class="sheet-bd" scroll-y>
         <view class="f-row">
           <text class="f-k">名称<text class="req">*</text></text>
-          <input class="f-input" value="{{form.name}}" data-k="name" bindinput="onInput" placeholder="必填" placeholder-class="f-ph" />
+          <input class="f-input" maxlength="30" value="{{form.name}}" data-k="name" bindinput="onInput" placeholder="必填" placeholder-class="f-ph" />
         </view>
         <view class="f-row">
           <text class="f-k">类别</text>

@@ -1,13 +1,13 @@
-import { fullUrl } from '../../services/request'
 import { getItems } from '../../services/items'
-import { ItemListItem } from '../../types/api'
+import { ItemCardVM, fallbackImg, mapItemCard } from '../../utils/item-vm'
 
 /** updatedAt → 相对时间文案 */
 function timeAgo(iso?: string): string {
   if (!iso) return ''
   const diff = Date.now() - new Date(iso).getTime()
+  if (diff < 3600000) return '刚刚'
+  if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前'
   const d = Math.floor(diff / 86400000)
-  if (d <= 0) return '今天'
   if (d < 30) return d + '天前'
   const m = Math.floor(d / 30)
   if (m < 12) return m + '个月前'
@@ -18,7 +18,7 @@ Page({
   data: {
     statusBarHeight: 20,
     navBarHeight: 44,
-    recentItems: [] as (ItemListItem & { time: string; img: string })[],
+    recentItems: [] as (ItemCardVM & { time: string })[],
     // 首次拉取完成前不渲染空态，避免加载中闪现「去添加」引导；失败态与真空态区分展示
     recentLoaded: false,
     recentFailed: false
@@ -37,22 +37,23 @@ Page({
       bar.setData({ selected: 0 })
     }
 
-    // 每次回首页刷新最近添加（保存物品后回首页即可看到），失败静默
+    // 每次回首页刷新最近动态（保存物品后回首页即可看到），失败静默
     const that = this
     getItems({ page: 1, pageSize: 3 }).then(function (res) {
-      const recentItems = res.items.map(function (it: ItemListItem) {
-        return Object.assign({}, it, {
-          time: timeAgo(it.updatedAt),
-          img: fullUrl(it.imageUrl) || '/assets/logo.png',
-          // space 是 {id,name} 对象，取短名展示
-          space: it.space ? it.space.name : '未归位'
-        })
+      const recentItems = res.items.map(function (it) {
+        return Object.assign(mapItemCard(it), { time: timeAgo(it.updatedAt) })
       })
       that.setData({ recentItems: recentItems, recentLoaded: true, recentFailed: false })
     }).catch(function () {
       // 拉取失败与真空态区分：失败显示错误态+重试（PRD 6.4），不误导「还没有物品」
       that.setData({ recentLoaded: true, recentFailed: true })
     })
+  },
+
+  /** 图片加载失败兜底：替换该条的展示图（fallbackImg 内留 console 痕，不静默掩盖） */
+  onImgError(e: any) {
+    const idx = Number(e.currentTarget.dataset.idx)
+    this.setData({ recentItems: fallbackImg(this.data.recentItems, idx) })
   },
 
   onSearch(e: any) {

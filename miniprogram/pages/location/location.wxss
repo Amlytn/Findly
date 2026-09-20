@@ -154,11 +154,16 @@
   font-size: 32rpx;
   font-weight: 700;
   color: #0E2E3B;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .card-count {
   font-size: 24rpx;
   color: #9CB4BE;
+  flex-shrink: 0;
 }
 
 .card-path {

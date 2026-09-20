@@ -27,7 +27,7 @@
 
     <view class="sec-title" wx:if="{{hot.length}}">相关物品</view>
     <view class="rel-card" wx:for="{{hot}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-      <image src="{{item.img}}" mode="aspectFit" />
+      <image src="{{item.img}}" mode="aspectFit" lazy-load binderror="onImgError" data-idx="{{index}}" />
       <view class="rel-info">
         <view class="rel-name">{{item.name}}</view>
         <view class="rel-meta">{{item.meta ? item.meta + ' · ' : ''}}{{item.count}}件</view>

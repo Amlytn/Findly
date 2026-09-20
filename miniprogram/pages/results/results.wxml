@@ -13,7 +13,7 @@
 
     <block wx:if="{{!loading && tab !== 'space'}}">
       <view class="res-item" wx:for="{{items}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-        <image src="{{item.img}}" mode="aspectFit" />
+        <image src="{{item.img}}" mode="aspectFit" lazy-load binderror="onImgError" data-idx="{{index}}" />
         <view class="res-info">
           <view class="res-name">{{item.name}}</view>
           <view class="res-meta">{{item.meta}}</view>

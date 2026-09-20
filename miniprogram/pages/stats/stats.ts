@@ -1,8 +1,9 @@
 import { getMe } from '../../services/users'
-import { isApiError, fullUrl } from '../../services/request'
+import { isApiError } from '../../services/request'
 import { getCategories, getItems, updateItem } from '../../services/items'
 import { getSpaces } from '../../services/spaces'
 import { SpaceListItem, ItemListItem } from '../../types/api'
+import { mapItemCard } from '../../utils/item-vm'
 
 interface StatBarItem {
   id?: string
@@ -206,11 +207,12 @@ Page({
         const rows: DrillRow[] = []
         for (const it of all) {
           if (type === 'pending' && it.space) continue
+          const vm = mapItemCard(it)
           rows.push({
-            id: it.id,
-            name: it.name,
-            img: fullUrl(it.imageUrl) || '/assets/logo.png',
-            meta: type === 'pending' ? '尚未归位' : (it.path || '未归位')
+            id: vm.id,
+            name: vm.name,
+            img: vm.img,
+            meta: type === 'pending' ? '尚未归位' : (vm.zone || '未归位')
           })
         }
         that.setData({

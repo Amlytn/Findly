@@ -26,7 +26,7 @@
 
       <view class="fav-list">
         <view class="fav-card" wx:for="{{items}}" wx:key="id" bindtap="onItemTap" data-id="{{item.id}}">
-          <image class="fav-img" src="{{item.img}}" mode="aspectFill" />
+          <image class="fav-img" src="{{item.img}}" mode="aspectFill" lazy-load binderror="onImgError" data-idx="{{index}}" />
           <view class="fav-info">
             <view class="fav-row">
               <view class="fav-name">{{item.name}}</view>
@@ -49,7 +49,7 @@
             </view>
             <view class="fav-loc">
               <view class="ic ic-pin"></view>
-              <text class="fav-loc-text">{{item.path || item.spaceName}}</text>
+              <text class="fav-loc-text">{{item.zone || item.space}}</text>
             </view>
           </view>
         </view>

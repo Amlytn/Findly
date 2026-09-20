@@ -7,12 +7,24 @@
 }
 
 .nav-back {
+  position: relative;
   width: 56rpx;
   height: 56rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+/* 用伪元素把返回键热区扩到约 88rpx 高（不吃布局、标题不位移）；
+   右侧多出部分会盖住标题左侧空白区，当前标题无点击行为，勿在此区域加交互 */
+.nav-back::after {
+  content: '';
+  position: absolute;
+  top: -16rpx;
+  left: -16rpx;
+  right: -32rpx;
+  bottom: -16rpx;
 }
 
 .nav-arrow {
