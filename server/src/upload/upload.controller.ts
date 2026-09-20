@@ -1,19 +1,20 @@
 /**
  * @author james-wu66
- * Findly 后端 · 2026-09-16（magic bytes 校验 2026-09-19）
+ * Findly 后端 · 2026-09-16（magic bytes 校验 2026-09-19；B03 孤儿图片清理 2026-09-20）
  *
  * POST /api/v1/upload：multipart 字段名 file，png/jpeg/webp，≤4MB（413）。
  * memoryStorage：先在内存中做文件头校验，通过后才落盘——扩展名可伪装，
  * 仅查 extname 挡不住把任意内容改名为 .png 的上传。
  */
-import { BadRequestException, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { BadRequestException, Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { extname, join } from 'path';
 import { randomBytes } from 'crypto';
 import { existsSync, mkdirSync } from 'fs';
 import { writeFile } from 'fs/promises';
+import { UploadService } from './upload.service';
 
 const UPLOAD_DIR = join(process.cwd(), 'uploads');
 const ALLOW = ['.png', '.jpg', '.jpeg', '.webp'];
@@ -30,6 +31,17 @@ function isAllowedImageBytes(buf: Buffer): boolean {
 @ApiTags('上传 Upload')
 @Controller('api/v1/upload')
 export class UploadController {
+  constructor(private uploadService: UploadService) {}
+
+  @Post('cleanup-orphans')
+  @ApiOperation({
+    summary: '清理孤儿图片：未被任何物品引用的 uploads/ 文件。dryRun 默认 true 只报告，false 才真正删除',
+  })
+  async cleanupOrphans(@Body() body: { dryRun?: boolean }) {
+    const dryRun = body?.dryRun !== false;
+    return this.uploadService.cleanOrphanImages(dryRun);
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('file', {
     storage: memoryStorage(),
