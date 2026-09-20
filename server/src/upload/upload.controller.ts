@@ -7,6 +7,7 @@
  * 仅查 extname 挡不住把任意内容改名为 .png 的上传。
  */
 import { BadRequestException, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { extname, join } from 'path';
@@ -26,6 +27,7 @@ function isAllowedImageBytes(buf: Buffer): boolean {
   return false;
 }
 
+@ApiTags('上传 Upload')
 @Controller('api/v1/upload')
 export class UploadController {
   @Post()

@@ -5,6 +5,7 @@
 import {
   BadRequestException, PayloadTooLargeException, Body, Controller, Post, Req,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AiService } from './ai.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +14,7 @@ import { RecognizeDto } from './dto';
 
 // AI 是计费入口，限流最严：每用户/IP 10 次/分钟（全局 120 次由 ThrottlerModule 兜底）
 @Throttle({ default: { limit: 10, ttl: 60000 } })
+@ApiTags('AI 识图')
 @Controller('api/v1/ai')
 export class AiController {
   constructor(

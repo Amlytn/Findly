@@ -3,9 +3,11 @@
  * Findly 后端 · 2026-09-14
  */
 import { BadRequestException, Controller, Get, Query, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { SearchService } from './search.service';
 import { userIdFrom } from '../common/user.util';
 
+@ApiTags('搜索 Search')
 @Controller('api/v1/search')
 export class SearchController {
   constructor(private readonly search: SearchService) {}

@@ -3,10 +3,12 @@
  * Findly 后端 · 2026-09-15
  */
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto, UpdateSpaceDto } from './dto';
 import { userIdFrom } from '../common/user.util';
 
+@ApiTags('空间 Spaces')
 @Controller('api/v1/spaces')
 export class SpacesController {
   constructor(private readonly spaces: SpacesService) {}

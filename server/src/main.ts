@@ -11,6 +11,7 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import { LoggingInterceptor } from './common/logging.interceptor';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -22,6 +23,15 @@ async function bootstrap() {
   // B04：统一异常响应格式 + 每请求一行日志（与上面的 Pipes 同为全局注册）
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
+  // B05：Swagger 接口文档（浏览器打开 http://localhost:3000/api/docs）
+  const config = new DocumentBuilder()
+    .setTitle('Findly API')
+    .setDescription('个人物品管理 + AI 搜索 后端接口文档')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
   // 本地上传目录静态服务（M4；迁移对象存储后移除）
   const uploadDir = join(process.cwd(), 'uploads');
   mkdirSync(uploadDir, { recursive: true });
