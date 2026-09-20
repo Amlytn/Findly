@@ -1,5 +1,5 @@
 import { getMe } from '../../services/users'
-import { DEFAULT_ID, loadProfile } from '../../utils/profile'
+import { DEFAULT_ID, loadProfile, avatarUrl } from '../../utils/profile'
 import type { UsersMe } from '../../types/api'
 
 Page({
@@ -39,11 +39,11 @@ Page({
     if (bar) {
       bar.setData({ selected: 3 })
     }
-    // 资料编辑页保存后返回，这里刷新头像与 ID
+    // 资料编辑页保存后返回，这里刷新头像与 ID；头像本地兜底先上，getMe 成功后云端值覆盖
     const profile = loadProfile()
     this.setData({
       id: profile.id,
-      avatar: profile.avatar,
+      avatar: avatarUrl(profile.avatar),
       displayName: profile.id
     })
     this.fetchMe()
@@ -57,6 +57,8 @@ Page({
       if (!me || me.__error) return
       that.setData({
         displayName: me.nickname || that.data.id,
+        // 云端头像为真相源：设置过就展示，未设置(null)保留本地兜底
+        avatar: me.avatar ? avatarUrl(me.avatar) : that.data.avatar,
         itemCount: me.itemCount,
         spaceCount: me.spaceCount
       })
