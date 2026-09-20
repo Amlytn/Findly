@@ -4,6 +4,7 @@
  */
 import { getApiBase } from './config'
 import { getToken } from './auth'
+import { shrinkToMaxEdge } from '../utils/crop'
 import type { UploadResponse } from '../types/api'
 
 export function uploadImage(filePath: string): Promise<UploadResponse> {
@@ -35,13 +36,6 @@ export function uploadImage(filePath: string): Promise<UploadResponse> {
       fail() { reject({ statusCode: 0, message: '网络不可用，上传失败' }) }
     })
   })
-  // 与识别同规格压缩，控制存储与流量
-  return new Promise<UploadResponse>(function (resolve) {
-    wx.compressImage({
-      src: filePath,
-      quality: 80,
-      success: (r) => resolve(doUpload(r.tempFilePath)),
-      fail: () => resolve(doUpload(filePath))
-    })
-  })
+  // 与识别同规格压缩（长边 ≤1200px + 画质），大图直传会撞 4MB 上限
+  return shrinkToMaxEdge(filePath, 1200, 80).then(doUpload)
 }
