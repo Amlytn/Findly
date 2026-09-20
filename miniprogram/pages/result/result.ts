@@ -6,6 +6,7 @@ import type { RecognizeResult } from '../../types/api'
 import type { IAppOption } from '../../app'
 import { checkName, checkTag } from '../../utils/validate'
 import { joinPath } from '../../utils/space-path'
+import { compressOnce, calcTargetSize } from '../../utils/crop'
 
 function getMimeTypeFromPath(filePath: string, fallback?: string): string {
   if (/\.png$/i.test(filePath)) return 'image/png'
@@ -33,42 +34,7 @@ function readFileBase64(filePath: string, mime: string): Promise<string> {
   })
 }
 
-function compressOnce(
-  src: string,
-  quality: number,
-  compressedWidth?: number,
-  compressedHeight?: number
-): Promise<string> {
-  return new Promise<string>(function (resolve) {
-    const opts: any = { src, quality }
-    if (compressedWidth) opts.compressedWidth = compressedWidth
-    if (compressedHeight) opts.compressedHeight = compressedHeight
-    wx.compressImage({
-      ...opts,
-      success(r: any) {
-        resolve(r.tempFilePath || src)
-      },
-      fail() {
-        resolve(src)
-      }
-    })
-  })
-}
-
-function calcTargetSize(origW: number, origH: number, maxEdge: number) {
-  if (origW <= 0 || origH <= 0) return { width: undefined, height: undefined }
-  if (origW <= maxEdge && origH <= maxEdge) return { width: origW, height: origH }
-  if (origW >= origH) {
-    return {
-      width: maxEdge,
-      height: Math.max(1, Math.round((origH * maxEdge) / origW))
-    }
-  }
-  return {
-    width: Math.max(1, Math.round((origW * maxEdge) / origH)),
-    height: maxEdge
-  }
-}
+// compressOnce / calcTargetSize 已提取至 utils/crop.ts，与上传路径共用
 
 /**
  * 读临时文件转 dataURL：

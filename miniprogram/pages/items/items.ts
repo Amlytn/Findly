@@ -1,4 +1,4 @@
-import { getItems, getCategories } from '../../services/items'
+import { getItems, getCategories, updateItem, deleteItem } from '../../services/items'
 import { ItemListItem } from '../../types/api'
 import { ItemCardVM, fallbackImg, mapItemCard } from '../../utils/item-vm'
 
@@ -177,6 +177,66 @@ Page({
 
   goDetail(e: any) {
     wx.navigateTo({ url: '/pages/detail/detail?id=' + e.currentTarget.dataset.id })
+  },
+
+  /** 卡片长按快捷菜单：移动位置 / 删除（与详情页同款流程；PRD 图 9 要求） */
+  onCardLongPress(e: any) {
+    const that = this
+    const id = e.currentTarget.dataset.id as string
+    const idx = this.data.shown.findIndex(function (it) { return it.id === id })
+    if (idx < 0) return
+    const name = this.data.shown[idx].name
+    wx.showActionSheet({
+      itemList: ['移动位置', '删除「' + name + '」'],
+      success(r: any) {
+        if (r.tapIndex === 0) {
+          that.quickMove(id)
+        } else if (r.tapIndex === 1) {
+          that.quickDelete(id, name)
+        }
+      }
+    })
+  },
+
+  /** 长按移动：进位置选择树，选中即提交 spaceId（复用详情页 move 的 eventChannel 流程） */
+  quickMove(id: string) {
+    const that = this
+    wx.navigateTo({
+      url: '/pages/location/location',
+      events: {
+        selectLocation(target: { id: string; name: string }) {
+          if (!target || !target.id) return
+          updateItem(id, { spaceId: target.id }).then(function () {
+            wx.showToast({ title: '已移动到 ' + target.name, icon: 'success' })
+            that.refreshLoaded()
+            that.fetchCats()
+          }).catch(function () { /* request 层已 toast */ })
+        }
+      }
+    })
+  },
+
+  /** 长按删除：二次确认后软删除，本地列表即时移除（onShow 仍会静默对账） */
+  quickDelete(id: string, name: string) {
+    const that = this
+    wx.showModal({
+      title: '删除物品',
+      content: '确定删除「' + name + '」吗？',
+      confirmColor: '#E06B6B',
+      success(res: any) {
+        if (!res.confirm) return
+        deleteItem(id).then(function () {
+          const shown = that.data.shown.filter(function (it) { return it.id !== id })
+          that.setData({
+            shown: shown,
+            total: Math.max(0, that.data.total - 1),
+            finished: shown.length >= Math.max(0, that.data.total - 1)
+          })
+          wx.showToast({ title: '已删除', icon: 'success' })
+          that.fetchCats()
+        }).catch(function () { /* request 层已 toast */ })
+      }
+    })
   },
 
   onShow() {

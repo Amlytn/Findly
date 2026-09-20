@@ -3,10 +3,10 @@
     <nav-bar title="个人资料" />
 
     <view class="g-card">
-      <!-- 头像行:点击整行更换 -->
+      <!-- 头像行:点击整行更换;预览优先本地暂存图,否则缓存的云端头像 -->
       <view class="list-row" bindtap="chooseAvatar">
         <text class="e-label">头像</text>
-        <image wx:if="{{avatar}}" class="e-avatar" src="{{avatar}}" mode="aspectFill" />
+        <image wx:if="{{pendingAvatar || avatar}}" class="e-avatar" src="{{pendingAvatar || avatar}}" mode="aspectFill" />
         <view wx:else class="e-avatar avatar"></view>
         <text class="e-hint">点击更换</text>
         <view class="chev"></view>
@@ -27,6 +27,6 @@
     </view>
 
     <view class="e-tip">头像与 ID 将展示在个人中心</view>
-    <view class="btn-primary e-save" bindtap="save">保存</view>
+    <view class="btn-primary e-save {{saving ? 'e-saving' : ''}}" bindtap="save">{{saving ? '保存中…' : '保存'}}</view>
   </view>
 </view>

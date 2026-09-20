@@ -50,3 +50,8 @@
 .e-save {
   margin-top: 60rpx;
 }
+
+/* 保存中：置灰防连点（ts 层另有 saving 闸） */
+.e-save.e-saving {
+  opacity: 0.6;
+}
