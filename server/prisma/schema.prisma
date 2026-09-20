@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -28,7 +28,8 @@ model Space {
   userId    String
   parentId  String? // 层级空间树（方案文档第十一节）
   name      String
-  type      String?
+  type      String? // home/room/furniture/container（前端图标选择器映射填写）
+  icon      String? // 语义图标 key（如 kitchen/garage/basement；null 由前端按名称匹配兜底）
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

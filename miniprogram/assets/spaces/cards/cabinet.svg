@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+  <rect width="96" height="96" rx="26" fill="#e1f6f1"/>
+<!-- Cabinet Main Body with Top Cornice, Doors, Drawers and Knobs Cutouts -->
+  <rect x="23" y="24" width="50" height="4.5" rx="2.25" fill="#2fa88c"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="
+    M 25 28.5 h 46 a 3 3 0 0 1 3 3 v 36.5 a 3 3 0 0 1 -3 3 H 25 a 3 3 0 0 1 -3 -3 V 31.5 a 3 3 0 0 1 3 -3 z
+    M 23 41.5 h 50 v 1.5 H 23 z
+    M 47.25 30 h 1.5 v 11.5 h -1.5 z
+    M 31 35 h 7 a 1 1 0 0 1 1 1 v 0.5 a 1 1 0 0 1 -1 1 h -7 a 1 1 0 0 1 -1 -1 v -0.5 a 1 1 0 0 1 1 -1 z
+    M 58 35 h 7 a 1 1 0 0 1 1 1 v 0.5 a 1 1 0 0 1 -1 1 h -7 a 1 1 0 0 1 -1 -1 v -0.5 a 1 1 0 0 1 1 -1 z
+    M 47.25 43 h 1.5 v 26 h -1.5 z
+    M 43 54.5 a 1.8 1.8 0 1 1 0 -0.01 z
+    M 53 54.5 a 1.8 1.8 0 1 1 0 -0.01 z
+  " fill="#2fa88c"/>
+  <!-- Sturdy Tapered Legs -->
+  <path d="M 27 71 l -2 5 a 1.2 1.2 0 0 0 1.1 1.7 h 1.2 a 1.2 1.2 0 0 0 1.1 -0.7 l 1.6 -6 z" fill="#2fa88c"/>
+  <path d="M 69 71 l 2 5 a 1.2 1.2 0 0 1 -1.1 1.7 h -1.2 a 1.2 1.2 0 0 1 -1.1 -0.7 l -1.6 -6 z" fill="#2fa88c"/>
+  <rect x="37" y="71" width="2.5" height="4.5" rx="1" fill="#2fa88c"/>
+  <rect x="56.5" y="71" width="2.5" height="4.5" rx="1" fill="#2fa88c"/>
+</svg>

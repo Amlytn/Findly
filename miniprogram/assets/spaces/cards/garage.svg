@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+  <rect width="96" height="96" rx="26" fill="#eaf0f6"/>
+  <!-- Pitched Eaves Roof -->
+  <path d="M 45.2 24.2 a 4.2 4.2 0 0 1 5.6 0 l 20 16 a 2.8 2.8 0 0 1 -0.4 4.2 a 2.8 2.8 0 0 1 -3.3 -0.2 L 48 29.5 L 28.9 44.2 a 2.8 2.8 0 0 1 -3.3 -0.2 a 2.8 2.8 0 0 1 -0.4 -4.2 z" fill="#5c7c9c"/>
+  <!-- Garage Main Structure -->
+  <path d="M 28 41.5 h 40 a 3 3 0 0 1 3 3 v 25 a 3 3 0 0 1 -3 3 H 28 a 3 3 0 0 1 -3 -3 v -25 a 3 3 0 0 1 3 -3 z" fill="#5c7c9c"/>
+  <!-- Roll-up Door Cutout Opening -->
+  <path d="M 33 48 h 30 a 2 2 0 0 1 2 2 v 22.5 H 31 V 50 a 2 2 0 0 1 2 -2 z" fill="#eaf0f6"/>
+  <!-- Horizontal Door Slats -->
+  <rect x="33.5" y="52" width="29" height="3.5" rx="1.5" fill="#5c7c9c"/>
+  <rect x="33.5" y="58" width="29" height="3.5" rx="1.5" fill="#5c7c9c"/>
+  <rect x="33.5" y="64" width="29" height="3.5" rx="1.5" fill="#5c7c9c"/>
+  <!-- Upper Transom Window -->
+  <rect x="44.5" y="34.5" width="7" height="3.5" rx="1.5" fill="#5c7c9c"/>
+</svg>

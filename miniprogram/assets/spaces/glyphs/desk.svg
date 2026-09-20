@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="15.5 17.3 64.9 64.9" width="48" height="48" fill="none">
+<!-- Desk Lamp on the left -->
+  <path d="M 31 42 h 8 a 1 1 0 0 0 1 -1 v -0.5 a 1 1 0 0 0 -1 -1 h -8 a 1 1 0 0 0 -1 1 v 0.5 a 1 1 0 0 0 1 1 z" fill="#ba7c45"/>
+  <path d="M 35 39.5 L 36.5 31.5 L 42.5 31.5" stroke="#ba7c45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M 41.5 30 l 5 -3 a 1.5 1.5 0 0 1 2 0.5 l 2.5 4 a 1.5 1.5 0 0 1 -0.5 2 l -5 3 z" fill="#ba7c45"/>
+  <!-- Tabletop -->
+  <rect x="23" y="42" width="50" height="4.5" rx="2.25" fill="#ba7c45"/>
+  <!-- Left Leg -->
+  <rect x="26" y="46.5" width="3.5" height="24.5" rx="1.5" fill="#ba7c45"/>
+  <!-- Right Drawer Unit -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="
+    M 49 46.5 h 22 a 2 2 0 0 1 2 2 v 22 a 2 2 0 0 1 -2 2 H 49 a 2 2 0 0 1 -2 -2 v -22 a 2 2 0 0 1 2 -2 z
+    M 49 57.5 h 22 v 1.5 H 49 z
+    M 57 51 h 6 a 1 1 0 0 1 1 1 v 0.5 a 1 1 0 0 1 -1 1 h -6 a 1 1 0 0 1 -1 -1 v -0.5 a 1 1 0 0 1 1 -1 z
+    M 57 63 h 6 a 1 1 0 0 1 1 1 v 0.5 a 1 1 0 0 1 -1 1 h -6 a 1 1 0 0 1 -1 -1 v -0.5 a 1 1 0 0 1 1 -1 z
+  " fill="#ba7c45"/>
+</svg>

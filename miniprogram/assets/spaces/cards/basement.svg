@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+  <rect width="96" height="96" rx="26" fill="#e9eaf2"/>
+<!-- Upper Ground Floor Landing Slab -->
+  <rect x="20" y="25" width="30" height="5.5" rx="2.75" fill="#687199"/>
+  <!-- Chunky Descending Staircase into Negative Space -->
+  <path d="
+    M 36 30.5 h 13 v 12 h 13 v 12 h 13 v 13.5 a 3 3 0 0 1 -3 3 H 23 a 3 3 0 0 1 -3 -3 V 30.5 h 16 z
+  " fill="#687199"/>
+</svg>

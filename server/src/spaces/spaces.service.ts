@@ -6,11 +6,13 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSpaceDto, UpdateSpaceDto } from './dto';
 
-type SpaceRow = { id: string; parentId: string | null; name: string; sortOrder: number };
+type SpaceRow = { id: string; parentId: string | null; name: string; type: string | null; icon: string | null; sortOrder: number };
 type SpaceNode = {
   id: string;
   parentId: string | null;
   name: string;
+  type: string | null;
+  icon: string | null;
   sortOrder: number;
   itemCount: number;
   children: SpaceNode[];
@@ -62,6 +64,8 @@ export class SpacesService {
         id: s.id,
         parentId: s.parentId,
         name: s.name,
+        type: s.type,
+        icon: s.icon,
         sortOrder: s.sortOrder,
         itemCount: countMap.get(s.id) || 0,
         children: [],
@@ -83,6 +87,8 @@ export class SpacesService {
     if (dto.parentId) await this.assertOwned(userId, dto.parentId, '父空间不存在或不属于当前用户');
     const data: any = { user: { connect: { id: userId } }, name: dto.name };
     if (dto.sortOrder !== undefined) data.sortOrder = dto.sortOrder;
+    if (dto.type !== undefined) data.type = dto.type;
+    if (dto.icon !== undefined) data.icon = dto.icon;
     if (dto.parentId) data.parent = { connect: { id: dto.parentId } };
     return this.prisma.space.create({ data });
   }
@@ -94,6 +100,10 @@ export class SpacesService {
 		const data: any = {};
 		if (dto.name !== undefined) data.name = dto.name;
 		if (dto.sortOrder !== undefined) data.sortOrder = dto.sortOrder;
+		// type 显式 null 时回退为 null 由前端兜底匹配；undefined = 不动
+		if (dto.type !== undefined) data.type = dto.type;
+		// icon 显式 null 表示清除用户选择，回退前端按名称匹配；undefined = 不动
+		if (dto.icon !== undefined) data.icon = dto.icon;
 		// parentId null/空串 = 移回根级（断开父级）；undefined = 不动
 		if (dto.parentId === null || dto.parentId === '') {
 			data.parent = { disconnect: true };

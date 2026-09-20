@@ -30,7 +30,7 @@
       </view>
       <view class="empty-title">还没有创建任何空间</view>
       <view class="empty-desc">添加第一个空间（如：我的家、办公室），开始清晰收纳</view>
-      <view class="empty-btn" bindtap="addRootSpace">＋ 创建我的家</view>
+      <view class="empty-btn" bindtap="onAddButtonTap">＋ 创建我的家</view>
     </view>
 
     <!-- 空间分组列表 -->
@@ -165,4 +165,16 @@
       </view>
     </view>
   </view>
+
+  <!-- 空间表单弹层：新建 / 加子空间 / 重命名（名称 + 类型 + 图标选择器） -->
+  <space-form-modal
+    visible="{{formModalVisible}}"
+    title="{{formModalTitle}}"
+    parent-name="{{formModalParentName}}"
+    initial-name="{{formInitialName}}"
+    initial-type="{{formInitialType}}"
+    initial-icon="{{formInitialIcon}}"
+    bind:confirm="onFormConfirm"
+    bind:cancel="onFormCancel"
+  />
 </view>

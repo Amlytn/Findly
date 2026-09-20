@@ -43,8 +43,12 @@ GET 返回示例：
 POST 请求体：
 
 ```json
-{ "name": "书房", "parentId": "sp1", "sortOrder": 0 }
+{ "name": "书房", "parentId": "sp1", "sortOrder": 0, "type": "room", "icon": "study" }
 ```
+
+- `type`（可选）：`home / room / furniture / container` 四选一，由前端图标选择器按类映射填写；
+- `icon`（可选）：语义图标 key（如 `kitchen`/`garage`/`basement`），为 null 或缺失时前端按名称匹配兜底展示；
+- PATCH 中 `type`/`icon` 传 `null` 表示清除（回退兜底），`undefined` 表示不动。
 
 ## 2. 物品 `/api/v1/items`
 

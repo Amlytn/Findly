@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "nav-bar": "/components/nav-bar/index"
+    "nav-bar": "/components/nav-bar/index",
+    "space-form-modal": "/components/space-form-modal/index"
   }
 }

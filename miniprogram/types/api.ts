@@ -1,7 +1,10 @@
 /**
- * Findly API 响应类型 —— 与 docs/api.md v1.2 及后端实测返回逐字段对齐
+ * Findly API 响应类型 —— 与 docs/api.md v1.5 及后端实测返回逐字段对齐
  * 禁止自创字段；字段可空性以实测返回为准。
  */
+
+/** 空间类型（api.md §1：home/room/furniture/container） */
+export type SpaceType = 'home' | 'room' | 'furniture' | 'container'
 
 /** 空间树节点（GET /spaces 的 tree；节点含 children 递归） */
 export interface SpaceTree {
@@ -10,6 +13,8 @@ export interface SpaceTree {
   itemCount: number
   parentId?: string | null
   sortOrder?: number
+  type?: SpaceType | null
+  icon?: string | null
   children?: SpaceTree[]
 }
 
@@ -17,12 +22,14 @@ export interface SpaceTree {
 export type SpaceListItem = SpaceTree
 
 /** POST /spaces、PATCH /spaces/:id 的返回：后端 Prisma 平铺行
- *（无 itemCount/children，消费方只用 id/parentId/name/sortOrder） */
+ *（无 itemCount/children，消费方只用 id/parentId/name/sortOrder/type/icon） */
 export interface SpaceMutationResult {
   id: string
   parentId: string | null
   name: string
   sortOrder: number
+  type: SpaceType | null
+  icon: string | null
 }
 
 /** GET /spaces */
