@@ -57,4 +57,12 @@
     </block>
 
   </view>
+
+  <!-- 快捷新建空间弹层（可选图标，复用 space-form-modal） -->
+  <space-form-modal
+    visible="{{formModalVisible}}"
+    title="{{formModalTitle}}"
+    bind:confirm="onFormConfirm"
+    bind:cancel="onFormCancel"
+  />
 </view>

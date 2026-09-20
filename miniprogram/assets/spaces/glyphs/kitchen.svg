@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="17.4 13.5 61.2 61.2" width="48" height="48" fill="none">
+<!-- Steam wisps -->
+  <path d="M 43 23 c -1.2 1.5 1 3 0 4.5 a 1 1 0 0 1 -1.8 -0.8 c 0.8 -1.2 -1 -2.2 0 -3.4 a 1 1 0 0 1 1.8 -0.3 z" fill="#ec985a"/>
+  <path d="M 53 21 c -1.2 1.8 1.2 3.6 0 5.4 a 1.2 1.2 0 0 1 -2.2 -0.8 c 1.2 -1.8 -1.2 -3.6 0 -5.4 a 1.2 1.2 0 0 1 2.2 0.8 z" fill="#ec985a"/>
+  <!-- Lid Knob -->
+  <rect x="44.5" y="29.5" width="7" height="4" rx="2" fill="#ec985a"/>
+  <!-- Lid Dome with Rim -->
+  <path d="M 29.5 42 h 37 a 2 2 0 0 0 2 -2 c 0 -5.5 -7.5 -10 -20.5 -10 s -20.5 4.5 -20.5 10 a 2 2 0 0 0 2 2 z" fill="#ec985a"/>
+  <!-- Left Handle -->
+  <path d="M 29 47.5 h -3 a 3.5 3.5 0 0 1 0 -7 h 3 v 3 h -3 a 0.5 0.5 0 0 0 0 1 h 3 z" fill="#ec985a"/>
+  <!-- Right Handle -->
+  <path d="M 67 47.5 h 3 a 3.5 3.5 0 0 0 0 -7 h -3 v 3 h 3 a 0.5 0.5 0 0 1 0 1 h -3 z" fill="#ec985a"/>
+  <!-- Pot Body with Cutout -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M 27.5 44.5 h 41 v 15 a 8.5 8.5 0 0 1 -8.5 8.5 H 36 a 8.5 8.5 0 0 1 -8.5 -8.5 V 44.5 z M 39 53 a 2 2 0 0 1 2 -2 h 14 a 2 2 0 0 1 0 4 H 41 a 2 2 0 0 1 -2 -2 z" fill="#ec985a"/>
+</svg>

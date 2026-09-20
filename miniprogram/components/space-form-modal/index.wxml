@@ -1,0 +1,75 @@
+<!-- 空间表单弹层：名称 + 类型/图标选择（底部 sheet，视觉对齐 spaces 页 custom-modal 体系） -->
+<view class="modal-mask {{visible ? 'is-visible' : ''}}" bindtap="onCancel" catchtouchmove="preventTouchMove">
+  <view class="modal-sheet {{visible ? 'is-visible' : ''}}" catchtap="preventBubble" catchtouchmove="preventTouchMove">
+
+    <!-- 顶部拖拽指示条 -->
+    <view class="modal-handle-bar">
+      <view class="modal-handle"></view>
+    </view>
+
+    <!-- 标题区 -->
+    <view class="modal-title-row">
+      <view class="modal-title-box">
+        <view class="modal-title">{{title}}</view>
+        <view class="modal-title-sub" wx:if="{{parentName}}">将创建在「{{parentName}}」下</view>
+      </view>
+    </view>
+
+    <!-- 名称输入 -->
+    <view class="form-field">
+      <view class="field-label">空间名称</view>
+      <input
+        class="field-input"
+        value="{{name}}"
+        bindinput="onInput"
+        placeholder="如：书房、抽屉、地下室"
+        placeholder-class="field-placeholder"
+        maxlength="30"
+        confirm-type="done"
+        focus="{{visible}}"
+      />
+    </view>
+
+    <!-- 图标选择：分类 tab + 网格 -->
+    <view class="form-field form-field-icon">
+      <view class="field-label">选择图标<span class="field-label-hint">（不选则按名称自动匹配）</span></view>
+
+      <scroll-view class="cat-tabs" scroll-x enable-flex>
+        <view
+          class="cat-tab {{activeCat === cat.id ? 'is-active' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="id"
+          wx:for-item="cat"
+          bindtap="onCatTap"
+          data-id="{{cat.id}}"
+        >{{cat.label}}</view>
+      </scroll-view>
+
+      <view class="icon-grid">
+        <block wx:for="{{categories}}" wx:key="id" wx:for-item="cat">
+          <block wx:if="{{activeCat === cat.id}}">
+            <view
+              class="icon-cell {{icon === item.key ? 'is-selected' : ''}}"
+              wx:for="{{cat.icons}}"
+              wx:key="key"
+              wx:for-item="item"
+              bindtap="onIconTap"
+              data-key="{{item.key}}"
+              data-type="{{item.type}}"
+            >
+              <image class="icon-img" src="{{item.card}}" mode="aspectFit" />
+              <text class="icon-label">{{item.label}}</text>
+              <view class="icon-check" wx:if="{{icon === item.key}}"></view>
+            </view>
+          </block>
+        </block>
+      </view>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="modal-btn-row">
+      <view class="btn-cancel" bindtap="onCancel">取消</view>
+      <view class="btn-confirm {{submitting ? 'is-disabled' : ''}}" bindtap="onSubmit">{{confirmText}}</view>
+    </view>
+  </view>
+</view>

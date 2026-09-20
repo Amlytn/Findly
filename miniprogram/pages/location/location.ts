@@ -1,7 +1,6 @@
 import { getSpaces, createSpace } from '../../services/spaces'
-import { SpaceTree } from '../../types/api'
-import { matchSpaceIcon, subtreeCount } from '../../utils/spaces'
-import { checkName } from '../../utils/validate'
+import { SpaceTree, SpaceType } from '../../types/api'
+import { resolveSpaceIcon, subtreeCount } from '../../utils/spaces'
 
 interface Row {
   id: string
@@ -17,7 +16,7 @@ interface Row {
 function flattenAll(nodes: SpaceTree[], prefix: string[], depth: number, out: Row[]) {
   for (const n of nodes) {
     const path = prefix.concat(n.name)
-    const icon = matchSpaceIcon(n.name)
+    const icon = resolveSpaceIcon(n.icon, n.name, n.type)
     const total = subtreeCount(n)
     out.push({
       id: n.id,
@@ -40,7 +39,10 @@ Page({
     rows: [] as Row[],
     selIndex: -1,
     loading: true,
-    error: ''
+    error: '',
+    // 快建空间弹层
+    formModalVisible: false,
+    formModalTitle: '新建空间'
   },
 
   onLoad() {
@@ -50,7 +52,7 @@ Page({
   fetch(autoSelectId?: string) {
     const that = this
     this.setData({ loading: true, error: '' })
-    getSpaces().then(function (res) {
+    getSpaces().then(function (res: any) {
       const rows = flattenAll(res.tree || [], [], 0, [])
       let selIndex = that.data.selIndex
       if (autoSelectId) {
@@ -86,30 +88,25 @@ Page({
     wx.navigateBack({ delta: 1 })
   },
 
-  /** 允许在位置选择页直接快捷创建新空间，彻底消除首次录物死锁 */
+  /** 允许在位置选择页直接快捷创建新空间，彻底消除首次录物死锁（弹层化，可选图标） */
   addNewSpace() {
+    this.setData({ formModalVisible: true, formModalTitle: '新建空间' })
+  },
+
+  onFormCancel() {
+    this.setData({ formModalVisible: false })
+  },
+
+  onFormConfirm(e: any) {
+    const detail = e.detail || {}
+    const name: string = detail.name
+    const type: SpaceType | undefined = detail.type
+    const icon: string | null = detail.icon
     const that = this
-    wx.showModal({
-      title: '新建空间',
-      editable: true,
-      placeholderText: '如：我的家、书桌、抽屉',
-      success(res: any) {
-        if (!res.confirm) return
-        const name = (res.content || '').trim()
-        if (!name) {
-          wx.showToast({ title: '空间名称不能为空', icon: 'none' })
-          return
-        }
-        const lenErr = checkName(name, '空间名称')
-        if (lenErr) {
-          wx.showToast({ title: lenErr, icon: 'none' })
-          return
-        }
-        createSpace({ name: name }).then(function (r) {
-          wx.showToast({ title: '已创建空间', icon: 'success' })
-          that.fetch(r && r.id)
-        }).catch(function () { /* request 层已统一 toast */ })
-      }
-    })
+    createSpace({ name: name, type: type, icon: icon }).then(function (r: any) {
+      wx.showToast({ title: '已创建空间', icon: 'success' })
+      that.setData({ formModalVisible: false })
+      that.fetch(r && r.id)
+    }).catch(function () { /* request 层已统一 toast */ })
   }
 })

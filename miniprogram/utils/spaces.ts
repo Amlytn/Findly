@@ -1,4 +1,5 @@
-import { SpaceTree } from '../types/api'
+import { SpaceTree, SpaceType } from '../types/api'
+import { findIconDef } from './space-icons'
 
 export interface SpaceIconInfo {
   glyph: string
@@ -6,8 +7,36 @@ export interface SpaceIconInfo {
 }
 
 /**
+ * 由语义 icon key 解析图标资源路径。
+ * key 存在且已登记 → 返回对应资源；否则返回 null（调用方回退 matchSpaceIcon）。
+ */
+export function iconPathsFromKey(key?: string | null): SpaceIconInfo | null {
+  if (!key) return null
+  if (findIconDef(key)) {
+    // 注意：兜底图标资源文件名为 other_space.svg，其余与 key 同名
+    const file = key === 'other' ? 'other_space' : key
+    return {
+      glyph: '/assets/spaces/glyphs/' + file + '.svg',
+      card: '/assets/spaces/cards/' + file + '.svg'
+    }
+  }
+  return null
+}
+
+/**
+ * 解析空间图标（读取优先级）：
+ * 1. Space.icon 字段（用户自选，入库持久）—— 权威来源，改名不漂移；
+ * 2. 无 icon 时按名称/类型关键词匹配（老数据兜底）。
+ */
+export function resolveSpaceIcon(icon?: string | null, name?: string, type?: SpaceType | null): SpaceIconInfo {
+  const fromField = iconPathsFromKey(icon)
+  if (fromField) return fromField
+  return matchSpaceIcon(name || '', type)
+}
+
+/**
  * 根据空间名称及类型智能匹配图标与配色方案
- * 覆盖 7 大收纳空间体系
+ * 覆盖 7 大收纳空间体系（作为 resolveSpaceIcon 的无 icon 兜底）
  */
 export function matchSpaceIcon(name: string, type?: string | null): SpaceIconInfo {
   const n = (name || '').toLowerCase()
