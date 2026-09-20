@@ -1,6 +1,7 @@
 import { getSpaces, createSpace } from '../../services/spaces'
 import { SpaceTree } from '../../types/api'
 import { matchSpaceIcon, subtreeCount } from '../../utils/spaces'
+import { checkName } from '../../utils/validate'
 
 interface Row {
   id: string
@@ -97,6 +98,11 @@ Page({
         const name = (res.content || '').trim()
         if (!name) {
           wx.showToast({ title: '空间名称不能为空', icon: 'none' })
+          return
+        }
+        const lenErr = checkName(name, '空间名称')
+        if (lenErr) {
+          wx.showToast({ title: lenErr, icon: 'none' })
           return
         }
         createSpace({ name: name }).then(function (r) {

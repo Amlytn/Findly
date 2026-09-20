@@ -68,9 +68,9 @@
       </view>
     </view>
 
-    <!-- 最近添加 -->
+    <!-- 最近动态 -->
     <view class="section-head">
-      <view class="section-title">最近添加</view>
+      <view class="section-title">最近动态</view>
       <view class="see-all" bindtap="goItems">查看全部<view class="see-all-chev"></view></view>
     </view>
     <view class="recent" wx:if="{{recentItems.length > 0}}">
@@ -81,7 +81,7 @@
         bindtap="onItemTap"
         data-id="{{item.id}}"
       >
-        <image class="recent-img" src="{{item.img}}" mode="aspectFill" />
+        <image class="recent-img" src="{{item.img}}" mode="aspectFill" lazy-load binderror="onImgError" data-idx="{{index}}" />
         <view class="recent-name">{{item.name}}</view>
         <view class="recent-meta">
           <view class="recent-pin"></view>

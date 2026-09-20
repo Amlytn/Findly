@@ -1,7 +1,8 @@
 import { getSpaces } from '../../services/spaces'
 import { getItems } from '../../services/items'
-import { fullUrl } from '../../services/request'
 import { SpaceListItem, ItemListItem } from '../../types/api'
+import { fallbackImg, mapItemCard } from '../../utils/item-vm'
+import { joinPath } from '../../utils/space-path'
 
 interface ShelfItem {
   id: string
@@ -29,7 +30,12 @@ function computeSpacePath(spaceMap: Map<string, SpaceListItem>, id: string): str
     parts.unshift(cur.name)
     cur = cur.parentId ? spaceMap.get(cur.parentId) : undefined
   }
-  return parts.join(' › ')
+  return joinPath(parts)
+}
+
+function toShelfItem(it: ItemListItem): ShelfItem {
+  const vm = mapItemCard(it)
+  return { id: vm.id, name: vm.name, img: vm.img, color: vm.color, category: vm.category }
 }
 
 Page({
@@ -47,6 +53,19 @@ Page({
     if (options && options.filter === 'pending') {
       this.setData({ activeSpaceId: 'pending' })
     }
+  },
+
+  /** 货架图加载失败兜底：仅替换该条的展示图（fallbackImg 内留 console 痕，不静默掩盖） */
+  onShelfImgError(e: any) {
+    const si = Number(e.currentTarget.dataset.si)
+    const ii = Number(e.currentTarget.dataset.ii)
+    const shelf = this.data.visibleShelves[si]
+    if (!shelf) return
+    const items = fallbackImg(shelf.items, ii)
+    if (items === shelf.items) return
+    const next = this.data.visibleShelves.slice()
+    next[si] = Object.assign({}, shelf, { items: items })
+    this.setData({ visibleShelves: next })
   },
 
   onShow() {
@@ -86,25 +105,13 @@ Page({
         for (const it of items) {
           const spId = (it.space && it.space.id) || ''
           if (!spId) {
-            unassigned.push({
-              id: it.id,
-              name: it.name,
-              img: fullUrl(it.imageUrl) || '/assets/logo.png',
-              color: it.color,
-              category: it.category
-            })
+            unassigned.push(toShelfItem(it))
             continue
           }
           if (!itemsBySpace.has(spId)) {
             itemsBySpace.set(spId, [])
           }
-          itemsBySpace.get(spId)!.push({
-            id: it.id,
-            name: it.name,
-            img: fullUrl(it.imageUrl) || '/assets/logo.png',
-            color: it.color,
-            category: it.category
-          })
+          itemsBySpace.get(spId)!.push(toShelfItem(it))
         }
 
         // 筛选收纳了物品的有效空间，并按收纳件数倒序

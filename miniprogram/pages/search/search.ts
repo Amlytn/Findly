@@ -1,8 +1,7 @@
-import { fullUrl } from '../../services/request'
 import { getItems } from '../../services/items'
 import { getSuggestions } from '../../services/search'
 import { getHistory, pushHistory, clearHistory } from '../../utils/search-history'
-import { ItemListItem } from '../../types/api'
+import { fallbackImg, mapItemCard } from '../../utils/item-vm'
 
 Page({
   data: {
@@ -17,16 +16,8 @@ Page({
     getItems({ page: 1, pageSize: 1 }).then(function (res) {
       const first = res.items[0]
       if (!first) return
-      // 热门物品卡：适配本页字段（无图用 logo 占位）；color/brand 为 null 时拼 meta 过滤
-      that.setData({
-        hot: [Object.assign({}, first, {
-          img: fullUrl(first.imageUrl) || '/assets/logo.png',
-          space: first.space ? first.space.name : '未归位',
-          zone: first.path || '',
-          count: 1,
-          meta: [first.color, first.brand].filter(Boolean).join(' · ')
-        })]
-      })
+      // 热门物品卡：字段适配见 utils/item-vm.ts
+      that.setData({ hot: [mapItemCard(first)] })
     }).catch(function () { /* 首页展示失败不阻塞搜索 */ })
     getSuggestions().then(function (res) {
       that.setData({ suggestions: res.suggestions || [] })
@@ -37,6 +28,12 @@ Page({
   onShow() {
     // 从结果页返回时刷新历史（结果页内可能发生过新搜索）
     this.setData({ history: getHistory() })
+  },
+
+  /** 图片加载失败兜底：替换该条的展示图（fallbackImg 内留 console 痕，不静默掩盖） */
+  onImgError(e: any) {
+    const idx = Number(e.currentTarget.dataset.idx)
+    this.setData({ hot: fallbackImg(this.data.hot, idx) })
   },
 
   onInput(e: any) {

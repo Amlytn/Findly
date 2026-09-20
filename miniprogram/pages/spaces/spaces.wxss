@@ -88,6 +88,7 @@ page {
   align-items: center;
   gap: 16rpx;
   flex: 1;
+  min-width: 0;
 }
 
 .sec-icon {
@@ -101,6 +102,10 @@ page {
   font-weight: 700;
   color: #124E5B;
   letter-spacing: 0.5rpx;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .sec-count {
@@ -238,12 +243,17 @@ page {
   font-weight: 700;
   color: #124E5B;
   letter-spacing: 0.5rpx;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .card-count {
   font-size: 24rpx;
   color: #8FA8AD;
   font-weight: 400;
+  flex-shrink: 0;
 }
 
 .card-path {

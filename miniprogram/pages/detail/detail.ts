@@ -2,6 +2,8 @@ import { fullUrl, isApiError } from '../../services/request'
 import { getItem, deleteItem, updateItem, getRelated } from '../../services/items'
 import { getSuggestions } from '../../services/search'
 import { isFavorite, toggleFavorite } from '../../utils/favorites'
+import { toDisplayPath } from '../../utils/space-path'
+import { checkTag } from '../../utils/validate'
 import { ItemDetail } from '../../types/api'
 
 Page({
@@ -54,7 +56,7 @@ Page({
         img: fullUrl(res.imageUrl) || '/assets/logo.png',
         previewUrl: res.imageUrl ? fullUrl(res.imageUrl) : '',
         space: res.space ? res.space.name : '未归位',
-        zone: res.path || ''
+        zone: toDisplayPath(res.path)
       })
       that.setData({
         obj: obj,
@@ -167,6 +169,11 @@ Page({
         if (!res.confirm) return
         const t = (res.content || '').trim()
         if (!t) return
+        const tagErr = checkTag(t)
+        if (tagErr) {
+          wx.showToast({ title: tagErr, icon: 'none' })
+          return
+        }
         const tags = ((that.data as any).form.tags || []).slice()
         if (tags.indexOf(t) < 0) tags.push(t)
         that.setData({ 'form.tags': tags })

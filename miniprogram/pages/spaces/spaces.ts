@@ -1,8 +1,10 @@
 import { getSpaces, createSpace, updateSpace, deleteSpace } from '../../services/spaces'
 import { getItems } from '../../services/items'
-import { fullUrl } from '../../services/request'
 import { SpaceTree, ItemListItem } from '../../types/api'
 import { matchSpaceIcon, subtreeCount } from '../../utils/spaces'
+import { ItemCardVM, mapItemCard } from '../../utils/item-vm'
+import { joinPath } from '../../utils/space-path'
+import { checkName } from '../../utils/validate'
 import type { IAppOption } from '../../app'
 
 export interface SpaceCardItem {
@@ -12,6 +14,8 @@ export interface SpaceCardItem {
   total: number
   directCount?: number
   pathText: string
+  /** 祖先路径数组（含自身）：跨页传参用，避免再切 pathText 字符串 */
+  pathArr: string[]
   cardIcon: string
   glyphIcon: string
   depth: number
@@ -29,8 +33,7 @@ export interface RootSection {
   children: SpaceCardItem[]
 }
 
-export interface PanelItem extends ItemListItem {
-  img: string
+export interface PanelItem extends ItemCardVM {
   subtitle: string
 }
 
@@ -97,7 +100,8 @@ Page({
               parentId: node.parentId || null,
               total: subtreeCount(node),
               directCount: node.itemCount || 0,
-              pathText: currentPath.join(' · '),
+              pathText: joinPath(currentPath),
+              pathArr: currentPath,
               cardIcon: icons.card,
               glyphIcon: icons.glyph,
               depth: depth,
@@ -247,11 +251,9 @@ Page({
     // 后端 pageSize 上限 100；超出部分由组件内"仅显示前 N 件"提示兜底
     getItems({ spaceId: spaceId, page: 1, pageSize: 100 }).then(function (res) {
       const items: PanelItem[] = res.items.map(function (it: ItemListItem) {
-        const parts = [it.category, it.color, it.brand].filter(Boolean)
-        return Object.assign({}, it, {
-          img: fullUrl(it.imageUrl) || '/assets/logo.png',
-          subtitle: parts.join(' · ') || '暂无描述'
-        })
+        const vm = mapItemCard(it)
+        const parts = [it.category, vm.meta].filter(Boolean)
+        return Object.assign(vm, { subtitle: parts.join(' · ') || '暂无描述' })
       })
       that.setData({
         ['itemsMap.' + spaceId]: items,
@@ -328,7 +330,7 @@ Page({
     if (!item) return
     const app = getApp() as any
     app.globalData.locationId = item.id
-    app.globalData.locationPath = item.pathText ? item.pathText.split(' · ') : [item.name]
+    app.globalData.locationPath = item.pathArr && item.pathArr.length ? item.pathArr : [item.name]
     wx.navigateTo({ url: '/pages/add/add' })
   },
 
@@ -357,6 +359,11 @@ Page({
           wx.showToast({ title: '空间名称不能为空', icon: 'none' })
           return
         }
+        const lenErr = checkName(name, '空间名称')
+        if (lenErr) {
+          wx.showToast({ title: lenErr, icon: 'none' })
+          return
+        }
         createSpace({ name: name }).then(function () {
           wx.showToast({ title: '空间已创建', icon: 'success' })
           that.fetch(true)
@@ -377,6 +384,11 @@ Page({
         const name = (res.content || '').trim()
         if (!name) {
           wx.showToast({ title: '子空间名称不能为空', icon: 'none' })
+          return
+        }
+        const lenErr = checkName(name, '子空间名称')
+        if (lenErr) {
+          wx.showToast({ title: lenErr, icon: 'none' })
           return
         }
         createSpace({ name: name, parentId: parent.id }).then(function () {
@@ -405,6 +417,11 @@ Page({
         if (!res.confirm) return
         const name = (res.content || '').trim()
         if (!name || name === target.name) return
+        const lenErr = checkName(name, '空间名称')
+        if (lenErr) {
+          wx.showToast({ title: lenErr, icon: 'none' })
+          return
+        }
         updateSpace(target.id, { name: name }).then(function () {
           wx.showToast({ title: '已修改名称', icon: 'success' })
           that.fetch(true)

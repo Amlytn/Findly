@@ -43,7 +43,7 @@
 
       <view class="grid">
         <view class="g-card" wx:for="{{shown}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-          <image src="{{item.img}}" mode="aspectFill" />
+          <image src="{{item.img}}" mode="aspectFill" lazy-load binderror="onImgError" data-idx="{{index}}" />
           <view class="g-name">{{item.name}}</view>
           <view class="g-meta" wx:if="{{item.meta}}">{{item.meta}}</view>
           <view class="g-loc">{{item.space}} · {{item.count}}件</view>

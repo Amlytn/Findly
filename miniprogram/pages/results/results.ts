@@ -1,7 +1,8 @@
-import { fullUrl } from '../../services/request'
 import { getSearch, SearchType } from '../../services/search'
 import { pushHistory } from '../../utils/search-history'
 import { ItemListItem, SearchSpaceItem, ParsedQuery } from '../../types/api'
+import { fallbackImg, mapItemCard } from '../../utils/item-vm'
+import { toDisplayPath } from '../../utils/space-path'
 import type { IAppOption } from '../../app'
 
 Page({
@@ -30,6 +31,12 @@ Page({
     return parts.join(' · ')
   },
 
+  /** 图片加载失败兜底：替换该条的展示图（fallbackImg 内留 console 痕，不静默掩盖） */
+  onImgError(e: any) {
+    const idx = Number(e.currentTarget.dataset.idx)
+    this.setData({ items: fallbackImg(this.data.items, idx) })
+  },
+
   onLoad(query: any) {
     const kw = decodeURIComponent(query.kw || '')
     // 首页搜索框直达本页的查询也计入历史
@@ -45,19 +52,13 @@ Page({
     const that = this
     this.setData({ kw: kw, tab: tab, loading: true, error: '' })
     getSearch(kw, tab as SearchType).then(function (res) {
-      // 物品卡字段适配本页（meta 预拼，避免 null 显示成 "null"）
+      // 物品卡字段适配见 utils/item-vm.ts；本页 meta 为空时显示占位符
       const items = tab === 'space' ? [] : (res.results || []).map(function (it: ItemListItem) {
-        const meta = [it.color, it.brand].filter(function (x) { return !!x }).join(' · ')
-        return Object.assign({}, it, {
-          img: fullUrl(it.imageUrl) || '/assets/logo.png',
-          meta: meta || '—',
-          space: it.space ? it.space.name : (it.path ? it.path.split(' → ').pop() : '未归位'),
-          zone: it.path || '',
-          count: 1
-        })
+        const vm = mapItemCard(it)
+        return Object.assign(vm, { meta: vm.meta || '—' })
       })
       const spaces = tab === 'item' ? [] : (res.spaces || []).map(function (s: SearchSpaceItem) {
-        return Object.assign({}, s, { pathText: s.path || '' })
+        return Object.assign({}, s, { pathText: toDisplayPath(s.path) })
       })
       that.setData({
         items: items,

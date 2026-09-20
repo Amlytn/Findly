@@ -41,6 +41,7 @@
           class="shelf-card"
           wx:for="{{visibleShelves}}"
           wx:for-item="shelf"
+          wx:for-index="si"
           wx:key="id"
         >
           <!-- 货架顶栏：名称 + 路径 + 件数 -->
@@ -59,11 +60,12 @@
               class="shelf-item-card"
               wx:for="{{shelf.items}}"
               wx:for-item="it"
+              wx:for-index="ii"
               wx:key="id"
               bindtap="onItemTap"
               data-id="{{it.id}}"
             >
-              <image class="shelf-item-img" src="{{it.img}}" mode="aspectFill" />
+              <image class="shelf-item-img" src="{{it.img}}" mode="aspectFill" lazy-load binderror="onShelfImgError" data-si="{{si}}" data-ii="{{ii}}" />
               <view class="shelf-item-name">{{it.name}}</view>
               <view class="shelf-item-meta" wx:if="{{it.color || it.category}}">
                 {{it.color ? it.color : ''}}{{it.color && it.category ? ' · ' : ''}}{{it.category ? it.category : ''}}

@@ -46,18 +46,24 @@
 .shelf-title-wrap {
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 
 .shelf-name {
   font-size: 32rpx;
   font-weight: 700;
   color: #0A1B29;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .shelf-badge {
   font-size: 22rpx;
   font-weight: 700;
   color: #12A5A0;
+  flex-shrink: 0;
   background: #EAF9F7;
   padding: 4rpx 16rpx;
   border-radius: 999rpx;
@@ -68,6 +74,9 @@
   font-size: 23rpx;
   color: #8BA2A6;
   margin-top: 8rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* 物品横向滚动视窗 */
