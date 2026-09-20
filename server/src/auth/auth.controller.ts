@@ -5,6 +5,7 @@
 import {
   BadRequestException, Body, Controller, ForbiddenException, Get, Post, Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
@@ -13,6 +14,7 @@ class LoginDto {
   @IsString() @IsNotEmpty() code: string;
 }
 
+@ApiTags('认证 Auth')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private auth: AuthService) {}

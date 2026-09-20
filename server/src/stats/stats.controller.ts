@@ -5,8 +5,10 @@
  * 认证由全局 JwtAuthGuard 负责，与其他接口一致，此处不再单独处理。
  */
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { StatsService } from './stats.service';
 
+@ApiTags('统计 Stats')
 @Controller('api/v1/stats')
 export class StatsController {
   constructor(private readonly stats: StatsService) {}

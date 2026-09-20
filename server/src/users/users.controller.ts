@@ -3,6 +3,7 @@
  * Findly 后端 · 2026-09-16（PATCH /me 契约 v1.4 2026-09-19）
  */
 import { Body, Controller, Get, Patch, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { PrismaService } from '../prisma/prisma.service';
 import { userIdFrom } from '../common/user.util';
@@ -12,6 +13,7 @@ class UpdateMeDto {
   @IsOptional() @IsString() @MaxLength(500) avatar?: string;
 }
 
+@ApiTags('用户 Users')
 @Controller('api/v1/users')
 export class UsersController {
   constructor(private prisma: PrismaService) {}

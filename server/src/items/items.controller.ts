@@ -3,11 +3,13 @@
  * Findly 后端 · 2026-09-15
  */
 import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ItemsService } from './items.service';
 import { CreateItemDto, QueryItemsDto, UpdateItemDto } from './dto';
 import { userIdFrom } from '../common/user.util';
 
 // 注意：GET categories 是静态路径，必须声明在 GET :id 之前，否则会被当成 :id 解析
+@ApiTags('物品 Items')
 @Controller('api/v1/items')
 export class ItemsController {
   constructor(private readonly items: ItemsService) {}
