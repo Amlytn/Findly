@@ -2,13 +2,13 @@
  * wx.request 统一封装：base URL、认证头、超时、错误规整、401 拦截与重登重试。
  * 页面不得直接调 wx.request，一律经 services 业务函数。
  *
- * 认证（契约 v1.3）：优先 Authorization: Bearer <JWT>；
- * 无 token 时保留 x-user-id: dev 兜底（后端过渡期兼容，M5 移除）。
+ * 认证（契约 v1.4）：请求头 Authorization: Bearer <JWT>；
+ * 无 token 或 token 失效时由 401 拦截静默重登并重放原请求。
  */
 import { ApiError } from '../types/api'
 import { getToken, clearToken } from './token'
 import { ensureLogin } from './auth'
-import { getApiBase, getServerRoot, setServerRoot, fullUrl } from './config'
+import { getApiBase, getServerRoot, setServerRoot, fullUrl, getEnvVersion } from './config'
 
 // 只再导出动态函数；SERVER_ROOT/API_BASE 快照常量不在此转发，避免页面拿到陈旧地址
 export { getApiBase, getServerRoot, setServerRoot, fullUrl }
@@ -55,9 +55,6 @@ function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
     const header: Record<string, string> = { 'Content-Type': 'application/json' }
     if (token) {
       header.Authorization = 'Bearer ' + token
-    } else {
-      // 过渡期兜底（契约 v1.3）：无 token 时后端仍接受 x-user-id，缺省 dev
-      header['x-user-id'] = 'dev'
     }
 
     wx.request({
@@ -119,7 +116,10 @@ function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
         }
       },
       fail() {
-        const err: RequestSilentError = { statusCode: 0, message: '网络不可用，请检查后端是否已启动', __error: true }
+        const message = getEnvVersion() === 'develop'
+          ? '网络不可用，请检查后端是否已启动'
+          : '网络不佳，下拉或点此重试'
+        const err: RequestSilentError = { statusCode: 0, message: message, __error: true }
         if (silent) {
           resolve(err as unknown as T & RequestSilentError)
         } else {

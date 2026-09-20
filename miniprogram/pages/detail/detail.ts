@@ -41,6 +41,10 @@ Page({
   },
 
   fetch() {
+    if (!this.data.id) {
+      this.setData({ loading: false, error: '物品不存在或链接已失效' })
+      return
+    }
     const that = this
     this.setData({ loading: true, error: '' })
     getItem(this.data.id).then(function (res) {

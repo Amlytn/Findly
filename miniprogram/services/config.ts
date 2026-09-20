@@ -26,16 +26,19 @@ export function getServerRoot(): string {
   } catch {
     // 降级兜底
   }
+  return ENV_MAP[getEnvVersion()] || ENV_MAP.develop
+}
+
+/** 当前运行环境：develop / trial / release；读取失败或非小程序环境按 develop 处理 */
+export function getEnvVersion(): string {
   try {
     const accountInfo = typeof wx !== 'undefined' && wx.getAccountInfoSync && wx.getAccountInfoSync()
     const envVersion = accountInfo && accountInfo.miniProgram && accountInfo.miniProgram.envVersion
-    if (envVersion && ENV_MAP[envVersion]) {
-      return ENV_MAP[envVersion]
-    }
+    if (envVersion) return envVersion
   } catch {
-    // 降级兜底
+    // 降级兜底：低版本或工具环境可能不支持
   }
-  return ENV_MAP.develop
+  return 'develop'
 }
 
 /**

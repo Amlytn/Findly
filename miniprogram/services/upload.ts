@@ -12,8 +12,6 @@ export function uploadImage(filePath: string): Promise<UploadResponse> {
     const header: Record<string, string> = {}
     if (token) {
       header.Authorization = 'Bearer ' + token
-    } else {
-      header['x-user-id'] = 'dev'
     }
     wx.uploadFile({
       url: getApiBase() + '/upload',

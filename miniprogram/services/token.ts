@@ -8,6 +8,13 @@ const TOKEN_TTL = 6 * 24 * 3600 * 1000
 export function getToken(): string {
   const cached = wx.getStorageSync(TOKEN_KEY) as { token: string; ts: number } | ''
   if (cached && cached.token && Date.now() - cached.ts < TOKEN_TTL) return cached.token
+  if (cached) {
+    try {
+      wx.removeStorageSync(TOKEN_KEY)
+    } catch {
+      /* 清理失败静默：下次读取仍会判过期 */
+    }
+  }
   return ''
 }
 
