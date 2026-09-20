@@ -13,15 +13,16 @@ design/           品牌资产
 docs/             协作文档（架构 / API / 数据库 / AI，随代码演进维护）
 miniprogram/      微信小程序端（原生 + TypeScript）
   app.json 等       工程入口（project.private.config.json 不入库）
-  pages/            页面（index / items / spaces / profile / camera / add / result / location / detail / search / results / settings / profile-edit / usage / doc，共 15 屏）
+  pages/            页面（index / items / spaces / profile / camera / add / result / location / detail / search / results / settings / profile-edit / usage / doc / tutorial / favorites / stats / common-spaces，共 19 屏）
   components/nav-bar/  +  custom-tab-bar/（自定义底部导航，中间凸起 ➕）
-  services/         统一接口层（request / items / spaces / ai / search / auth / upload / users）
+  services/         统一接口层（request / items / spaces / ai / search / auth / upload / users / stats）
+  assets/           图片资源（banner 背景、logo 与 item-*.jpg 演示物品图，后者仅供测试填充使用）
 server/           后端（NestJS + Prisma + PostgreSQL/SQLite）
   src/              全模块已实现：ai / search / items / spaces / auth / users / upload / common / prisma
   prisma/           schema.prisma（六表）+ seed.ts
 ```
 
-小程序端 15 屏界面已全部落地并接入真实后端 API（JWT 鉴权、图片上传、AI 识物与智能搜索）；后端业务模块与 30 例自动化单元测试均已完成并接入 CI 流水线。
+小程序端 19 屏界面已全部落地并接入真实后端 API（JWT 鉴权、图片上传、AI 识物与智能搜索）；后端业务模块与自动化单元测试均已完成并接入 CI 流水线。
 
 ## 设计资产维护
 
@@ -32,7 +33,7 @@ node tools/build.mjs
 python tools/validate.py
 ```
 
-`assets/` 下的任何文件都不应手工编辑，一切以构建脚本输出为准。
+`design/findly-icon-set/assets/` 下的任何文件都不应手工编辑，一切以构建脚本输出为准。
 
 ## 协作约定
 

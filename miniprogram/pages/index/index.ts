@@ -4,7 +4,10 @@ import { ItemCardVM, fallbackImg, mapItemCard } from '../../utils/item-vm'
 /** updatedAt → 相对时间文案 */
 function timeAgo(iso?: string): string {
   if (!iso) return ''
-  const diff = Date.now() - new Date(iso).getTime()
+  const t = new Date(iso).getTime()
+  // 非法/缺失时间戳时 NaN 比较恒为 false 会直落「年前」分支，先兜底为不展示
+  if (!isFinite(t)) return ''
+  const diff = Date.now() - t
   if (diff < 3600000) return '刚刚'
   if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前'
   const d = Math.floor(diff / 86400000)
