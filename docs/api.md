@@ -1,8 +1,8 @@
-# Findly API 接口契约（v1.4）
+# Findly API 接口契约（v1.5）
 
 > 前后端共同遵守的接口约定。改接口必须先改本文档，再动代码（PR 同步提交）。
 > 维护人：@james-wu66 ｜ 协作：@Amlytn
-> 评审状态：v1.4（M5 鉴权收紧：401 拦截生效、x-user-id 兜底移除；items 增加 category 精确筛选与 quantity 返回；items/spaces 支持 null 解绑语义；users 新增 PATCH /me；上传增加 magic bytes 校验。v1.3：M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义）
+> 评审状态：v1.5（① **@Amlytn 的 PR #42 已给 spaces 增加 `type`/`icon` 契约，但合入时未升版本号，本次一并记账补记**，正文见第 1 节；② 补记 B03 的 `POST /upload/cleanup-orphans` 端点——该端点进 main 时未同步本契约，同属流程遗漏；并按 **C10** 修正其语义：孤儿判定增加 24h `mtime` 保护窗口、响应新增 `skippedRecent` / `graceHours`，见第 5.4 节）。v1.4（M5 鉴权收紧：401 拦截生效、x-user-id 兜底移除；items 增加 category 精确筛选与 quantity 返回；items/spaces 支持 null 解绑语义；users 新增 PATCH /me；上传增加 magic bytes 校验。v1.3：M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义）
 
 ## 通用约定
 
@@ -225,3 +225,28 @@ GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity
 // PATCH 200 返回
 { "id": "u1", "nickname": "小明同学", "avatar": null }
 ```
+
+### 5.4 孤儿图片清理 `POST /api/v1/upload/cleanup-orphans`（B03 已实现，v1.5 补记入契约 + C10 修正语义）
+
+- 用途：删除 `server/uploads/` 下**未被任何物品引用、且已过保护窗口**的图片
+- 需 Bearer token（走全局 `JwtAuthGuard`，无 `@Public`）；面向运维/自查，非小程序常规调用
+- 请求体：`{ "dryRun": false }` —— **缺省即 `true`（只报告不删）**，必须显式传 `false` 才真正删除
+- 判定"孤儿"须**同时**满足两条：
+  1. 文件名不出现在任何 Item 的 `imageUrl` / `thumbnailUrl`（**含软删除物品**，保守策略：回收站物品的图不删）
+  2. **文件 `mtime` 早于 24 小时前**（C10 修正）——拍照 → 上传 → 保存物品之间存在"已上传但尚未被引用"的窗口，缺此阈值会删掉用户**正在编辑中**的物品图片
+- 响应：
+
+```json
+{
+  "scanned": 42,               // uploads/ 下图片文件总数
+  "referenced": 30,            // 被物品引用的图片文件名数（去重后）
+  "orphans": ["1758...a1b2.png"], // 本轮判定为孤儿（同时满足上面两条）的文件名，升序
+  "skippedRecent": 3,          // 因未过 24h 保护窗口而本轮不删的数量
+  "graceHours": 24,            // 保护窗口时长，见判定条件 2
+  "deleted": 0,                // 实际删除数；dryRun=true 时恒为 0
+  "dryRun": true
+}
+```
+
+- 错误：401（无 token / token 失效）
+- ⚠️ 运维红线：首次上线先 `dryRun: true` 核对 `orphans` 清单，确认无误再 `dryRun: false`

@@ -35,7 +35,8 @@ export class UploadController {
 
   @Post('cleanup-orphans')
   @ApiOperation({
-    summary: '清理孤儿图片：未被任何物品引用的 uploads/ 文件。dryRun 默认 true 只报告，false 才真正删除',
+    summary:
+      '清理孤儿图片：未被任何物品引用、且上传已满 24h 的 uploads/ 文件。dryRun 默认 true 只报告，false 才真正删除（24h 内的新图受保护，避免删掉编辑中物品的图片）',
   })
   async cleanupOrphans(@Body() body: { dryRun?: boolean }) {
     const dryRun = body?.dryRun !== false;
