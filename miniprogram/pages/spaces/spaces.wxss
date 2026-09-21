@@ -737,3 +737,124 @@ page {
   font-weight: 600;
   color: #8FA8AD;
 }
+
+/* 同级排序操作行 */
+.modal-reorder-row {
+  cursor: default;
+}
+
+.reorder-btns {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.reorder-btn {
+  padding: 12rpx 20rpx;
+  background: #EBF8F5;
+  border-radius: 12rpx;
+  border: 1rpx solid rgba(18, 165, 160, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.reorder-btn:active {
+  background: #D5F1EB;
+}
+
+.reorder-btn.is-disabled {
+  background: #F4F7F7;
+  border-color: #E2ECEE;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.reorder-txt {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #12A5A0;
+}
+
+.reorder-btn.is-disabled .reorder-txt {
+  color: #8FA8AD;
+}
+
+/* 移动空间目标选择弹层 */
+.move-targets-scroll {
+  max-height: 52vh;
+  margin: 16rpx 0 24rpx;
+}
+
+.move-targets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.move-target-item {
+  background: #F8FAFA;
+  border: 1rpx solid #EEF5F6;
+  border-radius: 18rpx;
+  padding: 20rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.move-target-item:active {
+  background: #EFF6F7;
+}
+
+.move-target-item.is-disabled {
+  opacity: 0.45;
+  background: #F5F7F7;
+}
+
+.move-target-item.is-current {
+  border-color: rgba(18, 165, 160, 0.35);
+  background: #F0FAF8;
+}
+
+.move-target-info {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.move-target-icon {
+  font-size: 28rpx;
+}
+
+.move-target-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #124E5B;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.move-target-badge {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+  background: rgba(18, 165, 160, 0.12);
+  color: #12A5A0;
+  font-weight: 600;
+}
+
+.move-target-badge.is-self {
+  background: rgba(143, 168, 173, 0.15);
+  color: #8FA8AD;
+}
+
+.move-target-arrow {
+  width: 24rpx;
+  height: 24rpx;
+  opacity: 0.4;
+}

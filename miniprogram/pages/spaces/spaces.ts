@@ -1,4 +1,4 @@
-import { SpaceTreeStore, SpaceCardItem, RootSection, StorePatch } from '../../utils/space-tree-store'
+import { SpaceTreeStore, SpaceCardItem, RootSection, StorePatch, MovableTarget } from '../../utils/space-tree-store'
 import { SpaceType } from '../../types/api'
 import type { IAppOption } from '../../app'
 
@@ -17,9 +17,15 @@ Page({
     error: '',
     loaded: false,
 
-    // 自定义空间设置弹层
-    settingModalVisible: false,
-    settingTarget: null as RootSection | SpaceCardItem | null,
+    // 统一空间操作弹层（S4）
+    actionSheetVisible: false,
+    actionTarget: null as RootSection | SpaceCardItem | null,
+    actionCanMoveUp: false,
+    actionCanMoveDown: false,
+
+    // 移动空间目标选择弹层
+    moveModalVisible: false,
+    moveTargets: [] as MovableTarget[],
 
     // 空间表单弹层（space-form-modal）
     formModalVisible: false,
@@ -87,18 +93,35 @@ Page({
     this.tapCard(e)
   },
 
-  /** 根分组设置按钮：唤起自定义空间设置弹层（取代微信原生 UI） */
-  onSectionSettings(e: any) {
-    const section: RootSection = e.currentTarget.dataset.section
-    if (!section) return
+  /** 打开统一操作弹层（S4 收敛入口） */
+  openActionSheet(target: RootSection | SpaceCardItem) {
+    if (!target) return
+    const pos = (this.store as any).getSiblingPosition(target.id)
     this.setData({
-      settingModalVisible: true,
-      settingTarget: section
+      actionSheetVisible: true,
+      actionTarget: target,
+      actionCanMoveUp: pos.canMoveUp,
+      actionCanMoveDown: pos.canMoveDown
     })
   },
 
-  closeSettingModal() {
-    this.setData({ settingModalVisible: false })
+  closeActionSheet() {
+    this.setData({ actionSheetVisible: false })
+  },
+
+  onSectionMore(e: any) {
+    const section: RootSection = e.currentTarget.dataset.section
+    if (section) this.openActionSheet(section)
+  },
+
+  onSectionSettings(e: any) {
+    const section: RootSection = e.currentTarget.dataset.section
+    if (section) this.openActionSheet(section)
+  },
+
+  onCardMoreAction(e: any) {
+    const item: SpaceCardItem = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
+    if (item) this.openActionSheet(item)
   },
 
   preventBubble() {
@@ -109,19 +132,110 @@ Page({
     // 阻止底层滑动穿透
   },
 
-  /** 弹层操作：重命名空间 */
-  onSettingModalRename() {
-    const target = this.data.settingTarget
-    this.closeSettingModal()
+  /** 弹层操作：添加子空间 */
+  onActionAddChild() {
+    const target = this.data.actionTarget
+    this.closeActionSheet()
+    if (target) {
+      this.openForm('add-child', target)
+    }
+  },
+
+  /** 弹层操作：重命名/更换图标 */
+  onActionRename() {
+    const target = this.data.actionTarget
+    this.closeActionSheet()
     if (target) {
       this.openForm('rename', target)
     }
   },
 
+  /** 弹层操作：移动空间（唤起移动选择器） */
+  onActionMove() {
+    const target = this.data.actionTarget
+    this.closeActionSheet()
+    if (!target) return
+    const targets = (this.store as any).getMovableTargets(target.id)
+    this.setData({
+      moveModalVisible: true,
+      moveTargets: targets
+    })
+  },
+
+  closeMoveModal() {
+    this.setData({ moveModalVisible: false })
+  },
+
+  /** 选择移动目标 */
+  onSelectMoveTarget(e: any) {
+    const target: MovableTarget = e.currentTarget.dataset.target
+    if (!target || target.disabled || target.isCurrentParent) return
+    const actionTarget = this.data.actionTarget
+    if (!actionTarget) return
+
+    const that = this
+    this.setData({ moveModalVisible: false })
+    this.store.moveSpace(actionTarget.id, target.id).then(function (ok: boolean) {
+      if (ok) {
+        wx.showToast({
+          title: target.id ? '已移至「' + target.name + '」' : '已设为顶级空间',
+          icon: 'success'
+        })
+      }
+    })
+  },
+
+  /** 弹层操作：同级上移 */
+  onActionReorderUp() {
+    const target = this.data.actionTarget
+    if (!target || !this.data.actionCanMoveUp) return
+    const that = this
+    this.store.reorderSpace(target.id, 'up').then(function (ok: boolean) {
+      if (ok) {
+        const pos = (that.store as any).getSiblingPosition(target.id)
+        that.setData({
+          actionCanMoveUp: pos.canMoveUp,
+          actionCanMoveDown: pos.canMoveDown
+        })
+        wx.showToast({ title: '已上移', icon: 'success' })
+      }
+    })
+  },
+
+  /** 弹层操作：同级下移 */
+  onActionReorderDown() {
+    const target = this.data.actionTarget
+    if (!target || !this.data.actionCanMoveDown) return
+    const that = this
+    this.store.reorderSpace(target.id, 'down').then(function (ok: boolean) {
+      if (ok) {
+        const pos = (that.store as any).getSiblingPosition(target.id)
+        that.setData({
+          actionCanMoveUp: pos.canMoveUp,
+          actionCanMoveDown: pos.canMoveDown
+        })
+        wx.showToast({ title: '已下移', icon: 'success' })
+      }
+    })
+  },
+
+  /** 弹层操作：直接加入物品 */
+  onActionAddItem() {
+    const target = this.data.actionTarget
+    this.closeActionSheet()
+    if (!target) return
+    const app = getApp() as any
+    app.globalData.locationId = target.id
+    app.globalData.locationPath = (target as any).pathArr && (target as any).pathArr.length
+      ? (target as any).pathArr
+      : [target.name]
+    wx.navigateTo({ url: '/pages/add/add' })
+  },
+
   /** 弹层操作：删除空间 */
-  onSettingModalDelete() {
-    const target = this.data.settingTarget
-    this.closeSettingModal()
+  onActionDelete() {
+    const target = this.data.actionTarget
+    this.closeActionSheet()
     if (target) {
       this.deleteSpaceConfirm(target)
     }
@@ -247,42 +361,16 @@ Page({
     })
   },
 
-  /** 卡片长按菜单：重命名 / 添加子空间 / 删除 */
+  /** 卡片长按：唤起统一操作面板（S4 入口收敛） */
   onCardLongPress(e: any) {
     const item: SpaceCardItem = (e.detail && e.detail.item) || (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item)
-    if (!item) return
-    const that = this
-    wx.showActionSheet({
-      itemList: ['重命名「' + item.name + '」', '在「' + item.name + '」下添加子空间', '删除空间'],
-      success(r: any) {
-        if (r.tapIndex === 0) {
-          that.openForm('rename', item)
-        } else if (r.tapIndex === 1) {
-          that.openForm('add-child', item)
-        } else if (r.tapIndex === 2) {
-          that.deleteSpaceConfirm(item)
-        }
-      }
-    })
+    if (item) this.openActionSheet(item)
   },
 
-  /** 根分组长按菜单 */
+  /** 根分组长按：唤起统一操作面板（S4 入口收敛） */
   onSectionLongPress(e: any) {
     const section: RootSection = e.currentTarget.dataset.section
-    if (!section) return
-    const that = this
-    wx.showActionSheet({
-      itemList: ['在「' + section.name + '」下添加子空间', '重命名「' + section.name + '」', '删除空间'],
-      success(r: any) {
-        if (r.tapIndex === 0) {
-          that.openForm('add-child', section)
-        } else if (r.tapIndex === 1) {
-          that.openForm('rename', section)
-        } else if (r.tapIndex === 2) {
-          that.deleteSpaceConfirm(section)
-        }
-      }
-    })
+    if (section) this.openActionSheet(section)
   },
 
   /** 删除空间（受后端 400 级联约束保护）——成功后本地移除，不整树刷新 */

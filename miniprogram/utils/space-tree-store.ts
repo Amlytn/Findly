@@ -54,6 +54,15 @@ export interface PanelItem extends ItemCardVM {
   subtitle: string
 }
 
+/** 空间移动候选目标 */
+export interface MovableTarget {
+  id: string | null
+  name: string
+  depth: number
+  disabled: boolean
+  isCurrentParent: boolean
+}
+
 /** 可 setData 的补丁（页面 data 的子集） */
 export interface StorePatch {
   sections?: RootSection[]
@@ -358,6 +367,170 @@ export class SpaceTreeStore {
       }
       that.apply(patch)
     }, function () { /* 400 提示由 request 层自动 toast */ })
+  }
+
+  /**
+   * 移动空间：将目标空间移动到 targetParentId 下（null 代表变为顶级根空间）。
+   * 本地实时调整内存树并重建 sections，自动展开新父空间；失败保持原状。
+   */
+  moveSpace(id: string, targetParentId: string | null): Promise<boolean> {
+    const that = this
+    return updateSpace(id, { parentId: targetParentId }).then(function () {
+      const found = findNode(that.cacheTree, id)
+      if (!found) {
+        that.refresh()
+        return true
+      }
+      const nodeToMove = found.node
+      removeNodeById(that.cacheTree, id)
+
+      nodeToMove.parentId = targetParentId
+      if (targetParentId) {
+        const targetParent = findNode(that.cacheTree, targetParentId)
+        if (targetParent) {
+          if (!targetParent.node.children) targetParent.node.children = []
+          const siblings = targetParent.node.children
+          const lastSort = siblings.length > 0 ? (siblings[siblings.length - 1].sortOrder || 0) : 0
+          nodeToMove.sortOrder = lastSort + 10
+          siblings.push(nodeToMove)
+        } else {
+          that.refresh()
+          return true
+        }
+      } else {
+        const lastSort = that.cacheTree.length > 0 ? (that.cacheTree[that.cacheTree.length - 1].sortOrder || 0) : 0
+        nodeToMove.sortOrder = lastSort + 10
+        that.cacheTree.push(nodeToMove)
+      }
+
+      const patch = that.rebuild()
+      const expandedMap = Object.assign({}, patch.expandedMap)
+      const collapsedMap = Object.assign({}, patch.collapsedMap)
+      if (targetParentId) {
+        expandedMap[targetParentId] = true
+        delete collapsedMap[targetParentId]
+      }
+      that.apply({
+        sections: patch.sections,
+        expandedMap: expandedMap,
+        collapsedMap: collapsedMap
+      })
+      return true
+    }, function () {
+      return false
+    })
+  }
+
+  /**
+   * 同级空间调序：将目标空间沿 direction（'up' 或 'down'）移动一位。
+   * 内存树即时调换顺序并规范化 sortOrder，异步并发写回服务端。
+   */
+  reorderSpace(id: string, direction: 'up' | 'down'): Promise<boolean> {
+    const that = this
+    const found = findNode(this.cacheTree, id)
+    if (!found) return Promise.resolve(false)
+    const siblings = found.parent
+    const idx = siblings.findIndex(function (s) { return s.id === id })
+    if (idx === -1) return Promise.resolve(false)
+
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (targetIdx < 0 || targetIdx >= siblings.length) return Promise.resolve(false)
+
+    // 1. 数组内调换位置
+    const current = siblings[idx]
+    siblings[idx] = siblings[targetIdx]
+    siblings[targetIdx] = current
+
+    // 2. 规范化该同级列表内所有项的 sortOrder (step 10)，筛选需要更新写入后端的节点
+    const toUpdate: { id: string; sortOrder: number }[] = []
+    siblings.forEach(function (node, index) {
+      const targetSort = index * 10
+      if (node.sortOrder !== targetSort) {
+        node.sortOrder = targetSort
+        toUpdate.push({ id: node.id, sortOrder: targetSort })
+      }
+    })
+
+    // 3. 本地即时生效（保持折叠状态）
+    that.apply(that.rebuild())
+
+    // 4. 并发写入后端
+    if (!toUpdate.length) return Promise.resolve(true)
+    return Promise.all(
+      toUpdate.map(function (item) {
+        return updateSpace(item.id, { sortOrder: item.sortOrder })
+      })
+    ).then(function () {
+      return true
+    }).catch(function () {
+      that.refresh()
+      return false
+    })
+  }
+
+  /**
+   * 获取某空间在同级中的位置信息，用于判断上移/下移是否可用
+   */
+  getSiblingPosition(id: string): { isFirst: boolean; isLast: boolean; canMoveUp: boolean; canMoveDown: boolean } {
+    const found = findNode(this.cacheTree, id)
+    if (!found) {
+      return { isFirst: true, isLast: true, canMoveUp: false, canMoveDown: false }
+    }
+    const siblings = found.parent
+    const idx = siblings.findIndex(function (s) { return s.id === id })
+    if (idx === -1) {
+      return { isFirst: true, isLast: true, canMoveUp: false, canMoveDown: false }
+    }
+    const isFirst = idx <= 0
+    const isLast = idx >= siblings.length - 1
+    return {
+      isFirst: isFirst,
+      isLast: isLast,
+      canMoveUp: !isFirst,
+      canMoveDown: !isLast
+    }
+  }
+
+  /**
+   * 获取指定空间可移动的目标空间列表（排除自身及所有子代，防止成环）
+   */
+  getMovableTargets(excludeId: string): MovableTarget[] {
+    const found = findNode(this.cacheTree, excludeId)
+    const currentParentId = found ? found.node.parentId : null
+
+    // 收集自身及所有后代 ID
+    const dead: string[] = []
+    if (found) collectSubtreeIds(found.node, dead)
+
+    const list: MovableTarget[] = [
+      {
+        id: null,
+        name: '设为顶级空间（根空间）',
+        depth: 0,
+        disabled: currentParentId === null,
+        isCurrentParent: currentParentId === null
+      }
+    ]
+
+    function walk(nodes: SpaceTree[], depth: number) {
+      for (const node of nodes) {
+        const isSelfOrDescendant = dead.indexOf(node.id) !== -1
+        const isCurrentParent = node.id === currentParentId
+        list.push({
+          id: node.id,
+          name: node.name,
+          depth: depth,
+          disabled: isSelfOrDescendant || isCurrentParent,
+          isCurrentParent: isCurrentParent
+        })
+        if (node.children && node.children.length) {
+          walk(node.children, depth + 1)
+        }
+      }
+    }
+
+    walk(this.cacheTree, 1)
+    return list
   }
 
   // ---------- 内部 ----------
