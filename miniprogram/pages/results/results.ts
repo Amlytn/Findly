@@ -13,6 +13,8 @@ Page({
     spaces: [] as any[],
     parsed: null as ParsedQuery | null,
     count: 0,
+    /** 物品结果打满后端 50 条上限：计数显示「50+」 */
+    countCapped: false,
     loading: true,
     error: '',
     parsedText: ''
@@ -60,16 +62,21 @@ Page({
       const spaces = tab === 'item' ? [] : (res.spaces || []).map(function (s: SearchSpaceItem) {
         return Object.assign({}, s, { pathText: toDisplayPath(s.path) })
       })
+      // 计数诚实化：后端 search 物品结果 take:50 封顶且不回 total——
+      // 物品打满 50 条时显示「50+」，避免把当页条数谎称成总数（真实 total 需后端契约补字段）
+      const capped = tab !== 'space' && items.length >= 50
+      const count = items.length + spaces.length
       that.setData({
         items: items,
         spaces: spaces,
         parsed: res.parsed || null,
         parsedText: that.buildParsedText(res.parsed || null),
-        count: items.length + spaces.length,
+        count: count,
+        countCapped: capped,
         loading: false
       })
     }).catch(function (e: any) {
-      that.setData({ loading: false, error: e.message || '搜索失败，点击重试', items: [], spaces: [], count: 0, parsedText: '' })
+      that.setData({ loading: false, error: e.message || '搜索失败，点击重试', items: [], spaces: [], count: 0, countCapped: false, parsedText: '' })
     })
   },
 
