@@ -29,6 +29,12 @@
         <text class="s-ph-txt">搜索物品名称、品牌、标签...</text>
       </view>
 
+      <!-- 空间过滤横幅：从空间管理货架「···」进入时显示，可一键清除 -->
+      <view class="space-filter" wx:if="{{spaceFilterName}}">
+        <text class="sf-txt">仅看空间 · {{spaceFilterName}}</text>
+        <view class="sf-clear" bindtap="clearSpaceFilter">✕ 查看全部</view>
+      </view>
+
       <scroll-view class="chips" scroll-x>
         <view
           class="chip {{cat === item.key ? 'on' : ''}}"

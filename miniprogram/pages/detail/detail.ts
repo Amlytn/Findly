@@ -10,6 +10,8 @@ Page({
   data: {
     id: '',
     obj: null as ItemDetail | null,
+    /** 物品所在叶子空间 id（长按位置行回跳空间管理定位用） */
+    spaceLeafId: '',
     tags: [] as string[],
     related: [] as any[],
     suggestions: [] as string[],
@@ -60,6 +62,7 @@ Page({
       })
       that.setData({
         obj: obj,
+        spaceLeafId: res.space ? res.space.id : '',
         tags: res.tags || [],
         loading: false,
         isFavorite: isFavorite(that.data.id)
@@ -230,6 +233,21 @@ Page({
       // 失败原因由 request 层统一 toast
       that.setData({ saving: false })
     })
+  },
+
+  /** 长按位置行：回跳空间管理，展开祖先链定位并高亮本物品（空间管理 2.0 · 搜索回跳） */
+  goSpace() {
+    const spaceId = this.data.spaceLeafId
+    if (!spaceId) {
+      wx.showToast({ title: '该物品还未归位到空间', icon: 'none' })
+      return
+    }
+    const app = getApp() as any
+    if (app && app.globalData) {
+      app.globalData.focusSpaceId = spaceId
+      app.globalData.focusItemId = this.data.id
+    }
+    wx.switchTab({ url: '/pages/spaces/spaces' })
   },
 
   /** 移动位置：打开树形空间选择页（支持全量空间与任意深度，解决 ActionSheet 6 项限制） */

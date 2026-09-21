@@ -22,6 +22,8 @@ Page({
     finished: false,
     loaded: false,
     error: '',
+    /** 空间过滤（从空间管理货架「···」进入时携带）：非空则仅列该空间直属物品 */
+    spaceFilterName: '',
     /** 自定义下拉刷新的触发态：true 时刷新器保持展开 */
     refreshing: false,
     /** 刷新槽实时高度（px）：跟随 bindrefresherpulling 的下拉距离，让圆点始终垂直居中于空隙 */
@@ -31,8 +33,26 @@ Page({
   /** 请求序号:切分类/刷新后按序号丢弃在途旧响应,防止慢响应把新分类列表覆盖成旧分类 */
   reqSeq: 0,
 
-  onLoad() {
+  onLoad(options: any) {
+    const q = options || {}
+    this.spaceId = q.spaceId ? String(q.spaceId) : ''
+    if (this.spaceId) {
+      let name = ''
+      try { name = q.spaceName ? decodeURIComponent(String(q.spaceName)) : '' } catch { name = '' }
+      this.setData({ spaceFilterName: name || '按空间筛选' })
+    }
     this.fetchCats()
+    this.fetchList(true)
+  },
+
+  /** 空间管理货架「···」过滤态 */
+  spaceId: '',
+
+  /** 清除空间过滤，回到全量列表 */
+  clearSpaceFilter() {
+    if (!this.spaceId) return
+    this.spaceId = ''
+    this.setData({ spaceFilterName: '', shown: [], finished: false })
     this.fetchList(true)
   },
 
@@ -57,8 +77,9 @@ Page({
     const that = this
     const page = reset ? 1 : this.data.page + 1
     this.setData({ loading: true, error: '' })
-    const query: { page: number; pageSize: number; category?: string } = { page: page, pageSize: PAGE_SIZE }
+    const query: { page: number; pageSize: number; category?: string; spaceId?: string } = { page: page, pageSize: PAGE_SIZE }
     if (cat !== 'all') query.category = cat
+    if (this.spaceId) query.spaceId = this.spaceId
     getItems(query).then(function (res) {
       if (seq !== that.reqSeq) {
         if (onDone) onDone()
@@ -93,8 +114,9 @@ Page({
     const pages = Math.max(1, Math.ceil(this.data.shown.length / PAGE_SIZE))
     const reqs: any[] = []
     for (let p = 1; p <= pages; p++) {
-      const query: { page: number; pageSize: number; category?: string } = { page: p, pageSize: PAGE_SIZE }
+      const query: { page: number; pageSize: number; category?: string; spaceId?: string } = { page: p, pageSize: PAGE_SIZE }
       if (cat !== 'all') query.category = cat
+      if (that.spaceId) query.spaceId = that.spaceId
       reqs.push(getItems(query))
     }
     Promise.all(reqs).then(function (responses) {

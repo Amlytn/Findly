@@ -1,15 +1,15 @@
-/* 空间管理 */
+/* 空间管理（第三批：全页就地展开；节点/货架/行样式在 space-node 组件内） */
 
-/* 1. 沉底色全局覆盖：确保整个页面从状态栏到底部 TabBar 均为高质感底色 #F4F7F6，彻底告别“全白无沉底色” */
+/* 1. 沉底色全局覆盖：确保整个页面从状态栏到底部 TabBar 均为高质感底色 #F2F5F8 */
 page {
-  background-color: #F4F7F6 !important;
-  background: #F4F7F6 !important;
+  background-color: #F2F5F8 !important;
+  background: #F2F5F8 !important;
   min-height: 100vh;
 }
 
 .page {
-  background-color: #F4F7F6 !important;
-  background: #F4F7F6 !important;
+  background-color: #F2F5F8 !important;
+  background: #F2F5F8 !important;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -22,7 +22,7 @@ page {
   box-sizing: border-box;
 }
 
-/* 导航区补全局边距（.screen 的横向 padding 在本页被置 0，由各内容块自管 32rpx）：左右与其他页对齐，顶部对齐 .screen 的 12rpx 顶距 */
+/* 导航区补全局边距（.screen 的横向 padding 在本页被置 0，由各内容块自管 32rpx） */
 .spaces-nav {
   padding: 12rpx 32rpx 0;
 }
@@ -65,414 +65,77 @@ page {
   opacity: 0.5;
 }
 
-/* 3. 根空间分组头部（Section Header） */
+/* 3. 空间卡片流容器（节点内部样式由 space-node 组件自管） */
 .spaces-scroll {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-
-.section-group {
-  margin-bottom: 8rpx;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20rpx 36rpx 14rpx;
-}
-
-.sec-left {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-  flex: 1;
-  min-width: 0;
-}
-
-.sec-icon {
-  width: 44rpx;
-  height: 44rpx;
-  flex-shrink: 0;
-}
-
-.sec-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #124E5B;
-  letter-spacing: 0.5rpx;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.sec-count {
-  font-size: 24rpx;
-  color: #8FA8AD;
-  font-weight: 400;
-  margin-left: 4rpx;
-}
-
-.sec-right {
-  display: flex;
-  align-items: center;
-  gap: 14rpx;
-  flex-shrink: 0;
-}
-
-.sec-act-btn {
-  width: 52rpx;
-  height: 52rpx;
-  border-radius: 50%;
-  background: #EBF8F5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.sec-act-btn.sec-act-settings {
-  background: #F0F3F4;
-}
-
-.sec-act-plus {
-  font-size: 32rpx;
-  color: #12A5A0;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.sec-act-icon {
-  width: 28rpx;
-  height: 28rpx;
-}
-
-.sec-toggle {
-  width: 52rpx;
-  height: 52rpx;
-  border-radius: 50%;
-  background: #F0F6F7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.25s ease;
-  flex-shrink: 0;
-}
-
-.sec-empty-wrap {
-  margin: 6rpx 32rpx 16rpx;
-}
-
-.sec-empty-card {
-  background: rgba(255, 255, 255, 0.6);
-  border: 2rpx dashed #D2E8E4;
-  border-radius: 20rpx;
-  padding: 24rpx;
-  text-align: center;
-}
-
-.sec-empty-tip {
-  font-size: 24rpx;
-  color: #12A5A0;
-  font-weight: 500;
-}
-
-.sec-toggle.is-collapsed {
-  transform: rotate(-90deg);
-}
-
-.sec-arrow {
-  width: 26rpx;
-  height: 26rpx;
-}
-
-/* 4. 子空间卡片流（纯白 Squircle 浮动卡片） */
-.cards-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-  margin-top: 4rpx;
   padding: 0 32rpx;
 }
 
-.sp-card {
-  margin: 0 32rpx;
-  background: #FFFFFF !important;
+/* 3.1 根列表拖拽插入线（组件内同级线由 space-node 自绘） */
+.spaces-scroll .drag-line {
+  height: 6rpx;
+  margin: 6rpx 8rpx;
+  border-radius: 3rpx;
+  background: linear-gradient(90deg, #1DB59B, #0E9B85);
+  box-shadow: 0 0 8rpx rgba(18, 165, 160, 0.4);
+}
+
+/* 3.2 拖拽幽灵卡 */
+.drag-ghost {
+  position: fixed;
+  left: 44rpx;
+  right: 44rpx;
+  margin-top: -34rpx;
+  background: #FFFFFF;
   border-radius: 24rpx;
-  padding: 22rpx 26rpx;
+  border: 1rpx solid rgba(18, 165, 160, 0.35);
+  box-shadow: 0 16rpx 40rpx rgba(18, 78, 91, 0.22);
+  padding: 18rpx 24rpx;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.04);
-  border: 1rpx solid rgba(18, 78, 91, 0.04);
+  z-index: 997;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.98);
+  transition: opacity 0.12s ease;
   box-sizing: border-box;
 }
 
-.card-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
+.drag-ghost.is-visible {
+  opacity: 1;
+  transform: scale(1.02);
 }
 
-.card-icon {
-  width: 92rpx;
-  height: 92rpx;
-  border-radius: 24rpx;
+.ghost-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
   flex-shrink: 0;
 }
 
-.card-info {
+.ghost-meta {
+  flex: 1;
+  min-width: 0;
   margin-left: 20rpx;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-width: 0;
+  gap: 4rpx;
 }
 
-.card-title-row {
-  display: flex;
-  align-items: baseline;
-  gap: 12rpx;
-}
-
-.card-name {
+.ghost-name {
   font-size: 30rpx;
   font-weight: 700;
   color: #124E5B;
-  letter-spacing: 0.5rpx;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.card-count {
-  font-size: 24rpx;
-  color: #8FA8AD;
-  font-weight: 400;
-  flex-shrink: 0;
-}
-
-.card-path {
-  font-size: 22rpx;
-  color: #8FA8AD;
-  margin-top: 6rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: 0.3rpx;
-}
-
-.card-arrow-box {
-  width: 52rpx;
-  height: 52rpx;
-  border-radius: 50%;
-  background: #F0F6F7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-left: 16rpx;
-  transition: transform 0.25s ease, background-color 0.2s ease;
-}
-
-.card-arrow-box.arrow-down {
-  transform: rotate(90deg);
-  background: #EBF8F5;
-}
-
-.card-arrow {
-  width: 24rpx;
-  height: 24rpx;
-  opacity: 0.5;
-}
-
-/* 5. 内联展开面板（分层解耦排版：1层专属操作条 + 2层物品统计 + 3层物品流） */
-.sp-card.is-expanded {
-  border-bottom-left-radius: 8rpx;
-  border-bottom-right-radius: 8rpx;
-  border-color: rgba(18, 165, 160, 0.25);
-  box-shadow: 0 4rpx 16rpx rgba(18, 78, 91, 0.08);
-}
-
-.in-panel {
-  margin: -6rpx 32rpx 14rpx;
-  background: #FFFFFF;
-  border-radius: 0 0 24rpx 24rpx;
-  border: 1rpx solid rgba(18, 78, 91, 0.06);
-  border-top: none;
-  padding: 22rpx 24rpx 24rpx;
-  box-shadow: 0 8rpx 20rpx rgba(18, 78, 91, 0.04);
-  box-sizing: border-box;
-}
-
-/* 根空间叶子节点直接展开时的容器形态 */
-.section-group > .in-panel {
-  margin-top: 6rpx;
-  border-top: 1rpx solid rgba(18, 78, 91, 0.06);
-  border-radius: 24rpx;
-}
-
-/* 第一层：专属空间管理工具栏（独立成行，等宽均分，绝不与标题竞争横向宽度，无 emoji） */
-.panel-act-row {
-  display: flex;
-  gap: 14rpx;
-  margin-bottom: 22rpx;
-}
-
-.panel-act-btn {
-  flex: 1;
-  height: 70rpx;
-  border-radius: 18rpx;
-  background: #F0F6F7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 25rpx;
-  font-weight: 600;
-  color: #124E5B;
-  box-sizing: border-box;
-}
-
-.panel-act-btn.act-add {
-  background: #EBF8F5;
-  color: #12A5A0;
-}
-
-.panel-act-btn.act-del {
-  background: #FDF2F2;
-  color: #E06B6B;
-}
-
-/* 第二层：物品统计信息行（纯粹独立，无按钮抢占，自适应宽裕） */
-.panel-head-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6rpx 4rpx 14rpx;
-  border-bottom: 1rpx solid #F2F5F5;
-  margin-bottom: 16rpx;
-}
-
-.panel-head-title {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: #124E5B;
-  letter-spacing: 0.5rpx;
-}
-
-.panel-head-badge {
-  font-size: 22rpx;
-  color: #12A5A0;
-  background: #EBF8F5;
-  padding: 4rpx 16rpx;
-  border-radius: 999rpx;
-  font-weight: 600;
-}
-
-/* 第三层：物品流 / 加载中 / 友好空态提示 */
-.panel-loading {
-  padding: 36rpx 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-}
-
-.panel-loading-text {
-  font-size: 24rpx;
-  color: #8FA8AD;
-}
-
-.panel-empty {
-  padding: 30rpx 16rpx 20rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.panel-empty-icon {
-  width: 56rpx;
-  height: 56rpx;
-  opacity: 0.35;
-  margin-bottom: 10rpx;
-}
-
-.panel-empty-title {
-  font-size: 24rpx;
-  color: #8FA8AD;
-  font-weight: 500;
-}
-
-.panel-empty-desc {
-  font-size: 22rpx;
-  color: #B0C4C8;
-  margin-top: 6rpx;
-}
-
-.panel-item-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-
-.p-item-card {
-  background: #F8FAFA;
-  border: 1rpx solid #EEF5F6;
-  border-radius: 18rpx;
-  padding: 14rpx 18rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.p-item-img {
-  width: 76rpx;
-  height: 76rpx;
-  border-radius: 16rpx;
-  background: #FFFFFF;
-  border: 1rpx solid #E2EFEA;
-  flex-shrink: 0;
-}
-
-.p-item-info {
-  flex: 1;
-  margin-left: 16rpx;
-  min-width: 0;
-}
-
-.p-item-name {
-  font-size: 27rpx;
-  font-weight: 700;
-  color: #124E5B;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.p-item-meta {
+.ghost-count {
   font-size: 22rpx;
   color: #8FA8AD;
-  margin-top: 4rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.p-item-arrow {
-  width: 22rpx;
-  height: 22rpx;
-  opacity: 0.4;
-  flex-shrink: 0;
-  margin-left: 8rpx;
-}
-
-/* 状态加载与错误 */
+/* 4. 状态加载与错误 */
 .state-box {
   padding: 140rpx 40rpx;
   display: flex;
@@ -508,7 +171,7 @@ page {
   border-radius: 999rpx;
 }
 
-/* 6. 底部操作区（随页面自然流布局，彻底移除破坏底色的浮动白色渐变罩） */
+/* 5. 底部操作区 */
 .bottom-actions {
   margin: 36rpx 32rpx 0;
   display: flex;
@@ -543,7 +206,7 @@ page {
   text-align: center;
 }
 
-/* 7. 空白状态 */
+/* 6. 空白状态 */
 .empty-state {
   padding: 140rpx 40rpx;
   display: flex;
@@ -591,7 +254,7 @@ page {
   box-shadow: 0 10rpx 24rpx rgba(18, 165, 160, 0.28);
 }
 
-/* 8. 自定义空间设置弹层（取代原生 ActionSheet） */
+/* 7. 自定义空间统一操作弹层（S4，取代原生 ActionSheet） */
 .custom-modal-mask {
   position: fixed;
   inset: 0;
@@ -697,6 +360,10 @@ page {
   border-color: #F8E8E8;
 }
 
+.modal-action-card.act-danger.is-disabled {
+  opacity: 0.75;
+}
+
 .modal-act-left {
   flex: 1;
   min-width: 0;
@@ -728,56 +395,13 @@ page {
 
 .modal-cancel-btn {
   height: 90rpx;
-  background: #F4F7F6;
+  background: #F2F5F8;
   border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 30rpx;
   font-weight: 600;
-  color: #8FA8AD;
-}
-
-/* 同级排序操作行 */
-.modal-reorder-row {
-  cursor: default;
-}
-
-.reorder-btns {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-}
-
-.reorder-btn {
-  padding: 12rpx 20rpx;
-  background: #EBF8F5;
-  border-radius: 12rpx;
-  border: 1rpx solid rgba(18, 165, 160, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.reorder-btn:active {
-  background: #D5F1EB;
-}
-
-.reorder-btn.is-disabled {
-  background: #F4F7F7;
-  border-color: #E2ECEE;
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.reorder-txt {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: #12A5A0;
-}
-
-.reorder-btn.is-disabled .reorder-txt {
   color: #8FA8AD;
 }
 

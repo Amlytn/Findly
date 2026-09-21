@@ -1,10 +1,10 @@
 {
   "usingComponents": {
     "nav-bar": "/components/nav-bar/index",
-    "space-tree-card": "/components/space-tree-card/index",
-    "space-form-modal": "/components/space-form-modal/index"
+    "space-form-modal": "/components/space-form-modal/index",
+    "space-node": "/components/space-node/index"
   },
-  "backgroundColor": "#F4F7F6",
-  "backgroundColorTop": "#F4F7F6",
-  "backgroundColorBottom": "#F4F7F6"
+  "backgroundColor": "#F2F5F8",
+  "backgroundColorTop": "#F2F5F8",
+  "backgroundColorBottom": "#F2F5F8"
 }

@@ -1,4 +1,4 @@
-<view class="bar">
+<view class="bar {{hidden ? 'bar-hidden' : ''}}">
   <view class="tab {{selected === 0 ? 'on' : ''}}" bindtap="goTab" data-index="0" data-path="/pages/index/index">
     <view class="tab-icon {{selected === 0 ? 'icon-home-a' : 'icon-home'}}"></view>
     <text class="tab-label {{selected === 0 ? 'on' : ''}}">首页</text>
