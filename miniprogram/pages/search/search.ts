@@ -13,12 +13,10 @@ Page({
 
   onLoad() {
     const that = this
-    getItems({ page: 1, pageSize: 1 }).then(function (res) {
-      const first = res.items[0]
-      if (!first) return
-      // 热门物品卡：字段适配见 utils/item-vm.ts
-      that.setData({ hot: [mapItemCard(first)] })
-    }).catch(function () { /* 首页展示失败不阻塞搜索 */ })
+    // 「相关物品」卡：取最近更新的 6 件（旧实现 pageSize:1 永远只显示 1 件，参数传错）
+    getItems({ page: 1, pageSize: 6 }).then(function (res) {
+      that.setData({ hot: res.items.map(mapItemCard) })
+    }).catch(function () { /* 展示失败不阻塞搜索 */ })
     getSuggestions().then(function (res) {
       that.setData({ suggestions: res.suggestions || [] })
     }).catch(function () { /* 无建议词则隐藏该区域 */ })

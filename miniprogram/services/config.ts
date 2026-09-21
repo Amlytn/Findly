@@ -1,6 +1,7 @@
 /**
  * 环境与服务基础配置：支持多环境（开发/体验/生产）自动切换及手动覆盖
  */
+import { getToken } from './token'
 
 const ENV_MAP: Record<string, string> = {
   develop: 'http://localhost:3000',
@@ -56,11 +57,20 @@ export function getApiBase(): string {
 }
 
 /**
- * 上传/图片类接口返回的是相对路径（/uploads/...），<image> 需要完整 URL
+ * 上传/图片类接口返回的是相对路径（/uploads/...），<image> 需要完整 URL。
+ * C02（uploads 鉴权）配套：image 标签无法携带 Authorization 头，故对 /uploads/ 链接
+ * 统一追加 ?token=<JWT> 查询参数由后端校验；未登录（无 token）时不追加，
+ * 后端 401 → 前端走 binderror 兜底 logo，不静默掩盖。
  */
 export function fullUrl(path: string | null | undefined): string {
   if (!path) return ''
-  return /^https?:\/\//.test(path) ? path : getServerRoot() + path
+  if (/^https?:\/\//.test(path)) return path
+  const url = getServerRoot() + path
+  if (url.indexOf('/uploads/') !== -1) {
+    const tk = getToken()
+    if (tk) return url + (url.indexOf('?') === -1 ? '?' : '&') + 'token=' + encodeURIComponent(tk)
+  }
+  return url
 }
 
 /** ⚠️ 快照常量：仅为本模块初次求值时的地址，setServerRoot 切换环境后不会更新。

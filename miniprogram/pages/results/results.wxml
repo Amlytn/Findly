@@ -8,7 +8,7 @@
       <view class="seg-item {{tab === 'space' ? 'on' : ''}}" bindtap="setTab" data-t="space">空间</view>
     </view>
 
-    <view class="cnt">{{loading ? '搜索中…' : '找到 ' + count + ' 个相关结果'}}</view>
+    <view class="cnt">{{loading ? '搜索中…' : '找到 ' + (countCapped ? '50+' : count) + ' 个相关结果'}}</view>
     <view class="parsed" wx:if="{{!loading && parsedText}}">{{parsedText}}</view>
 
     <block wx:if="{{!loading && tab !== 'space'}}">

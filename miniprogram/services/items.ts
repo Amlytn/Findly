@@ -25,8 +25,9 @@ export function getItems(query: ItemListQuery = {}): Promise<ItemListResponse> {
   return request<ItemListResponse>('/items' + qs)
 }
 
-export function getItem(id: string): Promise<ItemDetail> {
-  return request<ItemDetail>('/items/' + id)
+/** silent=true 时错误 resolve 出 {__error}（收藏页按 id 批量拉取用，避免失效 id 逐个弹 toast） */
+export function getItem(id: string, silent = false): Promise<ItemDetail> {
+  return request<ItemDetail>('/items/' + id, { silent })
 }
 
 export function createItem(data: CreateItemDto): Promise<ItemDetail> {
