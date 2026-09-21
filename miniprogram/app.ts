@@ -11,8 +11,10 @@ export interface GlobalData {
   locationId: string
   /** 本次识图是否待发起（result 页消费后清除，防 onShow 重复调 AI） */
   recognizePending: boolean
-  /** 跨页面传递的焦点空间 ID（spaces 页自动展开抽屉用） */
+  /** 跨页面传递的焦点空间 ID（spaces 页自动展开祖先链定位用） */
   focusSpaceId?: string
+  /** 跨页面传递的焦点物品 ID（spaces 页回跳后高亮并滚入视口用） */
+  focusItemId?: string
 }
 
 export interface IAppOption {
@@ -52,6 +54,7 @@ App({
     locationPath: [],
     locationId: '',
     recognizePending: false,
-    focusSpaceId: ''
+    focusSpaceId: '',
+    focusItemId: ''
   } as GlobalData
 })

@@ -147,3 +147,33 @@
     transform: scale(1);
   }
 }
+
+/* 空间过滤横幅（货架「···」进入的完整列表态） */
+.space-filter {
+  margin: 16rpx 0 4rpx;
+  padding: 14rpx 24rpx;
+  background: #EBF8F5;
+  border: 1rpx solid #D2EFE9;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sf-txt {
+  font-size: 24rpx;
+  color: #12A5A0;
+  font-weight: 600;
+}
+
+.sf-clear {
+  font-size: 22rpx;
+  color: #8FA8AD;
+  padding: 6rpx 16rpx;
+  background: #FFFFFF;
+  border-radius: 999rpx;
+}
+
+.sf-clear:active {
+  opacity: 0.7;
+}

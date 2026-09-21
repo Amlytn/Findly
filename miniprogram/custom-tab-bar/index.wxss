@@ -117,3 +117,8 @@
   background-position: center;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 5.5v13M5.5 12h13'/%3E%3C/svg%3E");
 }
+
+/* 弹层盖底时隐藏（custom tab 栏不受 wx.hideTabBar 控制，由页面 setData 驱动） */
+.bar-hidden {
+  display: none;
+}

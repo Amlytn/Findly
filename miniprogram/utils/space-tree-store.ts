@@ -1,14 +1,15 @@
 /**
- * 空间树状态 store —— 空间管理页（spaces）的树 / 展开 / 物品状态的唯一权威源，
- * 同时承担 location / common-spaces 的空间数据出处。
+ * 空间树状态 store —— 空间管理页（spaces）的树 / 展开 / 物品状态的唯一权威源。
  *
- * 设计目标（待改项 S1 / S2 / S5）：
- * - 消除 spaces 页 data 上五个 Map（expandedMap/itemsMap/itemsCountMap/loadingMap/collapsedMap）
- *   的散写，状态变更全部收敛到本 store，页面只做渲染与事件转发；
- * - 新建 / 改名 / 删除等操作成功后只做「本地树变更 + sections 重建」，不整树 fetch；
- *   整树请求只发生在：首次进入、focusId 定位、显式 refresh（下拉刷新）。
- *   —— 由此保留全部展开态与已加载物品缓存，不再触发已展开空间的重复请求；
- * - 图标解析统一走 resolveSpaceIcon（Space.icon 字段优先，无 icon 时名称匹配兜底）。
+ * 空间管理 2.0 视图模型（全页内联递归展开）：
+ * - 根空间卡片流；点卡片或子空间行 = 就地展开/收起（内联递归，逐层展开，不跳页）；
+ * - 展开状态逐节点独立（expandedMap）：同时可展开多个空间，收起只影响自己及其内部；
+ * - 计数：卡片头与子空间行 = 当前空间 + 全部下属空间的物品总数（total）；
+ *   物品模块 = 直属存放物品（directCount），默认展示前 4 个，超出显示 ··· 进完整列表；
+ * - 排序：长按拖动同级重排（reorderTo），本地即时生效 + 异步写回 sortOrder；
+ * - 图标：统一 resolveSpaceIcon（Space.icon 字段优先，无 icon 时名称/类型匹配兜底）；
+ * - 所有操作只做「本地树变更 + rebuild」，不整树 fetch、不改变其它展开状态与滚动位置；
+ *   整树请求只发生在：首次进入、focusId 定位、显式 refresh（下拉刷新 / 回退兜底）。
  */
 import { getSpaces, createSpace, updateSpace, deleteSpace } from '../services/spaces'
 import { getItems } from '../services/items'
@@ -17,13 +18,15 @@ import { resolveSpaceIcon } from './spaces'
 import { ItemCardVM, mapItemCard } from './item-vm'
 import { joinPath } from './space-path'
 
-/** 空间卡片视图节点（spaces 页空间卡片流） */
+/** 空间节点视图模型（根卡片与子空间行同构，space-node 组件递归消费） */
 export interface SpaceCardItem {
   id: string
   name: string
   parentId: string | null
+  /** 子树总数（当前空间 + 全部下属空间的物品数） */
   total: number
-  directCount?: number
+  /** 直属物品数 */
+  directCount: number
   pathText: string
   /** 祖先路径数组（含自身）：跨页传参用，避免再切 pathText 字符串 */
   pathArr: string[]
@@ -31,19 +34,8 @@ export interface SpaceCardItem {
   glyphIcon: string
   depth: number
   hasChildren: boolean
-  type?: SpaceType | null
-  icon?: string | null
-  children?: SpaceCardItem[]
-}
-
-/** 根空间分组（section） */
-export interface RootSection {
-  id: string
-  name: string
-  total: number
-  glyphIcon: string
-  cardIcon: string
-  collapsed: boolean
+  /** 该节点自身是否展开（逐节点独立，收起只影响自己及内部） */
+  expanded: boolean
   type?: SpaceType | null
   icon?: string | null
   children: SpaceCardItem[]
@@ -65,9 +57,7 @@ export interface MovableTarget {
 
 /** 可 setData 的补丁（页面 data 的子集） */
 export interface StorePatch {
-  sections?: RootSection[]
-  expandedMap?: Record<string, boolean>
-  collapsedMap?: Record<string, boolean>
+  sections?: SpaceCardItem[]
   itemsMap?: Record<string, PanelItem[]>
   itemsCountMap?: Record<string, number>
   loadingMap?: Record<string, boolean>
@@ -88,10 +78,13 @@ function subtreeTotal(node: SpaceTree): number {
   return sum
 }
 
-function buildCardNode(node: SpaceTree, depth: number, prefix: string[]): SpaceCardItem {
+/** 构建节点视图；expandedMap = 各节点展开状态 */
+function buildCardNode(node: SpaceTree, depth: number, prefix: string[], expandedMap: Record<string, boolean>): SpaceCardItem {
   const currentPath = prefix.concat(node.name)
   const icons = resolveSpaceIcon(node.icon, node.name, node.type)
-  const hasChildren = !!(node.children && node.children.length)
+  const children = (node.children && node.children.length)
+    ? node.children.map(function (c) { return buildCardNode(c, depth + 1, currentPath, expandedMap) })
+    : []
   return {
     id: node.id,
     name: node.name,
@@ -103,33 +96,15 @@ function buildCardNode(node: SpaceTree, depth: number, prefix: string[]): SpaceC
     cardIcon: icons.card,
     glyphIcon: icons.glyph,
     depth: depth,
-    hasChildren: hasChildren,
+    hasChildren: children.length > 0,
+    expanded: !!expandedMap[node.id],
     type: node.type || null,
     icon: node.icon || null,
-    children: hasChildren
-      ? node.children!.map(function (c) { return buildCardNode(c, depth + 1, currentPath) })
-      : []
+    children: children
   }
 }
 
-function buildSection(root: SpaceTree, collapsedMap: Record<string, boolean>): RootSection {
-  const icons = resolveSpaceIcon(root.icon, root.name, root.type)
-  return {
-    id: root.id,
-    name: root.name,
-    total: subtreeTotal(root),
-    glyphIcon: icons.glyph,
-    cardIcon: icons.card,
-    collapsed: !!collapsedMap[root.id],
-    type: root.type || null,
-    icon: root.icon || null,
-    children: (root.children && root.children.length)
-      ? root.children.map(function (c) { return buildCardNode(c, 1, [root.name]) })
-      : []
-  }
-}
-
-/** 深度查找节点（操作成功后本地更新用）；返回节点与其父容器 */ 
+/** 深度查找节点（操作成功后本地更新用）；返回节点与其父容器 */
 function findNode(nodes: SpaceTree[], id: string): { node: SpaceTree; parent: SpaceTree[] } | null {
   for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].id === id) return { node: nodes[i], parent: nodes }
@@ -163,9 +138,11 @@ function removeNodeById(nodes: SpaceTree[], id: string): boolean {
 
 export class SpaceTreeStore {
   private owner: Owner
-  /** 后端原始树缓存 —— 本地操作直接改它再重建 sections */
+  /** 后端原始树缓存 —— 本地操作直接改它再重建视图 */
   private cacheTree: SpaceTree[] = []
   private cacheList: SpaceListItem[] = []
+  /** 逐节点展开状态（收起只影响自己及内部） */
+  private expandedMap: Record<string, boolean> = {}
 
   constructor(owner: Owner) {
     this.owner = owner
@@ -179,42 +156,16 @@ export class SpaceTreeStore {
     if (!silent) owner.setData({ loading: true, error: '' })
 
     return getSpaces().then(function (res: any) {
-      const tree = res.tree || []
-      const list = res.list || []
-      that.cacheTree = tree
-      that.cacheList = list
+      that.cacheTree = res.tree || []
+      that.cacheList = res.list || []
 
-      const collapsedMap = Object.assign({}, owner.data.collapsedMap)
-      const sections = tree.map(function (root: SpaceTree) { return buildSection(root, collapsedMap) })
-
-      // focusId：自动展开对应根空间并沿层级展开所有祖先及目标卡片，随后滚动定位
-      const expandedMap = Object.assign({}, owner.data.expandedMap)
+      // focusId：展开目标及其全部祖先，随后滚动定位
       if (focusId) {
-        for (const s of sections) {
-          if (s.id === focusId) {
-            s.collapsed = false
-            delete collapsedMap[s.id]
-            expandedMap[s.id] = true
-            break
-          }
-          // 在子卡片树中查找目标并展开祖先链
-          const pathTo = findPathInCards(s.children, focusId)
-          if (pathTo) {
-            s.collapsed = false
-            delete collapsedMap[s.id]
-            for (const pid of pathTo) expandedMap[pid] = true
-            break
-          }
-        }
+        const chain = that.ancestorChain(focusId)
+        for (const n of chain) that.expandedMap[n.id] = true
       }
 
-      owner.setData({
-        sections: sections,
-        collapsedMap: collapsedMap,
-        expandedMap: expandedMap,
-        loading: false,
-        loaded: true
-      }, function () {
+      owner.setData(that.rebuild({ loading: false, loaded: true }), function () {
         if (focusId) {
           wx.nextTick(function () {
             wx.pageScrollTo({ selector: '#space-' + focusId, duration: 300 })
@@ -222,33 +173,33 @@ export class SpaceTreeStore {
         }
       })
 
-      // 对已展开的空间拉取物品列表（操作后本地重建也触发同样逻辑）
-      for (const spaceId in expandedMap) {
-        if (expandedMap[spaceId]) that.loadItems(spaceId)
-      }
+      // 展开中各层物品的懒加载
+      for (const sid of that.expandedIds()) that.loadItems(sid)
     }, function (e: any) {
       owner.setData({ loading: false, error: e.message || '加载空间失败' })
     })
   }
 
-  // ---------- 展开 / 收起 ----------
+  // ---------- 展开 / 收起（逐节点独立） ----------
 
-  toggleSection(id: string): StorePatch {
-    const collapsedMap = Object.assign({}, this.owner.data.collapsedMap)
-    collapsedMap[id] = !collapsedMap[id]
-    const sections = this.owner.data.sections.map(function (s: RootSection) {
-      return s.id === id ? Object.assign({}, s, { collapsed: collapsedMap[id] }) : s
-    })
-    return { sections: sections, collapsedMap: collapsedMap }
+  /** 点卡片/行：就地展开或收起，只影响自己 */
+  toggle(id: string): void {
+    const map = Object.assign({}, this.expandedMap)
+    const opening = !map[id]
+    if (opening) map[id] = true
+    else delete map[id]
+    this.expandedMap = map
+    if (opening) this.loadItems(id)
+    this.apply(this.rebuild())
   }
 
-  toggleCard(id: string): StorePatch {
-    const expandedMap = Object.assign({}, this.owner.data.expandedMap)
-    const isNowExpanded = !expandedMap[id]
-    expandedMap[id] = isNowExpanded
-    const patch: StorePatch = { expandedMap: expandedMap }
-    if (isNowExpanded && !this.owner.data.itemsMap[id]) this.loadItems(id)
-    return patch
+  /** 展开某节点（不改变其它节点状态） */
+  expand(id: string): void {
+    const map = Object.assign({}, this.expandedMap)
+    map[id] = true
+    this.expandedMap = map
+    this.loadItems(id)
+    this.apply(this.rebuild())
   }
 
   // ---------- 物品列表（per-space 懒加载，在途去重） ----------
@@ -274,9 +225,9 @@ export class SpaceTreeStore {
     })
   }
 
-  // ---------- 本地操作：改 cacheTree + 重建 sections，不整树 fetch ----------
+  // ---------- 本地操作：改 cacheTree + 重建视图，不整树 fetch ----------
 
-  /** 新建空间（任意层级）。成功后本地插入并展开父级；返回新空间 id */
+  /** 新建空间。成功后本地插入：父空间保持展开、新空间可见；返回新空间 id（页面据此滚动获焦） */
   addSpace(name: string, parentId?: string | null, type?: SpaceType, icon?: string | null): Promise<string | null> {
     const that = this
     return createSpace({ name: name, parentId: parentId, type: type, icon: icon }).then(function (res: any) {
@@ -302,23 +253,21 @@ export class SpaceTreeStore {
           that.refresh() // 父节点本地缓存缺失（极端），回退整树刷新
           return newId
         }
+        // 父空间保持展开（新子空间出现在其内部）；若父在收起状态则顺带展开父以可见
+        that.expandedMap = Object.assign({}, that.expandedMap, (function () {
+          const m: Record<string, boolean> = {}
+          m[parentId] = true
+          return m
+        })())
       } else {
         that.cacheTree.push(newNode)
       }
-
-      const patch = that.rebuild()
-      // 展开父级（或新建的根空间自身展开），让新节点立即可见
-      const targetId = parentId || newId
-      const expandedMap = Object.assign({}, patch.expandedMap)
-      expandedMap[targetId] = true
-      const collapsedMap = Object.assign({}, patch.collapsedMap)
-      delete collapsedMap[targetId]
-      that.apply({ sections: patch.sections, expandedMap: expandedMap, collapsedMap: collapsedMap })
+      that.apply(that.rebuild())
       return newId
     }, function () { return null })
   }
 
-  /** 重命名 / 更新空间（改名 + 可换 type/icon）。成功后本地改树并重建（path 前缀随父名联动） */
+  /** 重命名 / 更新空间（改名 + 可换 type/icon）。成功后本地改树并重建（路径前缀随父名联动） */
   renameSpaceFull(id: string, data: { name?: string; type?: SpaceType; icon?: string | null }): Promise<void> {
     const that = this
     return updateSpace(id, data).then(function () {
@@ -334,7 +283,7 @@ export class SpaceTreeStore {
     }, function () { /* request 层已 toast */ })
   }
 
-  /** 删除空间。成功后本地移除并清理该空间子树全部相关状态；失败保持原状（后端 400 级联保护） */
+  /** 删除空间（仅完全为空时后端会成功）。成功后本地移除并清理该子树状态；失败保持原状 */
   removeSpace(id: string): Promise<void> {
     const that = this
     return deleteSpace(id).then(function () {
@@ -350,20 +299,16 @@ export class SpaceTreeStore {
         const itemsMap = Object.assign({}, d.itemsMap)
         const itemsCountMap = Object.assign({}, d.itemsCountMap)
         const loadingMap = Object.assign({}, d.loadingMap)
-        const expandedMap = Object.assign({}, patch.expandedMap)
-        const collapsedMap = Object.assign({}, patch.collapsedMap)
+        const expandedMap = Object.assign({}, that.expandedMap)
         for (const dId of dead) {
           delete itemsMap[dId]
           delete itemsCountMap[dId]
           delete loadingMap[dId]
           delete expandedMap[dId]
-          delete collapsedMap[dId]
         }
         patch.itemsMap = itemsMap
         patch.itemsCountMap = itemsCountMap
         patch.loadingMap = loadingMap
-        patch.expandedMap = expandedMap
-        patch.collapsedMap = collapsedMap
       }
       that.apply(patch)
     }, function () { /* 400 提示由 request 层自动 toast */ })
@@ -371,7 +316,7 @@ export class SpaceTreeStore {
 
   /**
    * 移动空间：将目标空间移动到 targetParentId 下（null 代表变为顶级根空间）。
-   * 本地实时调整内存树并重建 sections，自动展开新父空间；失败保持原状。
+   * 本地即时调整内存树并重建视图；失败保持原状。
    */
   moveSpace(id: string, targetParentId: string | null): Promise<boolean> {
     const that = this
@@ -403,18 +348,16 @@ export class SpaceTreeStore {
         that.cacheTree.push(nodeToMove)
       }
 
-      const patch = that.rebuild()
-      const expandedMap = Object.assign({}, patch.expandedMap)
-      const collapsedMap = Object.assign({}, patch.collapsedMap)
-      if (targetParentId) {
-        expandedMap[targetParentId] = true
-        delete collapsedMap[targetParentId]
+      // 目标父级若收起，顺带展开以露出被移入的空间；其它节点展开状态不变
+      if (targetParentId && !that.expandedMap[targetParentId]) {
+        that.expandedMap = Object.assign({}, that.expandedMap, (function () {
+          const m: Record<string, boolean> = {}
+          m[targetParentId] = true
+          return m
+        })())
       }
-      that.apply({
-        sections: patch.sections,
-        expandedMap: expandedMap,
-        collapsedMap: collapsedMap
-      })
+      that.apply(that.rebuild())
+      that.loadItems(id)
       return true
     }, function () {
       return false
@@ -422,10 +365,10 @@ export class SpaceTreeStore {
   }
 
   /**
-   * 同级空间调序：将目标空间沿 direction（'up' 或 'down'）移动一位。
-   * 内存树即时调换顺序并规范化 sortOrder，异步并发写回服务端。
+   * 同级拖动排序：将 id 移动到其同级列表的 targetIndex 处（0 基）。
+   * 内存树即时生效并规范化 sortOrder（step 10），后台异步写回；写回失败静默刷新兜底。
    */
-  reorderSpace(id: string, direction: 'up' | 'down'): Promise<boolean> {
+  reorderTo(id: string, targetIndex: number): Promise<boolean> {
     const that = this
     const found = findNode(this.cacheTree, id)
     if (!found) return Promise.resolve(false)
@@ -433,28 +376,29 @@ export class SpaceTreeStore {
     const idx = siblings.findIndex(function (s) { return s.id === id })
     if (idx === -1) return Promise.resolve(false)
 
-    const targetIdx = direction === 'up' ? idx - 1 : idx + 1
-    if (targetIdx < 0 || targetIdx >= siblings.length) return Promise.resolve(false)
+    let to = targetIndex
+    if (to < 0) to = 0
+    if (to > siblings.length - 1) to = siblings.length - 1
+    if (to === idx) return Promise.resolve(true)
 
-    // 1. 数组内调换位置
-    const current = siblings[idx]
-    siblings[idx] = siblings[targetIdx]
-    siblings[targetIdx] = current
+    // 1. 数组内移动（先摘出再插入，targetIndex 为「不含自身」序列中的落点）
+    const [node] = siblings.splice(idx, 1)
+    siblings.splice(to, 0, node)
 
-    // 2. 规范化该同级列表内所有项的 sortOrder (step 10)，筛选需要更新写入后端的节点
+    // 2. 规范化同级 sortOrder (step 10)，收集需要写回的节点
     const toUpdate: { id: string; sortOrder: number }[] = []
-    siblings.forEach(function (node, index) {
+    siblings.forEach(function (n, index) {
       const targetSort = index * 10
-      if (node.sortOrder !== targetSort) {
-        node.sortOrder = targetSort
-        toUpdate.push({ id: node.id, sortOrder: targetSort })
+      if (n.sortOrder !== targetSort) {
+        n.sortOrder = targetSort
+        toUpdate.push({ id: n.id, sortOrder: targetSort })
       }
     })
 
-    // 3. 本地即时生效（保持折叠状态）
+    // 3. 本地即时生效（视觉位置立即更新）
     that.apply(that.rebuild())
 
-    // 4. 并发写入后端
+    // 4. 后台异步保存
     if (!toUpdate.length) return Promise.resolve(true)
     return Promise.all(
       toUpdate.map(function (item) {
@@ -466,29 +410,6 @@ export class SpaceTreeStore {
       that.refresh()
       return false
     })
-  }
-
-  /**
-   * 获取某空间在同级中的位置信息，用于判断上移/下移是否可用
-   */
-  getSiblingPosition(id: string): { isFirst: boolean; isLast: boolean; canMoveUp: boolean; canMoveDown: boolean } {
-    const found = findNode(this.cacheTree, id)
-    if (!found) {
-      return { isFirst: true, isLast: true, canMoveUp: false, canMoveDown: false }
-    }
-    const siblings = found.parent
-    const idx = siblings.findIndex(function (s) { return s.id === id })
-    if (idx === -1) {
-      return { isFirst: true, isLast: true, canMoveUp: false, canMoveDown: false }
-    }
-    const isFirst = idx <= 0
-    const isLast = idx >= siblings.length - 1
-    return {
-      isFirst: isFirst,
-      isLast: isLast,
-      canMoveUp: !isFirst,
-      canMoveDown: !isLast
-    }
   }
 
   /**
@@ -533,34 +454,67 @@ export class SpaceTreeStore {
     return list
   }
 
+  /** 某节点的兄弟 id 列表（含自身，按显示序）；拖动排序取插入位用 */
+  getSiblingIds(id: string): string[] {
+    const found = findNode(this.cacheTree, id)
+    if (!found) return []
+    return found.parent.map(function (n) { return n.id })
+  }
+
+  /** 节点是否完全为空（无子空间且无物品，含后代）——删除前置校验 */
+  isEmptyNode(id: string): boolean {
+    const found = findNode(this.cacheTree, id)
+    if (!found) return false
+    return subtreeTotal(found.node) === 0 && !(found.node.children && found.node.children.length)
+  }
+
   // ---------- 内部 ----------
 
-  /** 由 cacheTree 重建 sections，并清理已不存在节点的展开/折叠状态 */
-  private rebuild(): StorePatch {
-    const collapsedMap = Object.assign({}, this.owner.data.collapsedMap)
-    const expandedMap = Object.assign({}, this.owner.data.expandedMap)
-
-    const sections = this.cacheTree.map(function (root: SpaceTree) { return buildSection(root, collapsedMap) })
-
-    for (const key of Object.keys(expandedMap)) {
-      if (!findNode(this.cacheTree, key)) delete expandedMap[key]
+  /** 自根到目标 id 的祖先链（含自身）；id 不存在返回空数组 */
+  private ancestorChain(id: string): SpaceTree[] {
+    const chain: SpaceTree[] = []
+    let found = findNode(this.cacheTree, id)
+    let guard = 0
+    while (found && guard < 50) {
+      chain.unshift(found.node)
+      const pid = found.node.parentId
+      found = pid ? findNode(this.cacheTree, pid) : null
+      guard++
     }
-    for (const key of Object.keys(collapsedMap)) {
-      if (!findNode(this.cacheTree, key)) delete collapsedMap[key]
+    if (guard >= 50) return []
+    return chain[0] && !chain[0].parentId ? chain : []
+  }
+
+  /** 当前展开中的全部节点 id */
+  private expandedIds(): string[] {
+    return Object.keys(this.expandedMap)
+  }
+
+  /** 由 cacheTree 重建当前视图，并清理已不存在的展开标记 */
+  private rebuild(extra?: StorePatch): StorePatch {
+    const that = this
+    const patch: StorePatch = Object.assign({}, extra || {})
+
+    for (const key of Object.keys(that.expandedMap)) {
+      if (!findNode(that.cacheTree, key)) delete that.expandedMap[key]
     }
-    return { sections: sections, expandedMap: expandedMap, collapsedMap: collapsedMap }
+
+    patch.sections = that.cacheTree.map(function (root: SpaceTree) {
+      return buildCardNode(root, 0, [], that.expandedMap)
+    })
+    return patch
   }
 
   private apply(patch: StorePatch): void {
     this.owner.setData(patch)
   }
 
-  /** 本地缓存异常时的回退：静默整树刷新（保留展开态） */
+  /** 本地缓存异常时的回退：静默整树刷新（保留展开状态） */
   refresh(): void {
     this.fetch(true)
   }
 
-  // ---------- 外部只读入口（location / common-spaces 共用） ----------
+  // ---------- 外部只读入口 ----------
 
   getTree(): SpaceTree[] {
     return this.cacheTree
@@ -569,16 +523,4 @@ export class SpaceTreeStore {
   getList(): SpaceListItem[] {
     return this.cacheList
   }
-}
-
-/** 在卡片树中查找目标 id 的祖先链（含目标自身）；找不到返回 null */
-function findPathInCards(nodes: SpaceCardItem[], targetId: string): string[] | null {
-  for (const n of nodes) {
-    if (n.id === targetId) return [n.id]
-    if (n.children && n.children.length) {
-      const sub = findPathInCards(n.children, targetId)
-      if (sub) return [n.id].concat(sub)
-    }
-  }
-  return null
 }
