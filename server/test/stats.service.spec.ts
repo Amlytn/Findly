@@ -143,6 +143,26 @@ describe('StatsService', () => {
   });
 
   describe('缓存命中率', () => {
+    it('C03 口径：命中记录 usage 为 null 时不贡献 token/成本，但仍计入命中率', async () => {
+      const service = new StatsService(
+        mockPrisma([
+          {
+            taskType: 'recognize',
+            model: 'qwen-vl-plus',
+            resultJson: JSON.stringify({
+              usage: { prompt_tokens: 1000, completion_tokens: 500, total_tokens: 1500 },
+            }),
+          },
+          { taskType: 'recognize', model: 'qwen-vl-plus', resultJson: JSON.stringify({ cached: true, usage: null }) },
+        ]),
+      );
+      const res: any = await service.overview();
+
+      expect(res.totalCalls).toBe(2);
+      expect(res.totalTokens).toBe(1500); // 命中那条不重复计，否则成本虚高
+      expect(res.estimatedCost).toBeCloseTo(0.009, 6);
+      expect(res.cacheHitRate).toBe(0.5); // 但命中率统计得到
+    });
     it('cached:true 的记录被计数', async () => {
       const service = new StatsService(
         mockPrisma([

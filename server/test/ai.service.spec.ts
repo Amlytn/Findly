@@ -73,7 +73,9 @@ describe('AiService', () => {
       expect(first.result.cached).toBeUndefined();
       expect(second.result.cached).toBe(true);
       expect(second.result.name).toBe('鼠标');
-      expect(second.usage).toEqual({ total_tokens: 120 });
+      // C03：命中缓存 = 本次零 token，不得回传首次的 usage，
+      // 否则控制器无条件落库会把同一笔用量重复计入，成本统计虚高
+      expect(second.usage).toBeNull();
     });
 
     it('不同图片不会命中同一缓存', async () => {
