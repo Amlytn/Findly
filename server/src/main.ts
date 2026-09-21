@@ -24,14 +24,18 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
   // B05：Swagger 接口文档（浏览器打开 http://localhost:3000/api/docs）
-  const config = new DocumentBuilder()
-    .setTitle('Findly API')
-    .setDescription('个人物品管理 + AI 搜索 后端接口文档')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  // C01：生产环境不挂载 —— 实测原实现不带 token 也返回 200，等于向任何人公开全部接口结构。
+  // 需要在线上临时开启时，显式设 SWAGGER=1（并自行加反代/basic auth 保护）。
+  if (process.env.NODE_ENV !== 'production' || process.env.SWAGGER === '1') {
+    const config = new DocumentBuilder()
+      .setTitle('Findly API')
+      .setDescription('个人物品管理 + AI 搜索 后端接口文档')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
+  }
   // 本地上传目录静态服务（M4；迁移对象存储后移除）
   const uploadDir = join(process.cwd(), 'uploads');
   mkdirSync(uploadDir, { recursive: true });
