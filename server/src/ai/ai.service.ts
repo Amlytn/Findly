@@ -75,7 +75,11 @@ export class AiService {
     const key = createHash('sha256').update(userId + '|' + imageDataUrl).digest('hex');
     const hit = this.cache.get(key);
     if (hit && hit.expires > Date.now()) {
-      return { result: { ...hit.result, cached: true }, usage: hit.usage };
+      // C03：命中缓存 = 本次零模型调用、零 token，usage 必须是 null。
+      // 此前原样回传首次调用的 usage，而控制器又无条件把每次识别落库，
+      // 导致同一张图重复保存会重复计 token/成本 —— 用量统计与 usage.cjs 全线虚高。
+      // 首次那笔用量已记在它自己的 AIResult 行上，不需要也不应该再记一遍。
+      return { result: { ...hit.result, cached: true }, usage: null };
     }
     const { content, usage } = await this.chat(process.env.QWEN_VL_MODEL || 'qwen-vl-plus', [
       {

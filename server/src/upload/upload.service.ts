@@ -1,24 +1,32 @@
 /**
  * @author james-wu66
- * Findly 后端 · 2026-09-20（B03：孤儿图片清理）
+ * Findly 后端 · 2026-09-20（B03：孤儿图片清理）· 2026-09-21（C10：24h 保护窗口）
  *
- * 孤儿图片 = uploads/ 目录下、未被任何 Item 的 imageUrl / thumbnailUrl 引用的图片文件。
+ * 孤儿图片 = uploads/ 目录下、未被任何 Item 的 imageUrl / thumbnailUrl 引用、
+ * 且已越过保护窗口的图片文件。
  * AIResult 不落盘图片（recognize 用 base64 dataURL 直传模型），故只查 Item。
  */
 import { Injectable, Logger } from '@nestjs/common';
 import { join } from 'path';
 import { existsSync } from 'fs';
-import { readdir, unlink } from 'fs/promises';
+import { readdir, stat, unlink } from 'fs/promises';
 import { PrismaService } from '../prisma/prisma.service';
 
 // 与 upload.controller.ts 的 ALLOW 保持一致（magic bytes 已在落盘时校验过，这里仅按扩展名过滤）
 const UPLOAD_DIR = join(process.cwd(), 'uploads');
 const IMAGE_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
+/** 保护窗口：上传满 24h 的文件才可能成为孤儿。
+ * 上传与"保存成物品"是两个独立请求，中间那张图还没有任何 Item 引用它；
+ * 没有这道窗口，dryRun:false 会删掉用户正在编辑中的物品图片（C10）。 */
+const ORPHAN_GRACE_MS = 24 * 60 * 60 * 1000;
+
 export interface OrphanResult {
   scanned: number; // uploads/ 下图片文件总数
   referenced: number; // 被 Item 引用的图片数（去重后）
-  orphans: string[]; // 孤儿文件名列表
+  orphans: string[]; // 越过保护窗口的孤儿文件名列表（本轮可删）
+  skippedRecent: number; // 未越过保护窗口、本轮不删的数量
+  graceHours: number; // 保护窗口小时数（契约 v1.5 起对外可见）
   deleted: number; // 实际删除数（dryRun=true 时为 0）
   dryRun: boolean;
 }
@@ -52,15 +60,39 @@ export class UploadService {
    * @param dryRun 默认 true：只报告孤儿，不删文件。显式传 false 才真正删除。
    */
   async cleanOrphanImages(dryRun = true): Promise<OrphanResult> {
+    const graceHours = ORPHAN_GRACE_MS / 3600000;
     if (!existsSync(UPLOAD_DIR)) {
-      return { scanned: 0, referenced: 0, orphans: [], deleted: 0, dryRun };
+      return {
+        scanned: 0,
+        referenced: 0,
+        orphans: [],
+        skippedRecent: 0,
+        graceHours,
+        deleted: 0,
+        dryRun,
+      };
     }
     const files = (await readdir(UPLOAD_DIR)).filter((f) => {
       const ext = f.slice(f.lastIndexOf('.')).toLowerCase();
       return IMAGE_EXT.has(ext);
     });
     const referenced = await this.referencedImageNames();
-    const orphans = files.filter((f) => !referenced.has(f)).sort();
+    const now = Date.now();
+    const orphans: string[] = [];
+    let skippedRecent = 0;
+
+    for (const f of files) {
+      if (referenced.has(f)) continue;
+      let mtimeMs: number;
+      try {
+        mtimeMs = (await stat(join(UPLOAD_DIR, f))).mtimeMs;
+      } catch {
+        continue; // readdir 与 stat 之间文件消失（人工删或上一轮已清），跳过
+      }
+      if (now - mtimeMs < ORPHAN_GRACE_MS) skippedRecent += 1;
+      else orphans.push(f);
+    }
+    orphans.sort();
 
     let deleted = 0;
     if (!dryRun) {
@@ -73,6 +105,14 @@ export class UploadService {
         }
       }
     }
-    return { scanned: files.length, referenced: referenced.size, orphans, deleted, dryRun };
+    return {
+      scanned: files.length,
+      referenced: referenced.size,
+      orphans,
+      skippedRecent,
+      graceHours,
+      deleted,
+      dryRun,
+    };
   }
 }

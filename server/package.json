@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "node dist/src/main.js",
     "start:dev": "nest start --watch",
     "build": "nest build",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
     "seed": "ts-node prisma/seed.ts",
     "test": "jest"
   },
