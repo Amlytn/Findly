@@ -1,6 +1,6 @@
-import { getItems } from '../../services/items'
+import { getItem } from '../../services/items'
+import { isApiError } from '../../services/request'
 import { getFavoriteIds, removeFavorite } from '../../utils/favorites'
-import { ItemListItem } from '../../types/api'
 import { ItemCardVM, fallbackImg, mapItemCard } from '../../utils/item-vm'
 
 Page({
@@ -9,7 +9,7 @@ Page({
     empty: false,
     /** 请求失败态：与"真的没有收藏"严格区分（PRD 6.4），点击整块重试 */
     error: '',
-    /** 收藏 id 数超过一次拉取范围（pageSize 100）时提示未全部显示 */
+    /** 历史字段：按 id 精确拉取后不再存在截断，恒为 false（wxml 提示保留兼容） */
     truncated: false,
     items: [] as ItemCardVM[],
     totalFav: 0
@@ -35,39 +35,44 @@ Page({
     }
 
     this.setData({ loading: true, error: '' })
-    // 一次拉取最近 100 件物品，并按收藏 id 交集渲染（保持收藏先后顺序，展示最新数据）
-    getItems({ page: 1, pageSize: 100 })
-      .then(function (res) {
-        const itemMap = new Map<string, ItemListItem>()
-        for (const it of res.items) {
-          itemMap.set(it.id, it)
-        }
-
-        const matched: ItemCardVM[] = []
-        for (const id of favIds) {
-          const it = itemMap.get(id)
-          if (it) {
-            matched.push(mapItemCard(it))
+    // 按收藏 id 逐个精确拉取（silent 防失效 id 弹 toast 轰炸），保持收藏先后顺序。
+    // 旧实现「拉最近 100 件求交集」会让早于 100 条的收藏凭空消失，已废弃。
+    Promise.all(
+      favIds.map(function (id) {
+        // silent 模式：失败不 reject 而是 resolve 出 {__error, statusCode}，用 isApiError 判别
+        return getItem(id, true).then(function (res) {
+          if (isApiError(res)) {
+            // 404 = 物品已被删除 → 顺带清理该收藏记录；网络错误保留记录，下次回来重试
+            return { id: id, item: null, gone: res.statusCode === 404 }
           }
-        }
-
-        that.setData({
-          loading: false,
-          items: matched,
-          empty: matched.length === 0,
-          totalFav: matched.length,
-          error: '',
-          truncated: favIds.length > matched.length
+          return { id: id, item: res, gone: false }
         })
       })
-      .catch(function () {
-        that.setData({
-          loading: false,
-          error: '收藏加载失败，点击重试',
-          empty: false,
-          items: [],
-          totalFav: 0
-        })
+    ).then(function (results) {
+      const matched: ItemCardVM[] = []
+      for (const r of results) {
+        if (r.item) {
+          matched.push(mapItemCard(r.item as any))
+        } else if (r.gone) {
+          removeFavorite(r.id)
+        }
+      }
+      that.setData({
+        loading: false,
+        items: matched,
+        empty: matched.length === 0,
+        totalFav: matched.length,
+        error: '',
+        truncated: false
+      })
+    }).catch(function () {
+      that.setData({
+        loading: false,
+        error: '收藏加载失败，点击重试',
+        empty: false,
+        items: [],
+        totalFav: 0
+      })
       })
   },
 
