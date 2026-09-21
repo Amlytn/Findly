@@ -193,11 +193,6 @@ export interface LoginResponse {
   user: { id: string; nickname: string | null; avatar: string | null }
 }
 
-/** GET /auth/dev-token 响应（联调通道，M5 移除） */
-export interface DevTokenResponse {
-  token: string
-}
-
 /** POST /upload 响应（契约 v1.3 §5.2） */
 export interface UploadResponse {
   imageUrl: string

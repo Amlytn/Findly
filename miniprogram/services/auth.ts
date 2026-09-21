@@ -1,10 +1,11 @@
 /**
  * 登录态管理：wx.login code 换 JWT（7 天），本地缓存、提前 1 天续期。
- * 联调环境后端未配 WX_APPID 时降级 dev-token 测试通道（开发设施，上线前移除）。
+ * M5：dev-token 测试通道兜底已移除——登录失败如实抛错，
+ * 后端微信凭据配置问题必须作为真实错误暴露，不再被测试用户掩盖。
  */
 import { getApiBase } from './config'
 import { getToken, setToken, clearToken } from './token'
-import type { DevTokenResponse, LoginResponse } from '../types/api'
+import type { LoginResponse } from '../types/api'
 
 export { getToken, clearToken } from './token'
 
@@ -62,13 +63,6 @@ export function ensureLogin(force = false): Promise<string> {
 
   inFlightLogin = wxLogin()
     .then(function (code) { return rawRequest<LoginResponse>('POST', '/auth/login', { code }) })
-    .catch(function (e: { statusCode?: number }) {
-      // 400 = 后端未配置 WX_APPID/WX_APPSECRET（联调环境）→ 测试通道兜底
-      if (e && e.statusCode === 400) {
-        return rawRequest<DevTokenResponse>('GET', '/auth/dev-token?userId=dev')
-      }
-      throw e
-    })
     .then(function (res) {
       if (!res || !res.token) throw { statusCode: 0, message: '登录响应缺少 token' }
       setToken(res.token)
