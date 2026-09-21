@@ -55,17 +55,35 @@ Page({
     }
   },
 
-  /** 货架图加载失败兜底：仅替换该条的展示图（fallbackImg 内留 console 痕，不静默掩盖） */
+  /** 货架图加载失败兜底：按 shelfId 与 itemId 定位，同步更新 visibleShelves 与源数据 shelves */
   onShelfImgError(e: any) {
-    const si = Number(e.currentTarget.dataset.si)
-    const ii = Number(e.currentTarget.dataset.ii)
-    const shelf = this.data.visibleShelves[si]
-    if (!shelf) return
-    const items = fallbackImg(shelf.items, ii)
-    if (items === shelf.items) return
-    const next = this.data.visibleShelves.slice()
-    next[si] = Object.assign({}, shelf, { items: items })
-    this.setData({ visibleShelves: next })
+    const ds = e.currentTarget && e.currentTarget.dataset
+    const shelfId: string = ds && ds.shelfId
+    const itemId: string = ds && ds.itemId
+    if (!shelfId || !itemId) return
+
+    const updateList = (list: ShelfData[]): ShelfData[] => {
+      let changed = false
+      const next = list.map(function (shelf) {
+        if (shelf.id !== shelfId) return shelf
+        const itemIdx = shelf.items.findIndex(function (it) { return it.id === itemId })
+        if (itemIdx === -1) return shelf
+        const nextItems = fallbackImg(shelf.items, itemIdx)
+        if (nextItems === shelf.items) return shelf
+        changed = true
+        return Object.assign({}, shelf, { items: nextItems })
+      })
+      return changed ? next : list
+    }
+
+    const nextVisible = updateList(this.data.visibleShelves)
+    const nextShelves = updateList(this.data.shelves)
+    if (nextVisible !== this.data.visibleShelves || nextShelves !== this.data.shelves) {
+      this.setData({
+        visibleShelves: nextVisible,
+        shelves: nextShelves
+      })
+    }
   },
 
   onShow() {

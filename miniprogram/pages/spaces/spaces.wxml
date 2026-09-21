@@ -52,20 +52,12 @@
             </view>
             <view class="sec-right">
               <view
-                class="sec-act-btn"
-                catchtap="onSectionAddChild"
+                class="sec-act-btn sec-act-more"
+                catchtap="onSectionMore"
                 data-section="{{sec}}"
-                aria-label="添加子空间"
+                aria-label="更多操作"
               >
-                <text class="sec-act-plus">＋</text>
-              </view>
-              <view
-                class="sec-act-btn sec-act-settings"
-                catchtap="onSectionSettings"
-                data-section="{{sec}}"
-                aria-label="空间设置"
-              >
-                <image class="sec-act-icon" src="/assets/spaces/glyphs/settings.svg" mode="aspectFit" />
+                <image class="sec-act-icon" src="/assets/spaces/glyphs/more_horizontal.svg" mode="aspectFit" />
               </view>
               <view
                 class="sec-toggle {{sec.collapsed ? 'is-collapsed' : ''}}"
@@ -80,7 +72,7 @@
           <!-- 若无子空间，在展开状态下展示引导卡片 -->
           <view class="sec-empty-wrap" wx:if="{{!sec.children.length && !sec.collapsed}}" bindtap="onSectionAddChild" data-section="{{sec}}">
             <view class="sec-empty-card">
-              <text class="sec-empty-tip">点击此处或右上角 ＋ 添加子空间（如：书房、卧室）</text>
+              <text class="sec-empty-tip">点击此处添加子空间（如：书房、卧室）</text>
             </view>
           </view>
 
@@ -89,6 +81,7 @@
             class="cards-container"
             wx:if="{{sec.children.length && !sec.collapsed}}"
             bind:tapcard="onTapCard"
+            bind:moreaction="onCardMoreAction"
             bind:rename="onPanelRename"
             bind:addchild="onPanelAddChild"
             bind:additem="onPanelAddItem"
@@ -116,15 +109,15 @@
           <text class="btn-plus">＋</text>
           <text>添加空间</text>
         </view>
-        <view class="bottom-hint">提示：长按空间可 重命名 / 添加子空间 / 删除</view>
+        <view class="bottom-hint">提示：点击卡片右侧「⋯」或长按可快速管理空间</view>
       </view>
     </block>
 
   </view>
 
-  <!-- 自定义空间设置弹层（取代微信原生 ActionSheet） -->
-  <view class="custom-modal-mask {{settingModalVisible ? 'is-visible' : ''}}" bindtap="closeSettingModal" catchtouchmove="preventTouchMove">
-    <view class="custom-modal-sheet {{settingModalVisible ? 'is-visible' : ''}}" catchtap="preventBubble">
+  <!-- 自定义空间统一操作弹层（S4 收敛入口） -->
+  <view class="custom-modal-mask {{actionSheetVisible ? 'is-visible' : ''}}" bindtap="closeActionSheet" catchtouchmove="preventTouchMove">
+    <view class="custom-modal-sheet {{actionSheetVisible ? 'is-visible' : ''}}" catchtap="preventBubble">
       
       <!-- 弹层顶部拖拽指示条 -->
       <view class="modal-handle-bar">
@@ -133,34 +126,129 @@
 
       <!-- 空间信息头 -->
       <view class="modal-space-info">
-        <image class="modal-space-icon" src="{{settingTarget.glyphIcon || '/assets/spaces/glyphs/home.svg'}}" mode="aspectFit" />
+        <image class="modal-space-icon" src="{{actionTarget.glyphIcon || actionTarget.cardIcon || '/assets/spaces/glyphs/home.svg'}}" mode="aspectFit" />
         <view class="modal-space-meta">
-          <view class="modal-space-name">{{settingTarget.name}}</view>
-          <view class="modal-space-sub">空间管理设置 · 累计 {{settingTarget.total || 0}} 件物品</view>
+          <view class="modal-space-name">{{actionTarget.name}}</view>
+          <view class="modal-space-sub">空间管理 · 累计 {{actionTarget.total || 0}} 件物品</view>
         </view>
       </view>
 
       <!-- 操作项列表 -->
       <view class="modal-actions-list">
-        <view class="modal-action-card" bindtap="onSettingModalRename">
+        <!-- 1. 添加子空间 -->
+        <view class="modal-action-card" bindtap="onActionAddChild">
           <view class="modal-act-left">
-            <view class="modal-act-title">重命名空间</view>
-            <view class="modal-act-desc">修改该空间的显示名称</view>
+            <view class="modal-act-title">添加子空间</view>
+            <view class="modal-act-desc">在「{{actionTarget.name}}」下新建次级空间</view>
           </view>
           <image class="modal-act-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
         </view>
 
-        <view class="modal-action-card act-danger" bindtap="onSettingModalDelete">
+        <!-- 2. 重命名 / 更换图标 -->
+        <view class="modal-action-card" bindtap="onActionRename">
+          <view class="modal-act-left">
+            <view class="modal-act-title">重命名 / 更换图标</view>
+            <view class="modal-act-desc">修改该空间的名称、预设分类与展示图标</view>
+          </view>
+          <image class="modal-act-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+        </view>
+
+        <!-- 3. 移动空间（调整归属） -->
+        <view class="modal-action-card" bindtap="onActionMove">
+          <view class="modal-act-left">
+            <view class="modal-act-title">移动空间</view>
+            <view class="modal-act-desc">调整该空间的归属层级或上级空间</view>
+          </view>
+          <image class="modal-act-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+        </view>
+
+        <!-- 4. 同级排序（轻量上移 / 下移） -->
+        <view class="modal-action-card modal-reorder-row">
+          <view class="modal-act-left">
+            <view class="modal-act-title">同级排序</view>
+            <view class="modal-act-desc">调整该空间在同级空间中的展示次序</view>
+          </view>
+          <view class="reorder-btns">
+            <view
+              class="reorder-btn {{actionCanMoveUp ? '' : 'is-disabled'}}"
+              catchtap="onActionReorderUp"
+              aria-label="上移"
+            >
+              <text class="reorder-txt">↑ 上移</text>
+            </view>
+            <view
+              class="reorder-btn {{actionCanMoveDown ? '' : 'is-disabled'}}"
+              catchtap="onActionReorderDown"
+              aria-label="下移"
+            >
+              <text class="reorder-txt">↓ 下移</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 5. 加入物品 -->
+        <view class="modal-action-card" bindtap="onActionAddItem">
+          <view class="modal-act-left">
+            <view class="modal-act-title">加入物品</view>
+            <view class="modal-act-desc">向「{{actionTarget.name}}」中存入新物品</view>
+          </view>
+          <image class="modal-act-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+        </view>
+
+        <!-- 6. 删除空间（危险操作） -->
+        <view class="modal-action-card act-danger" bindtap="onActionDelete">
           <view class="modal-act-left">
             <view class="modal-act-title title-danger">删除空间</view>
-            <view class="modal-act-desc">删除该空间（若有子空间或物品需先清空）</view>
+            <view class="modal-act-desc">删除该空间（若包含子空间或物品需先清空）</view>
           </view>
           <image class="modal-act-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
         </view>
       </view>
 
       <!-- 底部取消操作 -->
-      <view class="modal-cancel-btn" bindtap="closeSettingModal">
+      <view class="modal-cancel-btn" bindtap="closeActionSheet">
+        <text>取消</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 移动空间目标选择弹层 -->
+  <view class="custom-modal-mask {{moveModalVisible ? 'is-visible' : ''}}" bindtap="closeMoveModal" catchtouchmove="preventTouchMove">
+    <view class="custom-modal-sheet move-modal-sheet {{moveModalVisible ? 'is-visible' : ''}}" catchtap="preventBubble">
+      <view class="modal-handle-bar">
+        <view class="modal-handle"></view>
+      </view>
+
+      <view class="modal-space-info">
+        <image class="modal-space-icon" src="{{actionTarget.glyphIcon || actionTarget.cardIcon || '/assets/spaces/glyphs/home.svg'}}" mode="aspectFit" />
+        <view class="modal-space-meta">
+          <view class="modal-space-name">移动「{{actionTarget.name}}」到…</view>
+          <view class="modal-space-sub">选择新的归属空间，将自动调整层级</view>
+        </view>
+      </view>
+
+      <scroll-view class="move-targets-scroll" scroll-y>
+        <view class="move-targets-list">
+          <view
+            class="move-target-item {{item.disabled ? 'is-disabled' : ''}} {{item.isCurrentParent ? 'is-current' : ''}}"
+            wx:for="{{moveTargets}}"
+            wx:key="id"
+            style="padding-left: {{28 + (item.depth * 32)}}rpx;"
+            bindtap="onSelectMoveTarget"
+            data-target="{{item}}"
+          >
+            <view class="move-target-info">
+              <text class="move-target-icon">{{item.depth === 0 ? '🏠' : '📁'}}</text>
+              <text class="move-target-name">{{item.name}}</text>
+            </view>
+            <view class="move-target-badge" wx:if="{{item.isCurrentParent}}">当前位置</view>
+            <view class="move-target-badge is-self" wx:elif="{{item.disabled}}">不可选</view>
+            <image class="move-target-arrow" wx:else src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="modal-cancel-btn" bindtap="closeMoveModal">
         <text>取消</text>
       </view>
     </view>

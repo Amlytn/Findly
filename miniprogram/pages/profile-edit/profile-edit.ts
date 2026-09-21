@@ -2,6 +2,7 @@ import { cropToSquare, shrinkToMaxEdge } from '../../utils/crop'
 import { DEFAULT_ID, loadProfile, saveProfile, avatarUrl } from '../../utils/profile'
 import { updateMe } from '../../services/users'
 import { uploadImage } from '../../services/upload'
+import { checkName } from '../../utils/validate'
 
 Page({
   data: {
@@ -54,6 +55,11 @@ Page({
     const id = (this.data.id || '').trim()
     if (!id) {
       wx.showToast({ title: 'ID 不能为空', icon: 'none' })
+      return
+    }
+    const lenErr = checkName(id, '昵称')
+    if (lenErr) {
+      wx.showToast({ title: lenErr, icon: 'none' })
       return
     }
     this.setData({ saving: true })

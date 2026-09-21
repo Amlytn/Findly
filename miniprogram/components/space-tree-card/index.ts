@@ -48,8 +48,14 @@ Component({
       this.triggerEvent('deletespace', { item: this.data.node }, { bubbles: true, composed: true })
     },
 
+    onMoreTap() {
+      if (!this.data.node) return
+      this.triggerEvent('moreaction', { item: this.data.node }, { bubbles: true, composed: true })
+    },
+
     onLongPress() {
       if (!this.data.node) return
+      this.triggerEvent('moreaction', { item: this.data.node }, { bubbles: true, composed: true })
       this.triggerEvent('cardlongpress', { item: this.data.node }, { bubbles: true, composed: true })
     },
 

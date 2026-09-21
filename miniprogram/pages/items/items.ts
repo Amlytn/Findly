@@ -1,4 +1,5 @@
 import { getItems, getCategories, updateItem, deleteItem } from '../../services/items'
+import { isApiError } from '../../services/request'
 import { ItemListItem } from '../../types/api'
 import { ItemCardVM, fallbackImg, mapItemCard } from '../../utils/item-vm'
 
@@ -225,7 +226,12 @@ Page({
       confirmColor: '#E06B6B',
       success(res: any) {
         if (!res.confirm) return
-        deleteItem(id).then(function () {
+        deleteItem(id).then(function (r: any) {
+          // 契约：重复删除返回 404 视为成功；其他非 404 错误不视为成功
+          if (isApiError(r) && r.statusCode !== 404) {
+            wx.showToast({ title: r.message || '删除失败', icon: 'none' })
+            return
+          }
           const shown = that.data.shown.filter(function (it) { return it.id !== id })
           that.setData({
             shown: shown,
@@ -234,7 +240,9 @@ Page({
           })
           wx.showToast({ title: '已删除', icon: 'success' })
           that.fetchCats()
-        }).catch(function () { /* request 层已 toast */ })
+        }).catch(function (err: any) {
+          wx.showToast({ title: (err && err.message) || '删除失败，请稍后重试', icon: 'none' })
+        })
       }
     })
   },

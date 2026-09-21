@@ -14,8 +14,13 @@
         </view>
       </view>
     </view>
-    <view class="card-arrow-box {{expandedMap[node.id] ? 'arrow-down' : ''}}">
-      <image class="card-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+    <view class="card-right">
+      <view class="card-more-btn" catchtap="onMoreTap" aria-label="更多操作">
+        <image class="card-more-icon" src="/assets/spaces/glyphs/more_horizontal.svg" mode="aspectFit" />
+      </view>
+      <view class="card-arrow-box {{expandedMap[node.id] ? 'arrow-down' : ''}}">
+        <image class="card-arrow" src="/assets/spaces/glyphs/chevron_right.svg" mode="aspectFit" />
+      </view>
     </view>
   </view>
 

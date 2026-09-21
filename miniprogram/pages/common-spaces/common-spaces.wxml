@@ -65,7 +65,7 @@
               bindtap="onItemTap"
               data-id="{{it.id}}"
             >
-              <image class="shelf-item-img" src="{{it.img}}" mode="aspectFill" lazy-load binderror="onShelfImgError" data-si="{{si}}" data-ii="{{ii}}" />
+              <image class="shelf-item-img" src="{{it.img}}" mode="aspectFill" lazy-load binderror="onShelfImgError" data-shelf-id="{{shelf.id}}" data-item-id="{{it.id}}" />
               <view class="shelf-item-name">{{it.name}}</view>
               <view class="shelf-item-meta" wx:if="{{it.color || it.category}}">
                 {{it.color ? it.color : ''}}{{it.color && it.category ? ' · ' : ''}}{{it.category ? it.category : ''}}
