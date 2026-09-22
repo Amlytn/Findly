@@ -1,8 +1,8 @@
-# Findly API 接口契约（v1.5）
+# Findly API 接口契约（v1.6）
 
 > 前后端共同遵守的接口约定。改接口必须先改本文档，再动代码（PR 同步提交）。
 > 维护人：@james-wu66 ｜ 协作：@Amlytn
-> 评审状态：v1.5（① **@Amlytn 的 PR #42 已给 spaces 增加 `type`/`icon` 契约，但合入时未升版本号，本次一并记账补记**，正文见第 1 节；② 补记 B03 的 `POST /upload/cleanup-orphans` 端点——该端点进 main 时未同步本契约，同属流程遗漏；并按 **C10** 修正其语义：孤儿判定增加 24h `mtime` 保护窗口、响应新增 `skippedRecent` / `graceHours`，见第 5.4 节）。v1.4（M5 鉴权收紧：401 拦截生效、x-user-id 兜底移除；items 增加 category 精确筛选与 quantity 返回；items/spaces 支持 null 解绑语义；users 新增 PATCH /me；上传增加 magic bytes 校验。v1.3：M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义）
+> 评审状态：**v1.6（补写第 6 节 `GET /api/v1/stats` —— 该接口自 B02 上线起从未进契约，属流程遗漏；同时记入三项口径修正：C09 只统计调用者本人、C07 命中率分母改为 recognize、C08 新增可选 `days` 参数，并新增 `cacheHitDenominator` / `unattributed` / `rangeDays` 三个披露字段。数据库侧配套迁移：`AIResult` 增 `userId` 及 3 个索引、`ItemTag` 增 `tagId` 索引）**。v1.5（① **@Amlytn 的 PR #42 已给 spaces 增加 `type`/`icon` 契约，但合入时未升版本号，本次一并记账补记**，正文见第 1 节；② 补记 B03 的 `POST /upload/cleanup-orphans` 端点——该端点进 main 时未同步本契约，同属流程遗漏；并按 **C10** 修正其语义：孤儿判定增加 24h `mtime` 保护窗口、响应新增 `skippedRecent` / `graceHours`，见第 5.4 节）。v1.4（M5 鉴权收紧：401 拦截生效、x-user-id 兜底移除；items 增加 category 精确筛选与 quantity 返回；items/spaces 支持 null 解绑语义；users 新增 PATCH /me；上传增加 magic bytes 校验。v1.3：M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义）
 
 ## 通用约定
 
@@ -250,3 +250,38 @@ GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity
 
 - 错误：401（无 token / token 失效）
 - ⚠️ 运维红线：首次上线先 `dryRun: true` 核对 `orphans` 清单，确认无误再 `dryRun: false`
+
+## 6. 用量统计 `/api/v1/stats`（B02 实现；v1.6 首次写入本契约；C09/C07/C08 修正口径）
+
+> 该接口上线时字段定义只写在 `docs/Findly_T7用量统计_前端需求_2026-09-16.md`，**从未进本契约** —— 属流程遗漏，现补。字段名沿用 T7，前端 `pages/usage` 按此渲染，不得单方改动。
+
+- 方法：`GET /api/v1/stats`，需 Bearer token
+- **口径：只统计当前登录用户自己的 AI 调用**（C09）。此前 `AIResult` 无 `userId`，接口返回的是**全平台**聚合，任何登录用户可看他人用量与成本。
+- 可选查询参数：`days`（整数 1~365）＝ 只统计最近 N 天（C08）；**缺省为全部**，前端既有不带参数的调用行为兼容。
+
+```json
+{
+  "totalCalls": 23,                 // 本人记录条数（不含无归属历史）
+  "totalTokens": 2132,              // usage.total_tokens 累加；命中缓存的行 usage 为 null，不重复计（C03）
+  "estimatedCost": 0.011487,        // 按模型单价估算，单位 CNY
+  "currency": "CNY",
+  "degradedRate": 0.087,            // source 含「降级」的占比
+  "cacheHitRate": 0.5,              // ⚠️ C07：分母是 cacheHitDenominator，不是 totalCalls
+  "avgDurationMs": null,            // 无耗时数据源，固定 null
+  "byTaskType": [                   // 按 recognize / parse-query 分组
+    { "taskType": "recognize", "calls": 4, "tokens": 1072, "cost": 0.009 }
+  ],
+  "cacheHitDenominator": 2,         // v1.6 新增：命中率的分母，便于自查
+  "unattributed": 37,               // v1.6 新增：无法判定归属的历史记录条数（披露用，不计入任何指标）
+  "rangeDays": null,                // v1.6 新增：本次生效的时间范围，null＝全部
+  "generatedAt": "2026-09-22T06:40:00.000Z"
+}
+```
+
+**口径细则（都是踩出来的，改动前先读）**：
+
+1. `cacheHitRate` 只按 **recognize** 计算 —— 缓存只存在于识图链路，把永不命中的 `parse-query` 放进分母会系统性压低命中率（C07）。
+2. `estimatedCost` 的单价表与服务端 `stats.service.ts` 的 `PRICE_PER_M`、脚本 `docs/验证脚本/usage.cjs` 三方共用一套，**必须同步修改**，否则接口与命令行数字会对不上。
+3. `unattributed`：C09 迁移只回填了能经 `Item` 反查出归属的历史行；识别后未保存成物品的记录无从判定，保持 `userId = null` 并**排除在统计之外**，只在这里报数 —— 避免"升级后数字突然变小"无法解释。
+4. **C03 之前导出的历史 token/成本数字偏高**（缓存命中被重复计费），不要用作量化依据。
+- 错误：401（无 token）/ 400（`days` 非 1~365 的整数）

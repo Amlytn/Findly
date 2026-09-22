@@ -44,6 +44,7 @@ describe('SearchService', () => {
       expect(prisma.aIResult.create).toHaveBeenCalledTimes(1);
       const arg = prisma.aIResult.create.mock.calls[0][0];
       expect(arg.data.taskType).toBe('parse-query');
+      expect(arg.data.userId).toBe('u1'); // C09：解析调用也要记归属
       expect(arg.data.resultJson).toContain('LLM Query Parser');
     });
 
@@ -56,6 +57,7 @@ describe('SearchService', () => {
       const arg = prisma.aIResult.create.mock.calls[0][0];
       expect(arg.data.resultJson).toContain('降级');
       expect(arg.data.resultJson).toContain('HTTP 401');
+      expect(arg.data.userId).toBe('u1'); // C09：降级落库同样要带归属，否则统计漏这一块
     });
 
     it('降级时落库本身失败，也不影响把降级结果返回给用户', async () => {
