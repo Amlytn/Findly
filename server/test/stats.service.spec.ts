@@ -7,9 +7,12 @@
  */
 import { StatsService } from '../src/stats/stats.service';
 
-function mockPrisma(rows: any[]) {
+function mockPrisma(rows: any[], unattributed = 0) {
   return {
-    aIResult: { findMany: jest.fn().mockResolvedValue(rows) },
+    aIResult: {
+      findMany: jest.fn().mockResolvedValue(rows),
+      count: jest.fn().mockResolvedValue(unattributed),
+    },
   } as any;
 }
 
@@ -17,7 +20,7 @@ describe('StatsService', () => {
   describe('空数据', () => {
     it('没有任何记录时各计数为 0，且比率不是 NaN', async () => {
       const service = new StatsService(mockPrisma([]));
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
 
       expect(res.totalCalls).toBe(0);
       expect(res.totalTokens).toBe(0);
@@ -44,7 +47,7 @@ describe('StatsService', () => {
           },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(res.estimatedCost).toBeCloseTo(0.009, 6);
       expect(res.totalTokens).toBe(1500);
     });
@@ -62,7 +65,7 @@ describe('StatsService', () => {
           },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(res.estimatedCost).toBeCloseTo(0.0012, 6);
     });
 
@@ -85,7 +88,7 @@ describe('StatsService', () => {
           },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(res.estimatedCost).toBeCloseTo(0.0102, 6); // 0.009 + 0.0012
       expect(res.totalTokens).toBe(4500);
       expect(res.totalCalls).toBe(2);
@@ -105,7 +108,7 @@ describe('StatsService', () => {
           },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(res.totalTokens).toBe(1500);
       expect(res.estimatedCost).toBe(0);
     });
@@ -137,7 +140,7 @@ describe('StatsService', () => {
           },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(res.degradedRate).toBe(0.25); // 1 / 4
     });
   });
@@ -156,7 +159,7 @@ describe('StatsService', () => {
           { taskType: 'recognize', model: 'qwen-vl-plus', resultJson: JSON.stringify({ cached: true, usage: null }) },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
 
       expect(res.totalCalls).toBe(2);
       expect(res.totalTokens).toBe(1500); // 命中那条不重复计，否则成本虚高
@@ -172,7 +175,7 @@ describe('StatsService', () => {
           { taskType: 'recognize', model: 'qwen-vl-plus', resultJson: JSON.stringify({ cached: false }) },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(res.cacheHitRate).toBe(0.5); // 2 / 4
     });
   });
@@ -191,8 +194,8 @@ describe('StatsService', () => {
           },
         ]),
       );
-      await expect(service.overview()).resolves.toBeDefined();
-      const res: any = await service.overview();
+      await expect(service.overview('dev')).resolves.toBeDefined();
+      const res: any = await service.overview('dev');
       expect(res.totalCalls).toBe(2);
       expect(res.totalTokens).toBe(1500); // 坏的那条贡献 0
     });
@@ -201,7 +204,7 @@ describe('StatsService', () => {
       const service = new StatsService(
         mockPrisma([{ taskType: 'parse-query', model: 'qwen-turbo', resultJson: JSON.stringify({ keyword: '鼠标' }) }]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(res.totalTokens).toBe(0);
       expect(res.estimatedCost).toBe(0);
       expect(res.totalCalls).toBe(1);
@@ -229,7 +232,7 @@ describe('StatsService', () => {
           },
         ]),
       );
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       const recognize = res.byTaskType.find((t: any) => t.taskType === 'recognize');
       const parseQuery = res.byTaskType.find((t: any) => t.taskType === 'parse-query');
 
@@ -244,7 +247,7 @@ describe('StatsService', () => {
   describe('契约字段', () => {
     it('currency / generatedAt / avgDurationMs 符合契约', async () => {
       const service = new StatsService(mockPrisma([]));
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
 
       expect(res.currency).toBe('CNY');
       expect(res.avgDurationMs).toBeNull(); // 无耗时数据源，固定 null
@@ -254,20 +257,85 @@ describe('StatsService', () => {
 
     it('返回的字段集合与契约一致', async () => {
       const service = new StatsService(mockPrisma([]));
-      const res: any = await service.overview();
+      const res: any = await service.overview('dev');
       expect(Object.keys(res).sort()).toEqual(
         [
           'avgDurationMs',
           'byTaskType',
+          'cacheHitDenominator',
           'cacheHitRate',
           'currency',
           'degradedRate',
           'estimatedCost',
           'generatedAt',
+          'rangeDays',
           'totalCalls',
           'totalTokens',
+          'unattributed',
         ].sort(),
       );
+    });
+  });
+
+  describe('C09 归属隔离 / C07 命中率分母 / C08 时间范围', () => {
+    const rec = (extra: object) => ({
+      taskType: 'recognize',
+      model: 'qwen-vl-plus',
+      resultJson: JSON.stringify(extra),
+    });
+
+    it('只查自己的记录：userId 与时间范围都下推到数据库，不在内存里筛', async () => {
+      const prisma = mockPrisma([]);
+      await new StatsService(prisma).overview('u-42', 7);
+
+      const where = prisma.aIResult.findMany.mock.calls[0][0].where;
+      expect(where.userId).toBe('u-42');
+      expect(where.createdAt.gte).toBeInstanceOf(Date);
+      // 断言确实是"约 7 天前"而不是随手一个时间
+      const ageDays = (Date.now() - where.createdAt.gte.getTime()) / 86400e3;
+      expect(ageDays).toBeGreaterThan(6.9);
+      expect(ageDays).toBeLessThan(7.1);
+    });
+
+    it('不传 days 时不带时间条件（向后兼容前端既有调用）', async () => {
+      const prisma = mockPrisma([]);
+      await new StatsService(prisma).overview('u-1');
+      expect(prisma.aIResult.findMany.mock.calls[0][0].where.createdAt).toBeUndefined();
+    });
+
+    it('C07：命中率分母只算 recognize，parse-query 不再稀释它', async () => {
+      const service = new StatsService(
+        mockPrisma([
+          rec({ cached: true, usage: null }),
+          rec({}),
+          { taskType: 'parse-query', model: 'qwen-turbo', resultJson: '{}' },
+          { taskType: 'parse-query', model: 'qwen-turbo', resultJson: '{}' },
+          { taskType: 'parse-query', model: 'qwen-turbo', resultJson: '{}' },
+        ]),
+      );
+      const res: any = await service.overview('dev');
+
+      expect(res.totalCalls).toBe(5);
+      expect(res.cacheHitDenominator).toBe(2);
+      expect(res.cacheHitRate).toBe(0.5); // 旧口径会是 1/5 = 0.2，被系统性压低
+    });
+
+    it('一条 recognize 都没有时命中率为 0，不出现除零/NaN', async () => {
+      const service = new StatsService(
+        mockPrisma([{ taskType: 'parse-query', model: 'qwen-turbo', resultJson: '{}' }]),
+      );
+      const res: any = await service.overview('dev');
+      expect(res.cacheHitRate).toBe(0);
+      expect(res.cacheHitDenominator).toBe(0);
+      expect(Number.isNaN(res.cacheHitRate)).toBe(false);
+    });
+
+    it('无归属的历史记录单独报数，不混进任何指标', async () => {
+      const service = new StatsService(mockPrisma([rec({})], 37));
+      const res: any = await service.overview('dev');
+
+      expect(res.unattributed).toBe(37);
+      expect(res.totalCalls).toBe(1); // 那 37 条没被算进结果
     });
   });
 });

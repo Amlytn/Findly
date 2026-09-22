@@ -42,6 +42,8 @@ export class AiController {
     const { description, tags, ...trimmed } = result;
     const record = await this.prisma.aIResult.create({
       data: {
+        // C09：每次调用记归属，否则 /stats 只能统计全平台（跨用户可见）
+        userId,
         taskType: 'recognize',
         model: process.env.QWEN_VL_MODEL || 'qwen-vl-plus',
         resultJson: JSON.stringify({ ...trimmed, usage }),

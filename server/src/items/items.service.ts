@@ -6,7 +6,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { pathOf } from '../common/path.util';
-import { isSqlite } from '../common/db.util';
 import { CreateItemDto, QueryItemsDto, UpdateItemDto } from './dto';
 
 // 卡片/列表/详情共用的关联装载
@@ -62,13 +61,12 @@ export class ItemsService {
   }
 
 	/** 关键词对 name/brand/model/category/description 五字段模糊匹配。
-	 * mode:'insensitive' 仅 PG/Mongo 支持，SQLite 下抛校验错误——按连接器降级
-	 * （SQLite 的 LIKE 对 ASCII 本就不区分大小写，中文无大小写差异，行为几乎无损失） */
+	 * 大小写不敏感靠 PG 的 mode:'insensitive'（schema.prisma 的 provider 必须是 postgresql，
+	 * 见 09-21 事故：provider 被误提交成 sqlite 会让后端起不来）。 */
 	private keywordWhere(keyword?: string): Prisma.ItemWhereInput {
 		const kw = (keyword || '').trim();
 		if (!kw) return {};
-		const contains = (k: string) =>
-			isSqlite() ? { contains: k } : { contains: k, mode: 'insensitive' as const };
+		const contains = (k: string) => ({ contains: k, mode: 'insensitive' as const });
 		return {
 			OR: [
 				{ name: contains(kw) },

@@ -88,10 +88,15 @@ model ItemTag {
   tag  Tag  @relation(fields: [tagId], references: [id])
 
   @@id([itemId, tagId])
+  // C04：主键 (itemId,tagId) 的最左列只能满足"某物品有哪些标签"；
+  // items.related() 走的是反方向 tags.some.tagId in [...]，没有这个索引就全表扫。
+  @@index([tagId])
 }
 
 model AIResult {
   id         String   @id @default(cuid())
+  userId     String? // C09：调用归属。历史记录里只有能经 Item 反查出来的已回填，
+                      // 其余为 null（识别后未保存成物品 → 无从判定归属），统计不计入但会如实报数。
   itemId     String? // 识别阶段暂无 itemId，物品保存后可回填
   taskType   String // recognize / parse-query
   resultJson String
@@ -99,4 +104,11 @@ model AIResult {
   createdAt  DateTime @default(now())
 
   item Item? @relation(fields: [itemId], references: [id])
+
+  // C09/C08：统计接口固定按 userId 过滤、可带时间范围，故两列各建索引。
+  // 详情页取"最近 5 次识别记录"走 itemId 外键，PG 不会为外键自动建索引，故一并补上。
+  // taskType 不单独建索引——只有三个取值、基数极低，走索引比顺序扫还慢。
+  @@index([userId])
+  @@index([createdAt])
+  @@index([itemId])
 }

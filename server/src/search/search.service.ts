@@ -7,7 +7,6 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
 import { pathOf } from '../common/path.util';
-import { isSqlite } from '../common/db.util';
 
 @Injectable()
 export class SearchService {
@@ -16,8 +15,9 @@ export class SearchService {
     private ai: AiService,
   ) {}
 
-  /** 解析搜索词：短词直查；长句走 LLM；LLM 不可用降级关键词（source 如实标注） */
-  private async parseForSearch(q: string) {
+  /** 解析搜索词：短词直查；长句走 LLM；LLM 不可用降级关键词（source 如实标注）。
+   * userId 用于 C09 落库归属——不传则统计侧无法区分是谁的调用。 */
+  private async parseForSearch(userId: string, q: string) {
     const isSimple = q.length <= 6 && !/在哪|哪里|什么颜色|帮我找|怎么找/.test(q);
     if (isSimple) {
       return { keyword: q, color: null, features: [], source: '关键词直查数据库' };
@@ -28,6 +28,7 @@ export class SearchService {
       // usage（token 用量）随记录落库，单次成本可直接从本表计算
       await this.prisma.aIResult.create({
         data: {
+          userId,
           taskType: 'parse-query',
           model: process.env.QWEN_TEXT_MODEL || 'qwen-turbo',
           resultJson: JSON.stringify({ ...parsed, source: 'LLM Query Parser', usage }),
@@ -40,6 +41,7 @@ export class SearchService {
       try {
         await this.prisma.aIResult.create({
           data: {
+            userId,
             taskType: 'parse-query',
             model: process.env.QWEN_TEXT_MODEL || 'qwen-turbo',
             resultJson: JSON.stringify({ keyword: q, source: 'LLM 不可用，降级关键词直查', reason }),
@@ -59,12 +61,10 @@ export class SearchService {
     const resp: Record<string, unknown> = {};
 
     if (type === 'item' || type === 'all') {
-      const parsed = await this.parseForSearch(q);
+      const parsed = await this.parseForSearch(userId, q);
       const keywords = parsed.keyword.split(/[|、,，\s]+/).filter(Boolean);
       if (!keywords.length) keywords.push(q);
-      // mode:'insensitive' 仅 PG/Mongo 支持，SQLite 下抛校验错误——按连接器降级（同 items.keywordWhere）
-      const contains = (k: string) =>
-        isSqlite() ? { contains: k } : { contains: k, mode: 'insensitive' as const };
+      const contains = (k: string) => ({ contains: k, mode: 'insensitive' as const });
       const and: Prisma.ItemWhereInput[] = [
         {
           OR: keywords.flatMap((k) => [

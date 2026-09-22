@@ -40,6 +40,7 @@ describe('AiController.recognize', () => {
 
     const { data, payload } = savedRow(prisma);
     expect(data.taskType).toBe('recognize');
+    expect(data.userId).toBe('dev'); // C09：落库带归属，/stats 才能只统计自己的
     expect(payload.usage).toEqual(USAGE);
     expect(payload.cached).toBeUndefined();
   });
