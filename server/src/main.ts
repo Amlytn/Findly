@@ -6,6 +6,8 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { json } from 'express';
+import type { Request, Response, NextFunction } from 'express';
+import { JwtService } from '@nestjs/jwt';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 import { AppModule } from './app.module';
@@ -37,6 +39,33 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
   // 本地上传目录静态服务（M4；迁移对象存储后移除）
+  // C02：uploads/ 存的是用户拍的物品照片，此前挂在 Nest 全局守卫链之外——实测不带 token
+  // 访问返回 404 而非 401，即请求根本没进守卫，文件存在就被直接吐出。这里在静态中间件
+  // 之前补一道 JWT 校验。小程序 <image src> 发不出 Authorization 头，故同时接受 ?token=
+  //（前端 services/config.ts 的 fullUrl() 是唯一收口，加一处即全覆盖）。
+  const jwtService = app.get(JwtService);
+  app.use('/uploads/', async (req: Request, res: Response, next: NextFunction) => {
+    const auth = req.headers.authorization;
+    const qtok = req.query?.token;
+    const raw =
+      typeof auth === 'string' && auth.startsWith('Bearer ')
+        ? auth.slice(7)
+        : typeof qtok === 'string'
+          ? qtok
+          : '';
+    try {
+      const payload = raw ? await jwtService.verifyAsync(raw) : null;
+      if (!payload?.sub) throw new Error('缺少或无效凭证');
+      next();
+    } catch {
+      res.status(401).json({
+        statusCode: 401,
+        message: '图片访问需登录凭证',
+        error: 'Unauthorized',
+        path: req.originalUrl,
+      });
+    }
+  });
   const uploadDir = join(process.cwd(), 'uploads');
   mkdirSync(uploadDir, { recursive: true });
   app.useStaticAssets(uploadDir, { prefix: '/uploads/' });
