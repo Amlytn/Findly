@@ -21,7 +21,11 @@ describe('C15 tags 先去重再落库', () => {
     };
     prisma = {
       item: { findFirst: jest.fn().mockResolvedValue({ id: 'i1' }) },
-      space: { findFirst: jest.fn().mockResolvedValue({ id: 's9' }) },
+      space: {
+        findFirst: jest.fn().mockResolvedValue({ id: 's9' }),
+        // C20 之后 update 也会读全量空间拼 path，这里不给 mock 会 TypeError
+        findMany: jest.fn().mockResolvedValue([]),
+      },
       $transaction: jest.fn((cb: any) => (typeof cb === 'function' ? cb(tx) : Promise.all(cb))),
     };
     service = new ItemsService(prisma);

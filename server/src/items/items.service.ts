@@ -132,7 +132,14 @@ export class ItemsService {
         data: { itemId: item.id },
       });
     }
-    return this.toCard(item);
+    return this.toCard(item, await this.spacesOf(userId));
+  }
+
+  /** C20：卡片统一含完整位置路径。列表分支本来就查了全量空间，
+   *  create/update/detail 三处漏传 ⇒ 返回体没有 path，而 api.md 写的是"卡片统一含 path"。
+   *  前端目前自己再拼一遍所以一直没暴露，但契约与实现不该长期不一致。 */
+  private spacesOf(userId: string) {
+    return this.prisma.space.findMany({ where: { userId } });
   }
 
   async detail(userId: string, id: string) {
@@ -146,7 +153,7 @@ export class ItemsService {
     });
     if (!r) throw new NotFoundException('物品不存在');
     return {
-      ...this.toCard(r),
+      ...this.toCard(r, await this.spacesOf(userId)),
       description: r.description,
       quantity: r.quantity,
       status: r.status,
@@ -180,7 +187,7 @@ export class ItemsService {
       if (dto.tags) data.tags = { create: this.tagOps(userId, dto.tags) };
       return tx.item.update({ where: { id }, data, include: itemInclude });
     });
-    return this.toCard(item);
+    return this.toCard(item, await this.spacesOf(userId));
   }
 
   /** 软删除：deletedAt 置时间；已删除再删返回 404（幂等由前端以"不存在即成功"处理） */

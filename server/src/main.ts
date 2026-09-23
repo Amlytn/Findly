@@ -6,13 +6,13 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { json } from 'express';
-import type { Request, Response, NextFunction } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import { LoggingInterceptor } from './common/logging.interceptor';
+import { uploadsAuthGuard } from './common/uploads-auth';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -46,33 +46,11 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
   // 本地上传目录静态服务（M4；迁移对象存储后移除）
-  // C02：uploads/ 存的是用户拍的物品照片，此前挂在 Nest 全局守卫链之外——实测不带 token
-  // 访问返回 404 而非 401，即请求根本没进守卫，文件存在就被直接吐出。这里在静态中间件
-  // 之前补一道 JWT 校验。小程序 <image src> 发不出 Authorization 头，故同时接受 ?token=
+  // C02 在此补了 JWT 校验；本轮（C22/C18）把这段守卫抽到 common/uploads-auth.ts ——
+  // 挂在 Nest 之外的 express 中间件层没法单测，而 C22 恰是"能跑但错误信息骗人"的坑。
+  // 小程序 <image src> 发不出 Authorization 头，故 Bearer 与 ?token= 两条路都收
   //（前端 services/config.ts 的 fullUrl() 是唯一收口，加一处即全覆盖）。
-  const jwtService = app.get(JwtService);
-  app.use('/uploads/', async (req: Request, res: Response, next: NextFunction) => {
-    const auth = req.headers.authorization;
-    const qtok = req.query?.token;
-    const raw =
-      typeof auth === 'string' && auth.startsWith('Bearer ')
-        ? auth.slice(7)
-        : typeof qtok === 'string'
-          ? qtok
-          : '';
-    try {
-      const payload = raw ? await jwtService.verifyAsync(raw) : null;
-      if (!payload?.sub) throw new Error('缺少或无效凭证');
-      next();
-    } catch {
-      res.status(401).json({
-        statusCode: 401,
-        message: '图片访问需登录凭证',
-        error: 'Unauthorized',
-        path: req.originalUrl,
-      });
-    }
-  });
+  app.use('/uploads/', uploadsAuthGuard(app.get(JwtService)));
   const uploadDir = join(process.cwd(), 'uploads');
   mkdirSync(uploadDir, { recursive: true });
   app.useStaticAssets(uploadDir, { prefix: '/uploads/' });

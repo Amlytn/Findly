@@ -105,4 +105,34 @@ describe('AiService', () => {
       await expect(service.parseQuery('测试')).rejects.toThrow('未配置 DASHSCOPE_API_KEY');
     });
   });
+
+  // C23：parseQuery 的出参归一 —— 模型把 color 返回成非字符串时，
+  // 原样透传给 Prisma 的 contains 会抛错，表现为搜索接口 500
+  describe('C23 parseQuery 出参归一', () => {
+    const parse = async (content: string) => {
+      jest.spyOn(service as any, 'chat').mockResolvedValue({ content, usage: null });
+      return (await service.parseQuery('我的黑色鼠标在哪里')).parsed;
+    };
+
+    it('color 是对象 → 归为 null（不再进 where 条件）', async () => {
+      expect((await parse('{"keyword":"鼠标","color":{"主色":"黑"}}')).color).toBeNull();
+    });
+
+    it('color 是数字/数组 → 同样归 null', async () => {
+      expect((await parse('{"keyword":"鼠标","color":123}')).color).toBeNull();
+      expect((await parse('{"keyword":"鼠标","color":["黑","白"]}')).color).toBeNull();
+    });
+
+    it('color 空串或纯空白 → 归 null（等于不按颜色过滤）', async () => {
+      expect((await parse('{"keyword":"鼠标","color":"   "}')).color).toBeNull();
+    });
+
+    it('正常颜色字符串保留，且去掉前后空白', async () => {
+      expect((await parse('{"keyword":"鼠标","color":"  黑色 "}')).color).toBe('黑色');
+    });
+
+    it('keyword 仍按原样兜底为字符串（这条是回归保护，不是新行为）', async () => {
+      expect((await parse('{"keyword":12345}')).keyword).toBe('12345');
+    });
+  });
 });

@@ -1,8 +1,8 @@
-# Findly API 接口契约（v1.6）
+# Findly API 接口契约（v1.7）
 
 > 前后端共同遵守的接口约定。改接口必须先改本文档，再动代码（PR 同步提交）。
 > 维护人：@james-wu66 ｜ 协作：@Amlytn
-> 评审状态：**v1.6（补写第 6 节 `GET /api/v1/stats` —— 该接口自 B02 上线起从未进契约，属流程遗漏；同时记入三项口径修正：C09 只统计调用者本人、C07 命中率分母改为 recognize、C08 新增可选 `days` 参数，并新增 `cacheHitDenominator` / `unattributed` / `rangeDays` 三个披露字段。数据库侧配套迁移：`AIResult` 增 `userId` 及 3 个索引、`ItemTag` 增 `tagId` 索引）**。v1.5（① **@Amlytn 的 PR #42 已给 spaces 增加 `type`/`icon` 契约，但合入时未升版本号，本次一并记账补记**，正文见第 1 节；② 补记 B03 的 `POST /upload/cleanup-orphans` 端点——该端点进 main 时未同步本契约，同属流程遗漏；并按 **C10** 修正其语义：孤儿判定增加 24h `mtime` 保护窗口、响应新增 `skippedRecent` / `graceHours`，见第 5.4 节）。v1.4（M5 鉴权收紧：401 拦截生效、x-user-id 兜底移除；items 增加 category 精确筛选与 quantity 返回；items/spaces 支持 null 解绑语义；users 新增 PATCH /me；上传增加 magic bytes 校验。v1.3：M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义）
+> 评审状态：**v1.7（批次①+批次② 的对外可见变化一次记齐，并订正两处与实现矛盾的旧话）**。①`aiResultId` 只回填本人记录（C14 越权）；②`name` 先 trim 再校验、空串与纯空白一律 400（C16，items/spaces 四处同规则）；③`tags` 由服务端去重（C15，改前重复标签 → 500）；④`cleanup-orphans` 默认 403，需 `CLEANUP_ORPHANS=1` + `CLEANUP_ADMINS` 名单（C17）；⑤限流分桶键由 IP 改为"凭证优先、匿名回落 IP"，并给 `POST /upload` 12/分钟、`cleanup-orphans` 6/分钟（C19）；⑥空间树最多 20 层，超深 400（C21，改前 20~50 层路径静默截断、50 层以上成环漏判）；⑦`path` 在列表/POST/PATCH/详情四处统一返回，未归位为 `"未归位"`（C20，实现追上原契约）；⑧搜索的 `color` 补大小写不敏感、非字符串归 null，并明确 `features` 只回显不过滤（C23）；⑨图片访问落一行日志且 token 不落盘（C18）。**订正**：5.1 原写"过渡期 x-user-id 仍被接受"（M5 已移除）、5.2 原写"可通过 GET /uploads/文件名 直接访问"（C02 后需凭证）——两处均已按实况改写（C24）。**新增环境变量**：`TRUST_PROXY_HOPS` / `CLEANUP_ORPHANS` / `CLEANUP_ADMINS`，见 `.env.example`。v1.6（补写第 6 节 `GET /api/v1/stats` —— 该接口自 B02 上线起从未进契约，属流程遗漏；同时记入三项口径修正：C09 只统计调用者本人、C07 命中率分母改为 recognize、C08 新增可选 `days` 参数，并新增 `cacheHitDenominator` / `unattributed` / `rangeDays` 三个披露字段。数据库侧配套迁移：`AIResult` 增 `userId` 及 3 个索引、`ItemTag` 增 `tagId` 索引）**。v1.5（① **@Amlytn 的 PR #42 已给 spaces 增加 `type`/`icon` 契约，但合入时未升版本号，本次一并记账补记**，正文见第 1 节；② 补记 B03 的 `POST /upload/cleanup-orphans` 端点——该端点进 main 时未同步本契约，同属流程遗漏；并按 **C10** 修正其语义：孤儿判定增加 24h `mtime` 保护窗口、响应新增 `skippedRecent` / `graceHours`，见第 5.4 节）。v1.4（M5 鉴权收紧：401 拦截生效、x-user-id 兜底移除；items 增加 category 精确筛选与 quantity 返回；items/spaces 支持 null 解绑语义；users 新增 PATCH /me；上传增加 magic bytes 校验。v1.3：M4 三接口由提案转正式：auth/login、upload、users/me；认证支持 Bearer token；新增 429 限流。v1.2：tags 统一字符串数组、aiResultId 回填、DELETE 幂等语义）
 
 ## 通用约定
 
@@ -16,7 +16,10 @@
 ```
 
 - 常用状态码：200 成功 / 400 参数错误 / 401 未登录或登录过期 / 404 不存在 / 403 无权访问 / 413 文件过大 / 429 触发限流 / 503 AI 服务不可用
-- 限流：全局 120 次/分钟；`/ai/*` 10 次/分钟（超出返回 429）
+- 限流（v1.7 / C19 改口径）：全局 **120 次/分钟**、`/ai/*` **10 次/分钟**、`POST /upload` **12 次/分钟**、`POST /upload/cleanup-orphans` **6 次/分钟**，超出返回 429。
+  **分桶键不再是来源 IP**：带 `Authorization` 的请求按该凭证的短摘要分桶（= 一个账号一个桶），匿名请求回落到 IP。
+  改前默认按 `req.ip`，而线上必经 nginx ⇒ 全站共用一个桶，一个人刷满、其他人跟着被限（实测：匿名打满后正常带凭证用户也 429）。
+  配套：反代后需设 `TRUST_PROXY_HOPS=1`，否则 IP 兜底桶与日志里的来源地址都是代理自己的地址（不设 = 不信任 `X-Forwarded-For`，防伪造）。
 
 ---
 
@@ -49,6 +52,11 @@ POST 请求体：
 - `type`（可选）：`home / room / furniture / container` 四选一，由前端图标选择器按类映射填写；
 - `icon`（可选）：语义图标 key（如 `kitchen`/`garage`/`basement`），为 null 或缺失时前端按名称匹配兜底展示；
 - PATCH 中 `type`/`icon` 传 `null` 表示清除（回退兜底），`undefined` 表示不动。
+- **`name` 一律先 trim 再校验，空串与纯空白都返回 400**（v1.7 / C16；创建与更新同规则，物品侧同）。
+- **空间树最多 20 层**（v1.7 / C21）：`POST` 与 `PATCH` 在父级已处于第 20 层时返回
+  `400 空间层级最多 20 层，当前父级已在第 20 层`；把某空间挪到自己的子孙之下仍返回 `400 不能移动到自己的子空间下（会形成环）`。
+  此前"环检测回溯 50 层、拼路径只回溯 20 层"两个数不一致，20 层以上的路径会被静默截断（没有省略号提示）——现在写入侧就拦住，前端**不需要**再处理截断。
+- 状态码差异（有意保留，前端可依赖）：`POST` 时 `parentId` 指向不存在的空间 → **404**；`PATCH` 时 → **400**。
 
 ## 2. 物品 `/api/v1/items`
 
@@ -82,6 +90,14 @@ POST / PATCH 请求体：
 ```
 
 - `aiResultId` 仅 POST 时有效（v1.2 新增）：识别结果页保存时带回 recognize 流程生成的 AIResult id，后端回填 `AIResult.itemId`，供详情页「最近 5 次 AI 识别记录」查询；传空/无效值不影响保存。
+  **v1.7 / C14：只回填「属于当前用户且尚未关联物品」的记录**。拿别人的 `aiResultId` 不会报错（保存仍 201），但那次回填是空操作——别人的识别记录不会挂到你身上，详情页也看不到。
+  同一条 `aiResultId` 第二次保存（比如一次识别连存两件物品）时，第二件也不会覆盖第一件的关联。
+- `tags` **由服务端去重**（v1.7 / C15）：先 trim、丢弃空串、再按首次出现顺序去重。`["鼠标","鼠标"," 鼠标 ","键盘"]` 落库为 `["鼠标","键盘"]`。
+  改前重复标签会让同一 `(itemId,tagId)` 主键被插两次 → **500**；识别结果的标签来自 LLM，重复很常见，前端不必再去重。
+- `name` **先 trim 再校验，空串与纯空白一律 400**（v1.7 / C16，POST 与 PATCH 同规则）。
+  改前 `PATCH {"name":""}` 会返回 200 并把名字清空 ⇒ 该物品再也搜不到（name 是关键词匹配的五个字段之一）。
+- **`path` 在四处返回体里都有**（v1.7 / C20）：列表、POST、PATCH、详情。此前只有列表带 path，
+  而本节契约写的是"卡片统一含 path"——现在实现追上契约；未归位物品 `path` 为 `"未归位"`（不是缺字段、不是 null）。
 
 GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity）：
 
@@ -141,6 +157,11 @@ GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity
 - `关键词直查数据库`（短词，如 `鼠标`）
 - `LLM Query Parser`（自然语言长句）
 - `LLM 不可用，降级关键词直查`（AI 挂了也能搜）
+
+`parsed.color` 的口径（v1.7 / C23）：
+- **大小写不敏感**：库里存 `"Black"`、用户搜"black"要能命中。此前关键词五个字段都带 `mode: 'insensitive'`，唯独 color 漏了（实测：不加 insensitive 命中 0 条，加了命中 1 条）。
+- **非字符串一律归 null**：模型偶发返回 `"color": {"主色":"黑"}` 或数字，原样透传给 Prisma 的 `contains` 会直接抛错 ⇒ 搜索接口 500。现在在解析源头就归一为"trim 后的非空字符串或 null"，归 null 即不按颜色过滤。
+- `parsed.features` **只回显、不参与查询过滤**（v1.7 明确写进契约；此前实现从未用它过滤，契约也没说，属口径空白）。
 
 `type=all` 时返回里多一个 `spaces` 字段（提案）：
 
@@ -202,15 +223,20 @@ GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity
 ```
 
 - 后端持 AppID/AppSecret（.env，不入库）调 jscode2session 换 openid → openid 唯一 upsert User → 签发 JWT（7 天）
-- 成功后前端所有请求改带 `Authorization: Bearer <token>`，替换 `x-user-id`（过渡期 x-user-id 仍被接受，M5 移除）
+- 成功后前端所有请求改带 `Authorization: Bearer <token>`。**`x-user-id` 兜底已在 M5 移除**（v1.7 / C24 订正本行旧话）：
+  该头现在只由服务端验签后覆写为 `payload.sub`，**客户端自己发一律不认**，无 token 或 token 失效都是 401。
 - 错误：400（code 无效 / 服务端未配置 WX_APPID/WX_APPSECRET）
 
 ### 5.2 图片上传 `POST /api/v1/upload`
 
-- multipart/form-data，字段名 `file`；仅 png/jpeg/webp；≤4MB（413）
-- 存 `server/uploads/`（已 ignore），随机文件名；返回 `{ "imageUrl": "/uploads/xxx.jpg" }`，可通过 `GET /uploads/文件名` 直接访问
-- 后续迁移对象存储时仅改实现，路径形态不变
-- 错误：400（格式不对）/ 413（超 4MB）
+- multipart/form-data，字段名 `file`；仅 png/jpeg/webp（**服务端校验文件头 magic bytes，改扩展名无效**）；≤4MB（413）；限流 12 次/分钟（v1.7 / C19）
+- 存 `server/uploads/`（已 ignore），随机文件名；返回 `{ "imageUrl": "/uploads/xxx.jpg" }`
+- **`GET /uploads/文件名` 需要登录凭证**（v1.7 / C24 订正本行旧话——原文写的是"可直接访问"，与 C02 之后的实现矛盾了两周）：
+  `Authorization: Bearer <token>` 或查询串 `?token=<token>` 二选一，都无效则 401。
+  小程序 `<image src>` 发不出请求头，所以走 `?token=`；前端唯一收口是 `services/config.ts` 的 `fullUrl()`（@Amlytn 已接，PR #46）。
+  访问会落一行日志（v1.7 / C18），**日志只记去掉 query 的路径，token 原文不会落盘**。长期方案仍是对象存储签名 URL。
+- 后续迁移对象存储时仅改实现，`/uploads/xxx.jpg` 这个路径形态不变（前端不用改）
+- 错误：400（格式不对）/ 401（取图无凭证）/ 413（超 4MB）/ 429（触发限流）
 
 ### 5.3 当前用户 `GET /api/v1/users/me` + 资料更新 `PATCH /api/v1/users/me`（v1.4 新增）
 
@@ -230,6 +256,12 @@ GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity
 
 - 用途：删除 `server/uploads/` 下**未被任何物品引用、且已过保护窗口**的图片
 - 需 Bearer token（走全局 `JwtAuthGuard`，无 `@Public`）；面向运维/自查，非小程序常规调用
+- **权限门（v1.7 / C17）：默认关闭，调用即 403**。开启要同时满足两条：
+  1. 环境变量 `CLEANUP_ORPHANS=1`；
+  2. 调用者在 `CLEANUP_ADMINS` 名单内（逗号分隔）——**未配名单时只有 `NODE_ENV=development` 放行**，生产环境不配名单一律不放行。
+  动因：本接口的"是否还被引用"是**跨用户全表**判断的，改前任一登录用户都能 `dryRun:false` 删掉全站图片，也能靠反复调用拖库。
+  响应 `403 { message: "清理接口默认关闭（需设 CLEANUP_ORPHANS=1）" }` 等三种文案，见 `upload.controller.ts` 的 `assertCleanupAllowed`。
+- 限流 **6 次/分钟**（v1.7 / C19，每次调用都要全表 findMany + 扫目录）
 - 请求体：`{ "dryRun": false }` —— **缺省即 `true`（只报告不删）**，必须显式传 `false` 才真正删除
 - 判定"孤儿"须**同时**满足两条：
   1. 文件名不出现在任何 Item 的 `imageUrl` / `thumbnailUrl`（**含软删除物品**，保守策略：回收站物品的图不删）
@@ -272,7 +304,7 @@ GET 列表返回（v1.2：tags 统一为字符串数组；v1.4：增加 quantity
     { "taskType": "recognize", "calls": 4, "tokens": 1072, "cost": 0.009 }
   ],
   "cacheHitDenominator": 2,         // v1.6 新增：命中率的分母，便于自查
-  "unattributed": 37,               // v1.6 新增：无法判定归属的历史记录条数（披露用，不计入任何指标）
+  "unattributed": 0,                // v1.6 新增：无法判定归属的历史记录（本地库那 25 条已于 09-23 删除并归档）条数（披露用，不计入任何指标）
   "rangeDays": null,                // v1.6 新增：本次生效的时间范围，null＝全部
   "generatedAt": "2026-09-22T06:40:00.000Z"
 }
