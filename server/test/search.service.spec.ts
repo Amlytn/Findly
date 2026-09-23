@@ -81,6 +81,19 @@ describe('SearchService', () => {
       expect(JSON.stringify(where)).toContain('白色');
     });
 
+    // C23：keyword 那五个字段都带了 mode:insensitive，color 分支原来漏了
+    //（实测：库里存 "Black"，用 contains:"black" 命中 0 条；加 insensitive 命中 1 条）
+    it('color 条件必须与关键词同口径：带 mode:insensitive', async () => {
+      ai.parseQuery.mockResolvedValue({
+        parsed: { keyword: 'charger', color: 'black', features: [] },
+        usage: null,
+      });
+      await service.search('u1', '帮我找黑色的那个charger', 'item');
+      const and = prisma.item.findMany.mock.calls[0][0].where.AND as any[];
+      const colorCond = and.find((c) => Object.prototype.hasOwnProperty.call(c, 'color'));
+      expect(colorCond.color).toEqual({ contains: 'black', mode: 'insensitive' });
+    });
+
     it('没有颜色时不追加 color 条件', async () => {
       await service.search('u1', '鼠标', 'item');
       const where = prisma.item.findMany.mock.calls[0][0].where;

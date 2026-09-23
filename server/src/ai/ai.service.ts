@@ -111,7 +111,10 @@ export class AiService {
     return {
       parsed: {
         keyword: String(json.keyword || q),
-        color: json.color || null,
+        // C23：color 必须归一为字符串或 null。模型偶发把 color 返回成对象/数组
+        //（如 {"color":{"主色":"黑"}}），原样透传到 Prisma 的 contains 会直接抛错 ⇒ 搜索接口 500。
+        // keyword 早就有 String() 兜底，color 是漏的那个。空串/纯空白同样归 null（等于不过滤）。
+        color: typeof json.color === 'string' && json.color.trim() ? json.color.trim() : null,
         features: Array.isArray(json.features) ? json.features : [],
       },
       usage,

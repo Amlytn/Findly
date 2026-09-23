@@ -76,7 +76,9 @@ export class SearchService {
           ]),
         },
       ];
-      if (parsed.color) and.push({ color: { contains: parsed.color } });
+      // C23：color 也要 insensitive。库里存的是识别时模型给的颜色（"Black"/"黑色" 都可能出现），
+      // 用户搜"black"时不加 mode 就一条也匹配不上——keyword 五个字段都加了，唯独这里漏了。
+      if (parsed.color) and.push({ color: contains(parsed.color) });
 
       const rows = await this.prisma.item.findMany({
         where: { userId, deletedAt: null, AND: and },
