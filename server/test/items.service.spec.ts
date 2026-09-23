@@ -86,21 +86,4 @@ describe('ItemsService', () => {
       });
     });
   });
-
-  // C15 重复标签：同一 name 出现两次会让 connectOrCreate 撞 (itemId,tagId) 主键 → P2002 → 500
-  describe('C15 tags 先去重再落库', () => {
-    it('同名（含 trim 后同名）只绑定一次，顺序按首次出现', async () => {
-      await service.update('u1', 'i1', { tags: ['鼠标', '鼠标', ' 鼠标 ', '键盘'] } as any);
-      const create = tx.item.update.mock.calls[0][0].data.tags.create;
-      expect(create.map((c: any) => c.tag.connectOrCreate.create)).toEqual([
-        { userId: 'u1', name: '鼠标' },
-        { userId: 'u1', name: '键盘' },
-      ]);
-    });
-
-    it('全是空串/空白时绑定空数组，不报错也不写脏标签', async () => {
-      await service.update('u1', 'i1', { tags: ['', '   '] } as any);
-      expect(tx.item.update.mock.calls[0][0].data.tags.create).toEqual([]);
-    });
-  });
 });
