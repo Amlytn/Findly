@@ -86,4 +86,33 @@ describe('ItemsService', () => {
       });
     });
   });
+
+  // C14 识别记录归属：B 拿 A 的 aiResultId 不能把 A 的记录挂到自己物品上
+  describe('C14 aiResultId 回填与详情装载必须带归属', () => {
+    beforeEach(() => {
+      prisma.ensureUser = jest.fn().mockResolvedValue(undefined);
+      prisma.item.create = jest.fn().mockResolvedValue({ id: 'i-new', tags: [], space: null });
+      prisma.aIResult = { updateMany: jest.fn().mockResolvedValue({ count: 1 }) };
+    });
+
+    it('回填 where 同时含 id / itemId: null / 当前 userId', async () => {
+      await service.create('b', { name: 'B 的物品', aiResultId: 'air-of-a' } as any);
+      expect(prisma.aIResult.updateMany).toHaveBeenCalledWith({
+        where: { id: 'air-of-a', itemId: null, userId: 'b' },
+        data: { itemId: 'i-new' },
+      });
+    });
+
+    it('未传 aiResultId 时不做回填', async () => {
+      await service.create('b', { name: '无识别记录' } as any);
+      expect(prisma.aIResult.updateMany).not.toHaveBeenCalled();
+    });
+
+    it('详情装载 aiResults 时带 userId 过滤条件（双保险）', async () => {
+      prisma.item.findFirst.mockResolvedValue({ id: 'i1', tags: [], aiResults: [] });
+      await service.detail('u1', 'i1');
+      const include = prisma.item.findFirst.mock.calls[0][0].include;
+      expect(include.aiResults.where).toEqual({ userId: 'u1' });
+    });
+  });
 });

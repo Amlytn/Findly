@@ -121,10 +121,12 @@ export class ItemsService {
 
     const item = await this.prisma.item.create({ data, include: itemInclude });
 
-    // AIResult 回填（契约 v1.2）：仅回填尚未关联物品的记录，防止串写
+    // AIResult 回填（契约 v1.2）：只回填「本人且尚未关联物品」的记录。
+    // C14：where 必须带 userId —— 少了它，任何人拿别人的 aiResultId 调 POST /items
+    // 就能把别人的识别记录挂到自己物品上，详情页随之读到别人的内容（跨用户越权）。
     if (dto.aiResultId) {
       await this.prisma.aIResult.updateMany({
-        where: { id: dto.aiResultId, itemId: null },
+        where: { id: dto.aiResultId, itemId: null, userId },
         data: { itemId: item.id },
       });
     }
@@ -134,7 +136,11 @@ export class ItemsService {
   async detail(userId: string, id: string) {
     const r = await this.prisma.item.findFirst({
       where: { id, userId, deletedAt: null },
-      include: { ...itemInclude, aiResults: { orderBy: { createdAt: 'desc' }, take: 5 } },
+      // C14 双保险：识别记录本身也按归属过滤，历史脏数据里被抢占的挂链不会出现在详情页
+      include: {
+        ...itemInclude,
+        aiResults: { where: { userId }, orderBy: { createdAt: 'desc' }, take: 5 },
+      },
     });
     if (!r) throw new NotFoundException('物品不存在');
     return {
