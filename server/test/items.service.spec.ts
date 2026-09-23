@@ -23,7 +23,11 @@ describe('ItemsService', () => {
         findFirst: jest.fn().mockResolvedValue({ id: 'i1' }),
         update: jest.fn(),
       },
-      space: { findFirst: jest.fn() },
+      space: {
+        findFirst: jest.fn(),
+        // C20 之后 create/update/detail 也要读全量空间来拼 path，缺这个 mock 会直接 TypeError
+        findMany: jest.fn().mockResolvedValue([]),
+      },
       // 模拟 Prisma 的交互式事务：把 mock 的事务客户端传进回调
       $transaction: jest.fn((cb: any) => (typeof cb === 'function' ? cb(tx) : Promise.all(cb))),
     };
@@ -113,6 +117,62 @@ describe('ItemsService', () => {
       await service.detail('u1', 'i1');
       const include = prisma.item.findFirst.mock.calls[0][0].include;
       expect(include.aiResults.where).toEqual({ userId: 'u1' });
+    });
+  });
+
+  // C20：api.md 写的是"卡片统一含 path"，但 create/update/detail 三处都没传 allSpaces ⇒ 返回体缺 path
+  describe('C20 三处返回体补齐完整位置路径', () => {
+    const chain = [
+      { id: 'sp1', parentId: null, name: '我的家' },
+      { id: 'sp2', parentId: 'sp1', name: '书房' },
+      { id: 'sp3', parentId: 'sp2', name: '书桌' },
+    ];
+    const row = (spaceId: string | null) => ({
+      id: 'i1',
+      name: '鼠标',
+      brand: null,
+      model: null,
+      category: null,
+      color: null,
+      quantity: 1,
+      status: 'normal',
+      description: null,
+      imageUrl: null,
+      updatedAt: new Date(),
+      spaceId,
+      space: spaceId ? { id: spaceId, name: '书桌' } : null,
+      tags: [],
+      aiResults: [],
+    });
+
+    beforeEach(() => {
+      prisma.ensureUser = jest.fn().mockResolvedValue({});
+      prisma.space.findMany.mockResolvedValue(chain);
+      prisma.item.create = jest.fn().mockResolvedValue(row('sp3'));
+      prisma.item.findFirst.mockResolvedValue(row('sp3'));
+      tx.item.update = jest.fn().mockResolvedValue(row('sp3'));
+    });
+
+    it('create 返回 path = 完整祖先链（不是只有直接父级）', async () => {
+      const out: any = await service.create('u1', { name: '鼠标' } as any);
+      expect(out.path).toBe('我的家 → 书房 → 书桌');
+    });
+
+    it('update 返回 path', async () => {
+      const out: any = await service.update('u1', 'i1', { brand: '罗技' } as any);
+      expect(out.path).toBe('我的家 → 书房 → 书桌');
+    });
+
+    it('detail 返回 path', async () => {
+      const out: any = await service.detail('u1', 'i1');
+      expect(out.path).toBe('我的家 → 书房 → 书桌');
+    });
+
+    it('未归位物品：path 是「未归位」，不是缺字段', async () => {
+      prisma.item.create.mockResolvedValue(row(null));
+      const out: any = await service.create('u1', { name: '桌上的U盘' } as any);
+      expect(out.path).toBe('未归位');
+      expect(out.space).toBeNull();
     });
   });
 });
