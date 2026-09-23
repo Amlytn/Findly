@@ -6,8 +6,9 @@
  * memoryStorage：先在内存中做文件头校验，通过后才落盘——扩展名可伪装，
  * 仅查 extname 挡不住把任意内容改名为 .png 的上传。
  */
-import { BadRequestException, Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, ForbiddenException, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { extname, join } from 'path';
@@ -15,6 +16,7 @@ import { randomBytes } from 'crypto';
 import { existsSync, mkdirSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { UploadService } from './upload.service';
+import { userIdFrom } from '../common/user.util';
 
 const UPLOAD_DIR = join(process.cwd(), 'uploads');
 const ALLOW = ['.png', '.jpg', '.jpeg', '.webp'];
@@ -28,22 +30,49 @@ function isAllowedImageBytes(buf: Buffer): boolean {
   return false;
 }
 
+/** C17 权限门：破坏性运维接口默认关闭，且开启后仍要在名单里。
+ *  动因：孤儿图片的"是否被引用"是跨用户全表判断的，任何登录用户调 dryRun:false
+ *  都能删掉全站 24h 未引用的图片；大量调用还能靠全表 findMany 拖库。
+ *  与 dev-token 同一套路：开关 + 环境/名单双条件。 */
+export function assertCleanupAllowed(userId: string): void {
+  if (process.env.CLEANUP_ORPHANS !== '1') {
+    throw new ForbiddenException('清理接口默认关闭（需设 CLEANUP_ORPHANS=1）');
+  }
+  const admins = (process.env.CLEANUP_ADMINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  // 未配名单时只在开发环境放行，方便本地自查；生产环境必须显式配名单
+  if (!admins.length) {
+    if (process.env.NODE_ENV === 'development') return;
+    throw new ForbiddenException('未配置 CLEANUP_ADMINS 名单，生产环境不放行清理调用');
+  }
+  if (!admins.includes(userId)) {
+    throw new ForbiddenException('当前用户不在清理名单内');
+  }
+}
+
 @ApiTags('上传 Upload')
 @Controller('api/v1/upload')
 export class UploadController {
   constructor(private uploadService: UploadService) {}
 
   @Post('cleanup-orphans')
+  // C19：这个端点每次调用都要全表 findMany + 扫目录，6 次/分钟足够运维用，不给拖库留空间
+  @Throttle({ default: { limit: 6, ttl: 60000 } })
   @ApiOperation({
     summary:
-      '清理孤儿图片：未被任何物品引用、且上传已满 24h 的 uploads/ 文件。dryRun 默认 true 只报告，false 才真正删除（24h 内的新图受保护，避免删掉编辑中物品的图片）',
+      '清理孤儿图片：未被任何物品引用、且上传已满 24h 的 uploads/ 文件。dryRun 默认 true 只报告，false 才真正删除（24h 内的新图受保护，避免删掉编辑中物品的图片）。⚠️ 运维接口：需 CLEANUP_ORPHANS=1 且在 CLEANUP_ADMINS 名单内，否则 403',
   })
-  async cleanupOrphans(@Body() body: { dryRun?: boolean }) {
+  async cleanupOrphans(@Req() req, @Body() body: { dryRun?: boolean }) {
+    assertCleanupAllowed(userIdFrom(req));
     const dryRun = body?.dryRun !== false;
     return this.uploadService.cleanOrphanImages(dryRun);
   }
 
   @Post()
+  // C19：4MB 级写盘接口，原先只吃全局 120/分钟 —— 单用户即可打满磁盘与内存（memoryStorage 先入内存）
+  @Throttle({ default: { limit: 12, ttl: 60000 } })
   @UseInterceptors(FileInterceptor('file', {
     storage: memoryStorage(),
     limits: { fileSize: 4 * 1024 * 1024 },

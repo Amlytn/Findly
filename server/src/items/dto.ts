@@ -4,9 +4,10 @@
  */
 import { ArrayMaxSize, IsArray, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+import { TrimmedName } from '../common/trim-name.decorator';
 
 export class CreateItemDto {
-  @IsString() @IsNotEmpty() name: string;
+  @TrimmedName() @IsString() @IsNotEmpty() name: string;
   @IsOptional() @IsString() category?: string;
   @IsOptional() @IsString() brand?: string;
   @IsOptional() @IsString() model?: string;
@@ -22,7 +23,9 @@ export class CreateItemDto {
 }
 
 export class UpdateItemDto {
-  @IsOptional() @IsString() name?: string;
+  /** C16：更新侧要与创建侧同规则。缺 @IsNotEmpty 时 {"name":""} 会把名字清空，
+   *  该物品从此搜不到（name 是关键词匹配的五个字段之一），且界面上看着像坏数据 */
+  @TrimmedName() @IsOptional() @IsString() @IsNotEmpty() name?: string;
   @IsOptional() @IsString() category?: string;
   @IsOptional() @IsString() brand?: string;
   @IsOptional() @IsString() model?: string;

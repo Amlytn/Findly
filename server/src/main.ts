@@ -18,6 +18,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors(); // 允许联调跨域；上线前收紧到小程序域名
+  // C19：经 nginx 反代后 req.ip 恒为代理地址（限流兜底桶与日志里的 IP 全失真）。
+  // 跳数由环境显式给出、默认不信任任何跳：X-Forwarded-For 是客户端可伪造的头，
+  // 本地直连时开着反而等于给"随手改个头就绕开 IP 兜底"留口子。部署清单里写 TRUST_PROXY_HOPS=1。
+  const trustProxyHops = Number(process.env.TRUST_PROXY_HOPS);
+  if (Number.isInteger(trustProxyHops) && trustProxyHops > 0) {
+    app.set('trust proxy', trustProxyHops);
+  }
   // 识图 base64 走 JSON body，express 默认 100KB 会把大图请求拒成不可诊断的 500；
   // 上限 6MB：与 /ai/recognize 的 4MB base64 检查之间留出 JSON 包装与多字段余量
   app.use(json({ limit: '6mb' }));

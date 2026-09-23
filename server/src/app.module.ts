@@ -16,12 +16,14 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { StatsModule } from './stats/stats.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { throttleTracker } from './common/throttle-tracker';
 // @Amlytn TODO: settings 等模块待实现后在此追加 import。
 @Module({
   imports: [
     ConfigModule.forRoot(),
     // 全局限流：120 次/分钟；/ai/* 在其控制器上单独加严到 10 次/分钟
-    ThrottlerModule.forRoot([{ ttl: 60000, limit: 120 }]),
+    // C19：分桶键不再只用 req.ip（经 nginx 后全站同一个 IP，一人刷完全站被限），见 throttle-tracker
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 120, getTracker: throttleTracker }]),
     PrismaModule,
     AiModule,
     SearchModule,

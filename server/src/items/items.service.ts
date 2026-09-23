@@ -15,9 +15,11 @@ const itemInclude = { space: true, tags: { include: { tag: true } } };
 export class ItemsService {
   constructor(private prisma: PrismaService) {}
 
-  /** tags 字符串数组 → connectOrCreate（Tag 按 userId+name 唯一防重复） */
+  /** tags 字符串数组 → connectOrCreate（Tag 按 userId+name 唯一防重复）
+   *  C15：先 trim、丢空串、去重再映射。同一 name 出现两次会让 connectOrCreate 对
+   *  同一 (itemId,tagId) 主键插入两次 → P2002 → 保存请求 500（LLM 输出重复标签很常见）。 */
   private tagOps(userId: string, tags: string[]) {
-    return tags.map((name) => ({
+    return [...new Set(tags.map((t) => t.trim()).filter(Boolean))].map((name) => ({
       tag: { connectOrCreate: { where: { userId_name: { userId, name } }, create: { userId, name } } },
     }));
   }
