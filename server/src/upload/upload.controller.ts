@@ -8,6 +8,7 @@
  */
 import { BadRequestException, Body, Controller, ForbiddenException, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { extname, join } from 'path';
@@ -57,6 +58,8 @@ export class UploadController {
   constructor(private uploadService: UploadService) {}
 
   @Post('cleanup-orphans')
+  // C19：这个端点每次调用都要全表 findMany + 扫目录，6 次/分钟足够运维用，不给拖库留空间
+  @Throttle({ default: { limit: 6, ttl: 60000 } })
   @ApiOperation({
     summary:
       '清理孤儿图片：未被任何物品引用、且上传已满 24h 的 uploads/ 文件。dryRun 默认 true 只报告，false 才真正删除（24h 内的新图受保护，避免删掉编辑中物品的图片）。⚠️ 运维接口：需 CLEANUP_ORPHANS=1 且在 CLEANUP_ADMINS 名单内，否则 403',
@@ -68,6 +71,8 @@ export class UploadController {
   }
 
   @Post()
+  // C19：4MB 级写盘接口，原先只吃全局 120/分钟 —— 单用户即可打满磁盘与内存（memoryStorage 先入内存）
+  @Throttle({ default: { limit: 12, ttl: 60000 } })
   @UseInterceptors(FileInterceptor('file', {
     storage: memoryStorage(),
     limits: { fileSize: 4 * 1024 * 1024 },

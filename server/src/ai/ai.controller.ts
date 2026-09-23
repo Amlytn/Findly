@@ -12,7 +12,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { userIdFrom } from '../common/user.util';
 import { RecognizeDto } from './dto';
 
-// AI 是计费入口，限流最严：每用户/IP 10 次/分钟（全局 120 次由 ThrottlerModule 兜底）
+// AI 是计费入口，限流最严：10 次/分钟（全局 120 次由 ThrottlerModule 兜底）。
+// C19 起分桶键是"调用方凭证"，所以这 10 次是每账号 10 次，不再受出口 IP 影响。
 @Throttle({ default: { limit: 10, ttl: 60000 } })
 @ApiTags('AI 识图')
 @Controller('api/v1/ai')
