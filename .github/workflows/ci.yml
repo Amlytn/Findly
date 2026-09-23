@@ -49,6 +49,20 @@ jobs:
       - name: 生成 Prisma Client
         run: npx prisma generate
 
+      # S1：schema 自检。09-21 事故（provider 被误提交成 sqlite、迁移全是 PG 方言）
+      # 之所以 CI 全绿，就是因为下面这两条都没有：单测把 Prisma 整个 mock 掉了，
+      # 构建阶段又只做 prisma generate（它不校验 provider 与迁移是否对得上）。
+      #
+      # 两道缺一不可（09-23 实测）：
+      #   prisma validate            provider=sqlite + postgres URL ⇒ 退出 1（抓得住）
+      #                                provider=sqlite + file: URL   ⇒ 退出 0（**放过**）
+      #   check-prisma-provider.cjs  比对 schema 的 datasource provider 与
+      #                                migrations/migration_lock.toml ⇒ 补上那个洞
+      - name: Prisma schema 校验（S1）
+        run: |
+          npx prisma validate
+          npm run prisma:check
+
       - name: 构建
         run: npm run build
 
