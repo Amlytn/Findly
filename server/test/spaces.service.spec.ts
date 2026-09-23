@@ -12,8 +12,10 @@ describe('SpacesService', () => {
 
   beforeEach(() => {
     prisma = {
+      ensureUser: jest.fn().mockResolvedValue({}),
       space: {
         findFirst: jest.fn(),
+        findMany: jest.fn().mockResolvedValue([]),
         count: jest.fn(),
         delete: jest.fn().mockResolvedValue({}),
       },
@@ -33,7 +35,12 @@ describe('SpacesService', () => {
     prisma.space.findFirst.mockImplementation((args: any) =>
       Promise.resolve(tree[args?.where?.id] ?? null),
     );
+    prisma.space.findMany.mockResolvedValue(Object.values(tree));
   };
+
+  /** 造 s1 → s2 → … → sN 的深链（s1 为根，sN 在第 N 层） */
+  const chainOf = (n: number) =>
+    Array.from({ length: n }, (_, i) => ({ id: 's' + (i + 1), parentId: i === 0 ? null : 's' + i }));
 
   // ⑥ 环检测
   describe('⑥ 环检测', () => {
@@ -55,6 +62,7 @@ describe('SpacesService', () => {
       prisma.space.findFirst.mockImplementation((args: any) =>
         Promise.resolve(args?.where?.id === 'A' ? tree.A : null),
       );
+      prisma.space.findMany.mockResolvedValue([tree.A]); // 集合里没有 ghost
       await expect(service.update('u1', 'A', { parentId: 'ghost' } as any)).rejects.toThrow(
         '目标父空间不存在或不属于当前用户',
       );
@@ -68,8 +76,47 @@ describe('SpacesService', () => {
       prisma.space.findFirst.mockImplementation((args: any) =>
         Promise.resolve(rows[args?.where?.id] ?? null),
       );
+      prisma.space.findMany.mockResolvedValue(Object.values(rows));
       prisma.space.update = jest.fn().mockResolvedValue({ id: 'A' });
       await expect(service.update('u1', 'A', { parentId: 'X' } as any)).resolves.toBeDefined();
+    });
+  });
+
+  // C21：环检测回溯 50 步、拼路径只回溯 20 步 ⇒ 两个数不一致的两个后果
+  describe('C21 深度上限与环检测取齐为一个常量', () => {
+    it('60 层深链把链顶挪到链底（真成环）→ 必须被拒（改前走完 50 步静默放过）', async () => {
+      const chain = chainOf(60);
+      prisma.space.findFirst.mockResolvedValue({ id: 's1', parentId: null });
+      prisma.space.findMany.mockResolvedValue(chain);
+      await expect(service.update('u1', 's1', { parentId: 's60' } as any)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+    });
+
+    it('父级已在第 20 层时再建子空间 → 400（新节点会落在第 21 层）', async () => {
+      prisma.space.findFirst.mockResolvedValue({ id: 's20' });
+      prisma.space.findMany.mockResolvedValue(chainOf(20));
+      prisma.space.create = jest.fn();
+      await expect(service.create('u1', { name: '第21层', parentId: 's20' } as any)).rejects.toThrow(
+        /空间层级最多 20 层/,
+      );
+      expect(prisma.space.create).not.toHaveBeenCalled();
+    });
+
+    it('边界：父级在第 19 层时允许（新节点正好第 20 层，不许多也不许多一层）', async () => {
+      prisma.space.findFirst.mockResolvedValue({ id: 's19' });
+      prisma.space.findMany.mockResolvedValue(chainOf(19));
+      prisma.space.create = jest.fn().mockResolvedValue({ id: 'new' });
+      await expect(
+        service.create('u1', { name: '第20层', parentId: 's19' } as any),
+      ).resolves.toEqual({ id: 'new' });
+    });
+
+    it('回溯改为一次 findMany 走内存链（原来最深要打 50 次库）', async () => {
+      prisma.space.findFirst.mockResolvedValue({ id: 's1' });
+      prisma.space.findMany.mockResolvedValue(chainOf(30));
+      await service.update('u1', 's1', { parentId: 's30' } as any).catch(() => undefined);
+      expect(prisma.space.findMany).toHaveBeenCalledTimes(1);
     });
   });
 
