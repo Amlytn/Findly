@@ -98,7 +98,7 @@ Page({
       title: '取消收藏',
       content: '确定取消收藏「' + name + '」吗？',
       confirmColor: '#E06B6B',
-      success(res) {
+      success(res: { confirm: boolean }) {
         if (!res.confirm) return
         removeFavorite(id)
         wx.showToast({ title: '已取消收藏', icon: 'none' })

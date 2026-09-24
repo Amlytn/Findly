@@ -55,6 +55,9 @@ Page({
     formInitialIcon: ''
   },
 
+  /** 空间树状态权威源；onLoad 里实例化（声明在此只为让 this 有这个成员的形状） */
+  store: null as unknown as SpaceTreeStore,
+
   /** 页面滚动位置（拖动步进计算用） */
   _scrollTop: 0,
   /** 本次拖拽会话：被拖节点、同级 id 序列、自身下标、起始触点、单行步进（px） */

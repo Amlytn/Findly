@@ -63,7 +63,7 @@ Page({
     const that = this
     ctx.takePhoto({
       quality: 'high',
-      success(res) {
+      success(res: { tempImagePath: string }) {
         that.afterPick(res.tempImagePath)
       },
       fail() {
@@ -81,7 +81,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album'],
-      success(res) {
+      success(res: { tempFiles: Array<{ tempFilePath: string }> }) {
         that.afterPick(res.tempFiles[0].tempFilePath)
       },
       fail() { /* 用户取消，静默 */ }

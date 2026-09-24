@@ -108,8 +108,11 @@ function buildCardNode(node: SpaceTree, depth: number, prefix: string[], expande
 function findNode(nodes: SpaceTree[], id: string): { node: SpaceTree; parent: SpaceTree[] } | null {
   for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].id === id) return { node: nodes[i], parent: nodes }
-    if (nodes[i].children && nodes[i].children.length) {
-      const found = findNode(nodes[i].children!, id)
+    // 提成局部变量：TS 不对 nodes[i] 这类变量下标做收窄，
+    // 直接写 nodes[i].children && nodes[i].children.length 后半截仍会报"可能 undefined"
+    const children = nodes[i].children
+    if (children && children.length) {
+      const found = findNode(children, id)
       if (found) return found
     }
   }
@@ -129,7 +132,8 @@ function removeNodeById(nodes: SpaceTree[], id: string): boolean {
       nodes.splice(i, 1)
       return true
     }
-    if (nodes[i].children && nodes[i].children.length && removeNodeById(nodes[i].children!, id)) {
+    const children = nodes[i].children
+    if (children && children.length && removeNodeById(children, id)) {
       return true
     }
   }

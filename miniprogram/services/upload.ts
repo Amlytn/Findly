@@ -20,7 +20,7 @@ export function uploadImage(filePath: string): Promise<UploadResponse> {
       name: 'file',
       header,
       timeout: 20000,
-      success(res) {
+      success(res: { statusCode: number; data: string }) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           try {
             resolve(JSON.parse(res.data) as UploadResponse)

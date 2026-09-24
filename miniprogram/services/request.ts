@@ -63,7 +63,7 @@ function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
       data: data as any,
       timeout: 15000,
       header,
-      success(res) {
+      success(res: { statusCode: number; data: unknown }) {
         const code = res.statusCode
         if (code >= 200 && code < 300) {
           resolve(res.data as T)
