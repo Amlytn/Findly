@@ -69,6 +69,18 @@ jobs:
       - name: 单元测试
         run: npm test
 
+      # 前端类型检查。动因和 S1 是同一类问题：CI 原先两个 job 只覆盖 server/，
+      # miniprogram 一行都不检查 —— 而 @Amlytn 在 PR #53 刚把 tsconfig 的 strict 打开。
+      # 没有这一步，以后前端提交一个类型错误 CI 照样全绿，只有打开微信开发者工具的人
+      # 才会看到红字（和 09-21 那次 provider 被改成 sqlite、CI 全绿是同一种盲区）。
+      #
+      # 借用 server 已装好的 tsc（package-lock 钉的是 typescript@5.9.3），
+      # 所以这个 job 不需要再 npm install 一次；miniprogram 自己没有 package.json。
+      # 本地验证命令与退出码：cd miniprogram && ../server/node_modules/.bin/tsc --noEmit -p tsconfig.json → 0
+      - name: 前端类型检查（miniprogram，strict）
+        working-directory: miniprogram
+        run: ../server/node_modules/.bin/tsc --noEmit -p tsconfig.json
+
   secret-scan:
     name: 密钥扫描
     runs-on: ubuntu-latest
