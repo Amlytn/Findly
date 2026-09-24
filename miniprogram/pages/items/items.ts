@@ -145,7 +145,7 @@ Page({
 
   /** "全部" chip 的计数 = 后端 total */
   syncAllCount(total: number) {
-    const idx = this.data.cats.findIndex(function (c) { return c.key === 'all' })
+    const idx = this.data.cats.findIndex(function (c: { key: string }) { return c.key === 'all' })
     if (idx >= 0) {
       const patch: any = {}
       patch['counts[' + idx + ']'] = total
@@ -206,7 +206,7 @@ Page({
   onCardLongPress(e: any) {
     const that = this
     const id = e.currentTarget.dataset.id as string
-    const idx = this.data.shown.findIndex(function (it) { return it.id === id })
+    const idx = this.data.shown.findIndex(function (it: { id: string }) { return it.id === id })
     if (idx < 0) return
     const name = this.data.shown[idx].name
     wx.showActionSheet({
@@ -254,7 +254,7 @@ Page({
             wx.showToast({ title: r.message || '删除失败', icon: 'none' })
             return
           }
-          const shown = that.data.shown.filter(function (it) { return it.id !== id })
+          const shown = that.data.shown.filter(function (it: { id: string }) { return it.id !== id })
           that.setData({
             shown: shown,
             total: Math.max(0, that.data.total - 1),

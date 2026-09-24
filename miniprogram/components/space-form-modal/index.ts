@@ -85,7 +85,7 @@ Component({
       // 预填图标时，activeCat 定位到该图标所属分类，方便直接看到选中项
       let activeCat = ''
       for (const cat of this.data.categories) {
-        if (cat.icons.some(function (i) { return i.key === initialIcon })) {
+        if (cat.icons.some(function (i: { key: string }) { return i.key === initialIcon })) {
           activeCat = cat.id
           break
         }
