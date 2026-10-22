@@ -1,18 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
-  <rect width="96" height="96" rx="26" fill="#e5f3fd"/>
-  <!-- Shower Pipe & Head -->
-  <path d="M 31 53 V 30 a 5 5 0 0 1 5 -5 h 8 a 3 3 0 0 1 3 3 v 1" stroke="#4d9dec" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <path d="M 43 30 l 7.5 4.5 a 1.5 1.5 0 0 1 0 2.6 l -7.5 4.5 a 1.5 1.5 0 0 1 -2.3 -1.3 v -9 a 1.5 1.5 0 0 1 2.3 -1.3 z" fill="#4d9dec"/>
-  <!-- Droplets -->
-  <circle cx="56" cy="41" r="1.5" fill="#4d9dec"/>
-  <circle cx="52" cy="46" r="1.3" fill="#4d9dec"/>
-  <circle cx="58" cy="49" r="1.1" fill="#4d9dec"/>
-  <!-- Bathtub Rim -->
-  <rect x="23" y="52" width="50" height="4.5" rx="2.25" fill="#4d9dec"/>
-  <!-- Bathtub Basin with Wave Cutout -->
-  <path fill-rule="evenodd" clip-rule="evenodd" d="M 27 56 h 42 v 4 a 9 9 0 0 1 -9 9 H 36 a 9 9 0 0 1 -9 -9 V 56 z M 38 61 a 2 2 0 0 1 2 -2 h 16 a 2 2 0 0 1 0 4 H 40 a 2 2 0 0 1 -2 -2 z" fill="#4d9dec"/>
-  <!-- Left Leg -->
-  <path d="M 32 68.5 l -1.5 4.5 a 1.2 1.2 0 0 0 1.1 1.6 h 1.2 a 1.2 1.2 0 0 0 1.1 -0.8 l 1.2 -5.3 z" fill="#4d9dec"/>
-  <!-- Right Leg -->
-  <path d="M 61 68.5 l 1.2 5.3 a 1.2 1.2 0 0 0 1.1 0.8 h 1.2 a 1.2 1.2 0 0 0 1.1 -1.6 l -1.5 -4.5 z" fill="#4d9dec"/>
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="116" height="116" viewBox="0 0 116 116" fill="none">
+<g filter="url(#filter0_d_9_551)">
+<g clip-path="url(#clip0_9_551)">
+<path d="M80 6H36C21.6406 6 10 17.6406 10 32V76C10 90.3594 21.6406 102 36 102H80C94.3594 102 106 90.3594 106 76V32C106 17.6406 94.3594 6 80 6Z" fill="#E6F0FD" />
+<g opacity="0.16" filter="url(#filter1_f_9_551)">
+<path d="M58 89.6C71.2548 89.6 82 87.9882 82 86C82 84.0118 71.2548 82.4 58 82.4C44.7452 82.4 34 84.0118 34 86C34 87.9882 44.7452 89.6 58 89.6Z" fill="#3B6FD4" />
+</g>
+<path d="M71 30H45C42.7909 30 41 31.7909 41 34V49C41 51.2091 42.7909 53 45 53H71C73.2091 53 75 51.2091 75 49V34C75 31.7909 73.2091 30 71 30Z" fill="url(#paint0_linear_9_551)" />
+<path d="M48.5 68H67.5L70.5 82.4C70.5 83.0896 70.2261 83.7509 69.7385 84.2385C69.2509 84.7261 68.5896 85 67.9 85H48.1C47.4104 85 46.7491 84.7261 46.2615 84.2385C45.7739 83.7509 45.5 83.0896 45.5 82.4L48.5 68Z" fill="url(#paint1_linear_9_551)" />
+<path d="M38.5 56H77.5C77.5 67 72 74.5 58 74.5C44 74.5 38.5 67 38.5 56Z" fill="url(#paint2_linear_9_551)" />
+<path d="M41.5 50H74.5C76.7091 50 78.5 51.7909 78.5 54C78.5 56.2091 76.7091 58 74.5 58H41.5C39.2909 58 37.5 56.2091 37.5 54C37.5 51.7909 39.2909 50 41.5 50Z" fill="url(#paint3_linear_9_551)" stroke="#A3C9FF" />
+<path d="M72.25 23H43.75C41.1266 23 39 25.1266 39 27.75C39 30.3734 41.1266 32.5 43.75 32.5H72.25C74.8734 32.5 77 30.3734 77 27.75C77 25.1266 74.8734 23 72.25 23Z" fill="url(#paint4_linear_9_551)" />
+<path opacity="0.92" d="M60.7 25.4H55.3C54.3059 25.4 53.5 26.2059 53.5 27.2C53.5 28.1941 54.3059 29 55.3 29H60.7C61.6941 29 62.5 28.1941 62.5 27.2C62.5 26.2059 61.6941 25.4 60.7 25.4Z" fill="white" />
+<path opacity="0.32" d="M73.9 30.8H42.1C41.4925 30.8 41 31.2925 41 31.9C41 32.5075 41.4925 33 42.1 33H73.9C74.5075 33 75 32.5075 75 31.9C75 31.2925 74.5075 30.8 73.9 30.8Z" fill="white" />
+<path opacity="0.32" d="M42.8 59.5C43.8 64.8 47.5 68.2 52 69.2" stroke="white" stroke-width="1.9" stroke-linecap="round" />
+</g>
+</g>
+<defs>
+<filter id="filter0_d_9_551" x="0" y="0" width="116" height="116" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="4" />
+<feGaussianBlur stdDeviation="5" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.0392 0 0 0 0 0.2471 0 0 0 0 0.2392 0 0 0 0.07 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_551" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9_551" result="shape" />
+</filter>
+<filter id="filter1_f_9_551" x="29.6" y="78" width="56.8" height="16" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+<feGaussianBlur stdDeviation="2.2" result="effect1_foregroundBlur_9_551" />
+</filter>
+<linearGradient id="paint0_linear_9_551" x1="41" y1="30" x2="41" y2="53" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6BA7FB" />
+<stop offset="1" stop-color="#2E6CDF" />
+</linearGradient>
+<linearGradient id="paint1_linear_9_551" x1="45.5" y1="68" x2="45.5" y2="85" gradientUnits="userSpaceOnUse">
+<stop stop-color="#5093F2" />
+<stop offset="1" stop-color="#1F56BB" />
+</linearGradient>
+<linearGradient id="paint2_linear_9_551" x1="38.5" y1="56" x2="38.5" y2="74.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#5093F2" />
+<stop offset="1" stop-color="#1F56BB" />
+</linearGradient>
+<linearGradient id="paint3_linear_9_551" x1="37" y1="49.5" x2="37" y2="58.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" />
+<stop offset="0.0001" stop-color="#E6F0FE" />
+<stop offset="1" stop-color="#CFE1FD" />
+</linearGradient>
+<linearGradient id="paint4_linear_9_551" x1="39" y1="23" x2="39" y2="32.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#82B4FC" />
+<stop offset="1" stop-color="#4A8AF0" />
+</linearGradient>
+<clipPath id="clip0_9_551">
+<rect width="96" height="96" fill="white" transform="translate(10 6)" />
+</clipPath>
+</defs>
 </svg>
