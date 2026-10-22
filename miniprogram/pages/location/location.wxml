@@ -32,7 +32,7 @@
           data-i="{{index}}"
         >
           <view class="card-left">
-            <image class="card-icon" src="{{item.cardIcon}}" mode="aspectFit" />
+            <view class="card-icon"><image class="card-icon-img" src="{{item.cardIcon}}" mode="aspectFit" /></view>
             <view class="card-info">
               <view class="card-title-row">
                 <text class="card-name">{{item.name}}</text>

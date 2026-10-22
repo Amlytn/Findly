@@ -1,20 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
-  <rect width="96" height="96" rx="26" fill="#e1f6f1"/>
-<!-- Cabinet Main Body with Top Cornice, Doors, Drawers and Knobs Cutouts -->
-  <rect x="23" y="24" width="50" height="4.5" rx="2.25" fill="#2fa88c"/>
-  <path fill-rule="evenodd" clip-rule="evenodd" d="
-    M 25 28.5 h 46 a 3 3 0 0 1 3 3 v 36.5 a 3 3 0 0 1 -3 3 H 25 a 3 3 0 0 1 -3 -3 V 31.5 a 3 3 0 0 1 3 -3 z
-    M 23 41.5 h 50 v 1.5 H 23 z
-    M 47.25 30 h 1.5 v 11.5 h -1.5 z
-    M 31 35 h 7 a 1 1 0 0 1 1 1 v 0.5 a 1 1 0 0 1 -1 1 h -7 a 1 1 0 0 1 -1 -1 v -0.5 a 1 1 0 0 1 1 -1 z
-    M 58 35 h 7 a 1 1 0 0 1 1 1 v 0.5 a 1 1 0 0 1 -1 1 h -7 a 1 1 0 0 1 -1 -1 v -0.5 a 1 1 0 0 1 1 -1 z
-    M 47.25 43 h 1.5 v 26 h -1.5 z
-    M 43 54.5 a 1.8 1.8 0 1 1 0 -0.01 z
-    M 53 54.5 a 1.8 1.8 0 1 1 0 -0.01 z
-  " fill="#2fa88c"/>
-  <!-- Sturdy Tapered Legs -->
-  <path d="M 27 71 l -2 5 a 1.2 1.2 0 0 0 1.1 1.7 h 1.2 a 1.2 1.2 0 0 0 1.1 -0.7 l 1.6 -6 z" fill="#2fa88c"/>
-  <path d="M 69 71 l 2 5 a 1.2 1.2 0 0 1 -1.1 1.7 h -1.2 a 1.2 1.2 0 0 1 -1.1 -0.7 l -1.6 -6 z" fill="#2fa88c"/>
-  <rect x="37" y="71" width="2.5" height="4.5" rx="1" fill="#2fa88c"/>
-  <rect x="56.5" y="71" width="2.5" height="4.5" rx="1" fill="#2fa88c"/>
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="116" height="116" viewBox="0 0 116 116" fill="none">
+<g filter="url(#filter0_d_9_214)">
+<g clip-path="url(#clip0_9_214)">
+<path d="M80 6H36C21.6406 6 10 17.6406 10 32V76C10 90.3594 21.6406 102 36 102H80C94.3594 102 106 90.3594 106 76V32C106 17.6406 94.3594 6 80 6Z" fill="#DFF2ED" />
+<g filter="url(#filter1_dd_9_214)">
+<path d="M78 43H38C33.5817 43 30 46.5817 30 51V73C30 77.4183 33.5817 81 38 81H78C82.4183 81 86 77.4183 86 73V51C86 46.5817 82.4183 43 78 43Z" fill="url(#paint0_linear_9_214)" />
+<path d="M76 47.5H40C37.2386 47.5 35 49.7386 35 52.5V72C35 74.7614 37.2386 77 40 77H76C78.7614 77 81 74.7614 81 72V52.5C81 49.7386 78.7614 47.5 76 47.5Z" fill="#065A42" />
+<path d="M43.5 52H43C42.4477 52 42 52.4477 42 53V58C42 58.5523 42.4477 59 43 59H43.5C44.0523 59 44.5 58.5523 44.5 58V53C44.5 52.4477 44.0523 52 43.5 52Z" fill="#DDF3EF" />
+<path d="M44.5 59H42C40.6193 59 39.5 60.1193 39.5 61.5V71.5C39.5 72.8807 40.6193 74 42 74H44.5C45.8807 74 47 72.8807 47 71.5V61.5C47 60.1193 45.8807 59 44.5 59Z" fill="#DDF3EF" />
+<path d="M52.5 52H52C51.4477 52 51 52.4477 51 53V58C51 58.5523 51.4477 59 52 59H52.5C53.0523 59 53.5 58.5523 53.5 58V53C53.5 52.4477 53.0523 52 52.5 52Z" fill="#DDF3EF" />
+<path d="M53.5 59H51C49.6193 59 48.5 60.1193 48.5 61.5V71.5C48.5 72.8807 49.6193 74 51 74H53.5C54.8807 74 56 72.8807 56 71.5V61.5C56 60.1193 54.8807 59 53.5 59Z" fill="#DDF3EF" />
+<path d="M61.5 52H61C60.4477 52 60 52.4477 60 53V58C60 58.5523 60.4477 59 61 59H61.5C62.0523 59 62.5 58.5523 62.5 58V53C62.5 52.4477 62.0523 52 61.5 52Z" fill="#DDF3EF" />
+<path d="M62.5 59H60C58.6193 59 57.5 60.1193 57.5 61.5V71.5C57.5 72.8807 58.6193 74 60 74H62.5C63.8807 74 65 72.8807 65 71.5V61.5C65 60.1193 63.8807 59 62.5 59Z" fill="#DDF3EF" />
+<path d="M81.5 30H34.5C32.0147 30 30 32.0147 30 34.5V39.5C30 41.9853 32.0147 44 34.5 44H81.5C83.9853 44 86 41.9853 86 39.5V34.5C86 32.0147 83.9853 30 81.5 30Z" fill="url(#paint1_linear_9_214)" />
+<path d="M54 35.5H46.5C45.6716 35.5 45 36.1716 45 37C45 37.8284 45.6716 38.5 46.5 38.5H54C54.8284 38.5 55.5 37.8284 55.5 37C55.5 36.1716 54.8284 35.5 54 35.5Z" fill="#DDF3EF" />
+<path d="M69.5 35.5H62C61.1716 35.5 60.5 36.1716 60.5 37C60.5 37.8284 61.1716 38.5 62 38.5H69.5C70.3284 38.5 71 37.8284 71 37C71 36.1716 70.3284 35.5 69.5 35.5Z" fill="#DDF3EF" />
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_9_214" x="0" y="0" width="116" height="116" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="4" />
+<feGaussianBlur stdDeviation="5" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.0392 0 0 0 0 0.2471 0 0 0 0 0.2392 0 0 0 0.07 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_214" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9_214" result="shape" />
+</filter>
+<filter id="filter1_dd_9_214" x="5" y="3" width="106" height="106.5" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feMorphology radius="1" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_9_214" />
+<feOffset />
+<feGaussianBlur stdDeviation="1" />
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_214" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="2.5" />
+<feGaussianBlur stdDeviation="2.5" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.07 0 0 0 0 0.59 0 0 0 0 0.46 0 0 0 0.2 0" />
+<feBlend mode="normal" in2="effect1_dropShadow_9_214" result="effect2_dropShadow_9_214" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_9_214" result="shape" />
+</filter>
+<linearGradient id="paint0_linear_9_214" x1="58" y1="43" x2="58" y2="82" gradientUnits="userSpaceOnUse">
+<stop stop-color="#129774" />
+<stop offset="1" stop-color="#087053" />
+</linearGradient>
+<linearGradient id="paint1_linear_9_214" x1="58" y1="30" x2="58" y2="44" gradientUnits="userSpaceOnUse">
+<stop stop-color="#18B087" />
+<stop offset="1" stop-color="#0E8A68" />
+</linearGradient>
+<clipPath id="clip0_9_214">
+<rect width="96" height="96" fill="white" transform="translate(10 6)" />
+</clipPath>
+</defs>
 </svg>

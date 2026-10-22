@@ -1,25 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
-  <rect width="96" height="96" rx="26" fill="#ddf8ef"/>
-  <!-- 我的家：对称屋顶、平滑挑檐与圆拱门洞 (1:1 像素级精准复刻) -->
-  <path d="
-    M 45.2 24.2
-    a 4.2 4.2 0 0 1 5.6 0
-    l 20 18.2
-    a 2.8 2.8 0 0 1 0.4 3.4
-    a 2.8 2.8 0 0 1 -2.7 1.2
-    H 68.5
-    v 19
-    a 5 5 0 0 1 -5 5
-    H 53.5
-    v -12
-    a 5.5 5.5 0 0 0 -11 0
-    v 12
-    H 32.5
-    a 5 5 0 0 1 -5 -5
-    v -19
-    H 27.5
-    a 2.8 2.8 0 0 1 -2.7 -1.2
-    a 2.8 2.8 0 0 1 0.4 -3.4
-    Z
-  " fill="#20b4af"/>
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="116" height="116" viewBox="0 0 116 116" fill="none">
+<g filter="url(#filter0_d_9_634)">
+<g clip-path="url(#clip0_9_634)">
+<g clip-path="url(#clip1_9_634)">
+<mask id="mask0_9_634" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="10" y="6" width="96" height="96">
+<path d="M106 6H10V102H106V6Z" fill="white" />
+</mask>
+<g mask="url(#mask0_9_634)">
+<path d="M80 6H36C21.6406 6 10 17.6406 10 32V76C10 90.3594 21.6406 102 36 102H80C94.3594 102 106 90.3594 106 76V32C106 17.6406 94.3594 6 80 6Z" fill="#DDF3EF" />
+<g filter="url(#filter1_d_9_634)">
+<path d="M34.8 54L58 42L81.2 54V71.8C81.2 77.3 76.7 81.8 71.2 81.8H64.5V66.5C64.5 62.9 61.6 60 58 60C54.4 60 51.5 62.9 51.5 66.5V81.8H44.8C39.3 81.8 34.8 77.3 34.8 71.8V54Z" fill="url(#paint0_linear_9_634)" />
+</g>
+<g filter="url(#filter2_d_9_634)">
+<path d="M49.5 32.5C52.8 28.2 55.2 26.8 58 26.8C60.8 26.8 63.2 28.2 66.5 32.5L83.2 49.2C86.2 52.2 85.8 56.2 82.5 58.2C74.5 51.8 66.5 47.5 58 47.5C49.5 47.5 41.5 51.8 33.5 58.2C30.2 56.2 29.8 52.2 32.8 49.2L49.5 32.5Z" fill="url(#paint1_linear_9_634)" />
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_9_634" x="0" y="0" width="116" height="116" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="4" />
+<feGaussianBlur stdDeviation="5" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.0392 0 0 0 0 0.2471 0 0 0 0 0.2392 0 0 0 0.07 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_634" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9_634" result="shape" />
+</filter>
+<filter id="filter1_d_9_634" x="28.8" y="39" width="58.4" height="51.8" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="3" />
+<feGaussianBlur stdDeviation="3" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.03 0 0 0 0 0.42 0 0 0 0 0.4 0 0 0 0.18 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_634" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9_634" result="shape" />
+</filter>
+<filter id="filter2_d_9_634" x="27.2695" y="25.8" width="61.4609" height="38.4" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="2.5" />
+<feGaussianBlur stdDeviation="1.75" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.02 0 0 0 0 0.35 0 0 0 0 0.33 0 0 0 0.38 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_634" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9_634" result="shape" />
+</filter>
+<linearGradient id="paint0_linear_9_634" x1="42" y1="42" x2="78" y2="82" gradientUnits="userSpaceOnUse">
+<stop stop-color="#18C7B9" />
+<stop offset="0.4" stop-color="#0EB1A6" />
+<stop offset="0.75" stop-color="#07988E" />
+<stop offset="1" stop-color="#037B73" />
+</linearGradient>
+<linearGradient id="paint1_linear_9_634" x1="54" y1="26.5" x2="68" y2="58" gradientUnits="userSpaceOnUse">
+<stop stop-color="#7AE9D8" />
+<stop offset="0.22" stop-color="#48D7C5" />
+<stop offset="0.65" stop-color="#1DBBAE" />
+<stop offset="1" stop-color="#08A397" />
+</linearGradient>
+<clipPath id="clip0_9_634">
+<rect width="96" height="96" fill="white" transform="translate(10 6)" />
+</clipPath>
+<clipPath id="clip1_9_634">
+<rect width="96" height="96" fill="white" transform="translate(10 6)" />
+</clipPath>
+</defs>
 </svg>

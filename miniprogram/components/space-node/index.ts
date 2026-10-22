@@ -1,6 +1,6 @@
 /**
- * 空间节点（空间管理 2.0）：根卡片与子空间行同构，点击就地展开/收起（逐节点独立，
- * 收起只影响自己及内部），展开渲染「物品货架 + 子空间行」双模块，子行经自引用递归逐层展开。
+ * 空间节点（空间管理 v2 · 树式重设计）：根空间一张白卡，卡内所有层级同尺寸，
+ * 层级只靠缩进与短竖线表达；子行点击就地展开/收起（逐节点独立，收起只影响自己及内部）。
  * 长按 = 同级拖动排序（拖拽编排由页面负责，组件只转发触点事件与渲染插入指示线）。
  * 全部事件 bubbles+composed 上抛给 spaces 页统一处理（组件自身无状态、无请求）。
  */
@@ -9,6 +9,11 @@ Component({
     node: {
       type: Object,
       value: null
+    },
+    /** 是否同级第一行：控制发丝分隔线（首行不画） */
+    isFirst: {
+      type: Boolean,
+      value: false
     },
     itemsMap: {
       type: Object,
@@ -106,12 +111,12 @@ Component({
       this.triggerEvent('moreaction', { item: this.data.node }, { bubbles: true, composed: true })
     },
 
-    /** 长按：进入同级拖动排序（携带自身卡高，页面据此估算步进） */
+    /** 长按：进入同级拖动排序（量行高而非整卡，展开体不参与步进估算） */
     onDragStart() {
       if (!this.data.node) return
       const that = this
       this.createSelectorQuery()
-        .select('.sp-card')
+        .select('.drag-measure')
         .boundingClientRect()
         .exec(function (res: any) {
           const rect = res && res[0]

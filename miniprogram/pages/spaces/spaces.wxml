@@ -88,7 +88,7 @@
 
       <!-- 空间信息头 -->
       <view class="modal-space-info">
-        <image class="modal-space-icon" src="{{actionTarget.glyphIcon || actionTarget.cardIcon || '/assets/spaces/glyphs/home.svg'}}" mode="aspectFit" />
+        <view class="modal-space-icon"><image class="modal-space-icon-img" src="{{actionTarget.cardIcon || actionTarget.glyphIcon || '/assets/spaces/cards/other_space.svg'}}" mode="aspectFit" /></view>
         <view class="modal-space-meta">
           <view class="modal-space-name">{{actionTarget.name}}</view>
           <view class="modal-space-sub">空间管理 · 累计 {{actionTarget.total || 0}} 件物品</view>
@@ -140,7 +140,7 @@
       </view>
 
       <view class="modal-space-info">
-        <image class="modal-space-icon" src="{{actionTarget.glyphIcon || actionTarget.cardIcon || '/assets/spaces/glyphs/home.svg'}}" mode="aspectFit" />
+        <view class="modal-space-icon"><image class="modal-space-icon-img" src="{{actionTarget.cardIcon || actionTarget.glyphIcon || '/assets/spaces/cards/other_space.svg'}}" mode="aspectFit" /></view>
         <view class="modal-space-meta">
           <view class="modal-space-name">移动「{{actionTarget.name}}」到…</view>
           <view class="modal-space-sub">选择新的归属空间，将自动调整层级</view>
@@ -188,7 +188,7 @@
 
   <!-- 拖拽幽灵卡：跟随手指的浮起卡片（仅视觉反馈，落位由插入线指示） -->
   <view class="drag-ghost {{ghostShow ? 'is-visible' : ''}}" style="top: {{ghostY}}px;">
-    <image class="ghost-icon" src="{{ghostIcon}}" mode="aspectFit" />
+    <view class="ghost-icon"><image class="ghost-icon-img" src="{{ghostIcon}}" mode="aspectFit" /></view>
     <view class="ghost-meta">
       <text class="ghost-name">{{ghostName}}</text>
       <text class="ghost-count">共 {{ghostTotal}} 件</text>

@@ -1,19 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
-  <rect width="96" height="96" rx="26" fill="#ddf8ef"/>
-  <!-- Warm Sun -->
-  <circle cx="65" cy="27" r="4.5" fill="#12bd8f"/>
-  <!-- Potted Plant on the left -->
-  <path d="M 33 34 C 30 30 32 24 37 24 C 37 28 35 32 33 34 Z" fill="#12bd8f"/>
-  <path d="M 37 32 C 40 29 44 27 45 30 C 43 33 39 34 37 32 Z" fill="#12bd8f"/>
-  <path d="M 33 34 h 8 l -1.2 6.5 a 1.5 1.5 0 0 1 -1.5 1.2 h -4.1 a 1.5 1.5 0 0 1 -1.5 -1.2 z" fill="#12bd8f"/>
-  <!-- Railing Top Bar -->
-  <rect x="23" y="42.5" width="50" height="4.5" rx="2.25" fill="#12bd8f"/>
-  <!-- Vertical Balusters -->
-  <rect x="27" y="46.5" width="3.5" height="20" rx="1.75" fill="#12bd8f"/>
-  <rect x="37" y="46.5" width="3.5" height="20" rx="1.75" fill="#12bd8f"/>
-  <rect x="47" y="46.5" width="3.5" height="20" rx="1.75" fill="#12bd8f"/>
-  <rect x="57" y="46.5" width="3.5" height="20" rx="1.75" fill="#12bd8f"/>
-  <rect x="65.5" y="46.5" width="3.5" height="20" rx="1.75" fill="#12bd8f"/>
-  <!-- Bottom Floor Slab -->
-  <rect x="21" y="66" width="54" height="5" rx="2.5" fill="#12bd8f"/>
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="116" height="116" viewBox="0 0 116 116" fill="none">
+<g filter="url(#filter0_d_9_521)">
+<g clip-path="url(#clip0_9_521)">
+<path d="M80 6H36C21.6406 6 10 17.6406 10 32V76C10 90.3594 21.6406 102 36 102H80C94.3594 102 106 90.3594 106 76V32C106 17.6406 94.3594 6 80 6Z" fill="#DEF4EF" />
+<g filter="url(#filter1_dd_9_521)">
+<path d="M57.2792 52C57.5412 45.4524 59.1133 41.5833 61.9954 40.3929C64.3535 39.5 73 37.7143 73 27C63.5675 27 60.4233 35.0357 58.0652 39.5C55.7071 35.0357 53.349 31.4643 47.0606 33.25C46.2746 43.0714 53.349 45.75 55.7071 52H57.2792Z" fill="url(#paint0_linear_9_521)" />
+<path d="M39 56H37C36.1716 56 35.5 56.6716 35.5 57.5V77.5C35.5 78.3284 36.1716 79 37 79H39C39.8284 79 40.5 78.3284 40.5 77.5V57.5C40.5 56.6716 39.8284 56 39 56Z" fill="#0C8E72" />
+<path d="M51.5 56H49.5C48.6716 56 48 56.6716 48 57.5V77.5C48 78.3284 48.6716 79 49.5 79H51.5C52.3284 79 53 78.3284 53 77.5V57.5C53 56.6716 52.3284 56 51.5 56Z" fill="#0C8E72" />
+<path d="M66 56H64C63.1716 56 62.5 56.6716 62.5 57.5V77.5C62.5 78.3284 63.1716 79 64 79H66C66.8284 79 67.5 78.3284 67.5 77.5V57.5C67.5 56.6716 66.8284 56 66 56Z" fill="#0C8E72" />
+<path d="M78.5 56H76.5C75.6716 56 75 56.6716 75 57.5V77.5C75 78.3284 75.6716 79 76.5 79H78.5C79.3284 79 80 78.3284 80 77.5V57.5C80 56.6716 79.3284 56 78.5 56Z" fill="#0C8E72" />
+<path d="M82.5 52H33C31.067 52 29.5 53.567 29.5 55.5C29.5 57.433 31.067 59 33 59H82.5C84.433 59 86 57.433 86 55.5C86 53.567 84.433 52 82.5 52Z" fill="url(#paint1_linear_9_521)" />
+<path d="M82.5 76H33C31.067 76 29.5 77.567 29.5 79.5C29.5 81.433 31.067 83 33 83H82.5C84.433 83 86 81.433 86 79.5C86 77.567 84.433 76 82.5 76Z" fill="url(#paint2_linear_9_521)" />
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_9_521" x="0" y="0" width="116" height="116" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="4" />
+<feGaussianBlur stdDeviation="5" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.0392 0 0 0 0 0.2471 0 0 0 0 0.2392 0 0 0 0.07 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_521" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9_521" result="shape" />
+</filter>
+<filter id="filter1_dd_9_521" x="5" y="3" width="106" height="106.5" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feMorphology radius="1" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_9_521" />
+<feOffset />
+<feGaussianBlur stdDeviation="1" />
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9_521" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dy="2.5" />
+<feGaussianBlur stdDeviation="2.5" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.07 0 0 0 0 0.63 0 0 0 0 0.5 0 0 0 0.2 0" />
+<feBlend mode="normal" in2="effect1_dropShadow_9_521" result="effect2_dropShadow_9_521" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_9_521" result="shape" />
+</filter>
+<linearGradient id="paint0_linear_9_521" x1="62.7815" y1="27" x2="62.7815" y2="52" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2EE4B9" />
+<stop offset="1" stop-color="#0E9F7F" />
+</linearGradient>
+<linearGradient id="paint1_linear_9_521" x1="58" y1="52" x2="58" y2="83" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1ECFA9" />
+<stop offset="1" stop-color="#0CA181" />
+</linearGradient>
+<linearGradient id="paint2_linear_9_521" x1="58" y1="52" x2="58" y2="83" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1ECFA9" />
+<stop offset="1" stop-color="#0CA181" />
+</linearGradient>
+<clipPath id="clip0_9_521">
+<rect width="96" height="96" fill="white" transform="translate(10 6)" />
+</clipPath>
+</defs>
 </svg>

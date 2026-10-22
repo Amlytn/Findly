@@ -1,19 +1,21 @@
-<view class="node node-d{{node.depth > 2 ? 2 : node.depth}}">
-  <!-- 一张白色大卡承载头部与展开体（设计稿：模块长在卡内，不裸在页面底色上） -->
-  <view class="sp-card {{node.depth === 0 ? 'is-root' : 'is-row'}} {{node.expanded ? 'is-open' : ''}} {{drag && drag.dragId === node.id ? 'is-dragging' : ''}}">
-    <!-- 卡片头（depth 0 大卡 / depth ≥1 紧凑行，同一结构）；id 挂组件标签上供页面查询兄弟位置 -->
+<view class="node {{node.depth === 0 ? 'node-root' : 'node-child'}}">
+  <!-- ============ 根空间：一张白卡，卡内是整棵树的入口 ============ -->
+  <view
+    wx:if="{{node.depth === 0}}"
+    class="sp-card is-root {{node.expanded ? 'is-open' : ''}} {{drag && drag.dragId === node.id ? 'is-dragging' : ''}}"
+  >
     <view
-      class="rc-head"
+      class="rc-head drag-measure"
       bindtap="onTap"
       bindlongpress="onDragStart"
       bindtouchmove="onDragMove"
       bindtouchend="onDragEnd"
       bindtouchcancel="onDragEnd"
     >
-      <image class="rc-icon" src="{{node.cardIcon}}" mode="aspectFit" />
+      <view class="rc-icon"><image class="rc-icon-img" src="{{node.cardIcon}}" mode="aspectFit" /></view>
       <view class="rc-meta">
         <text class="rc-name">{{node.name}}</text>
-        <text class="rc-count">共 {{node.total}} 件</text>
+        <text class="rc-count">{{node.total ? '共 ' + node.total + ' 件物品' : '还没有物品'}}</text>
       </view>
       <view class="rc-act" catchtap="onMore" aria-label="管理空间">
         <image class="rc-act-icon" src="/assets/spaces/glyphs/more_horizontal.svg" mode="aspectFit" />
@@ -23,85 +25,156 @@
       </view>
     </view>
 
-    <!-- 卡内展开体：物品模块 + 空间模块（点模块空白不误收起） -->
-    <view class="rc-body" wx:if="{{node.expanded}}" catchtap="noop">
-      <!-- 物品模块：直属物品，默认前 4 个，超出显示 ··· -->
-      <view class="mod">
-        <view class="mod-head">
-          <view class="mod-title-wrap">
-            <text class="mod-title">物品</text>
-            <text class="mod-badge">{{node.directCount}} 件</text>
-          </view>
-          <view class="mod-add" catchtap="onAddItem">
-            <text class="mod-add-plus">＋</text>
-            <text>添加物品</text>
-          </view>
+    <view class="rc-body is-root" wx:if="{{node.expanded}}" catchtap="noop">
+      <!-- 空间：直属子空间列表；灰底只铺这一层容器，层级靠缩进与短竖线表达 -->
+      <view class="sec-head">
+        <view class="sec-ico"><image class="sec-ico-img" src="/assets/spaces/cards/other_space.svg" mode="aspectFit" /></view>
+        <text class="sec-label">空间</text>
+        <text class="sec-count">{{node.children.length}} 个</text>
+        <view class="sec-add" catchtap="onAddSpace">
+          <text class="sec-add-plus">＋</text>
+          <text>添加空间</text>
         </view>
+      </view>
 
-        <view class="mod-loading" wx:if="{{loadingMap[node.id]}}">
-          <view class="mod-spinner"></view>
-          <text class="mod-loading-text">正在读取物品…</text>
-        </view>
-
-        <scroll-view class="item-shelf" wx:elif="{{itemsMap[node.id] && itemsMap[node.id].length}}" scroll-x>
+      <view class="sp-list" wx:if="{{node.children.length}}">
+        <block wx:for="{{node.children}}" wx:key="id" wx:for-item="childNode">
           <view
-            class="shelf-tile {{highlightId && highlightId === item.id ? 'is-highlight' : ''}}"
-            wx:for="{{itemsMap[node.id]}}"
-            wx:key="id"
-            wx:if="{{index < 4}}"
+            class="drag-line"
+            wx:if="{{drag && drag.parentId === node.id && drag.index === index}}"
+          ></view>
+          <space-node
+            id="space-{{childNode.id}}"
+            node="{{childNode}}"
+            is-first="{{index === 0}}"
+            items-map="{{itemsMap}}"
+            loading-map="{{loadingMap}}"
+            drag="{{drag}}"
+            highlight-id="{{highlightId}}"
+            focus-id="{{focusId}}"
+          />
+        </block>
+        <view
+          class="drag-line"
+          wx:if="{{drag && drag.parentId === node.id && drag.index >= node.children.length}}"
+        ></view>
+      </view>
+      <view class="mod-empty" wx:else>暂无子空间</view>
+
+      <!-- 物品：直属物品，固定瓦片按可用宽度换行 -->
+      <view class="sec-head sec-head-items">
+        <view class="sec-ico"><image class="sec-ico-img" src="/assets/spaces/cards/other_space.svg" mode="aspectFit" /></view>
+        <text class="sec-label">物品</text>
+        <text class="sec-count">{{node.directCount}} 件</text>
+        <view class="sec-add" catchtap="onAddItem">
+          <text class="sec-add-plus">＋</text>
+          <text>添加物品</text>
+        </view>
+      </view>
+
+      <view class="mod-loading" wx:if="{{loadingMap[node.id]}}">
+        <view class="mod-spinner"></view>
+        <text class="mod-loading-text">正在读取物品…</text>
+      </view>
+      <view class="tiles" wx:elif="{{itemsMap[node.id] && itemsMap[node.id].length}}">
+        <block wx:for="{{itemsMap[node.id]}}" wx:key="id">
+          <view
+            class="tile {{highlightId && highlightId === item.id ? 'is-highlight' : ''}}"
+            wx:if="{{index < 8}}"
             id="item-{{item.id}}"
             catchtap="onTileTap"
             data-id="{{item.id}}"
           >
-            <view class="shelf-img-box">
-              <image class="shelf-img" src="{{item.img}}" mode="aspectFill" />
-            </view>
-            <text class="shelf-name">{{item.name}}</text>
+            <image class="tile-img" src="{{item.img}}" mode="aspectFill" />
+            <text class="tile-name">{{item.name}}</text>
           </view>
-          <view class="shelf-tile" wx:if="{{itemsMap[node.id].length > 4}}" catchtap="onShowAll">
-            <view class="shelf-img-box shelf-more-box">
-              <text class="shelf-more-txt">···</text>
-            </view>
-            <text class="shelf-name">查看全部</text>
-          </view>
-        </scroll-view>
+        </block>
+        <view class="tile" wx:if="{{itemsMap[node.id].length > 8}}" catchtap="onShowAll">
+          <view class="tile-img tile-more"><text class="tile-more-txt">···</text></view>
+          <text class="tile-name">查看全部</text>
+        </view>
+      </view>
+      <view class="mod-empty" wx:else>此空间暂无直接存放的物品</view>
+    </view>
+  </view>
 
-        <view class="mod-empty" wx:else>
-          此空间暂无直接存放的物品
+  <!-- ============ 子空间：一行 + 缩进一层的展开体 ============ -->
+  <view
+    wx:else
+    class="tnode {{node.expanded ? 'open' : ''}} {{isFirst ? '' : 'has-sep'}}"
+  >
+    <view
+      class="trow {{node.depth > 1 ? 'is-deep' : ''}} drag-measure"
+      bindtap="onTap"
+      bindlongpress="onDragStart"
+      bindtouchmove="onDragMove"
+      bindtouchend="onDragEnd"
+      bindtouchcancel="onDragEnd"
+    >
+      <view class="t-ico"><image class="t-ico-img" src="{{node.cardIcon}}" mode="aspectFit" /></view>
+      <text class="t-name {{node.expanded ? 'is-open' : ''}}">{{node.name}}</text>
+      <text class="t-count {{node.total ? '' : 'zero'}}">{{node.total ? node.total + ' 件' : '空'}}</text>
+      <view class="disclosure">
+        <image class="t-arrow" src="/assets/spaces/glyphs/chevron_down.svg" mode="aspectFit" />
+      </view>
+    </view>
+
+    <view class="tkids" wx:if="{{node.expanded}}" catchtap="noop">
+      <view class="mod-loading" wx:if="{{loadingMap[node.id]}}">
+        <view class="mod-spinner"></view>
+        <text class="mod-loading-text">正在读取物品…</text>
+      </view>
+      <view class="tiles" wx:elif="{{itemsMap[node.id] && itemsMap[node.id].length}}">
+        <block wx:for="{{itemsMap[node.id]}}" wx:key="id">
+          <view
+            class="tile {{highlightId && highlightId === item.id ? 'is-highlight' : ''}}"
+            wx:if="{{index < 8}}"
+            id="item-{{item.id}}"
+            catchtap="onTileTap"
+            data-id="{{item.id}}"
+          >
+            <image class="tile-img" src="{{item.img}}" mode="aspectFill" />
+            <text class="tile-name">{{item.name}}</text>
+          </view>
+        </block>
+        <view class="tile" wx:if="{{itemsMap[node.id].length > 8}}" catchtap="onShowAll">
+          <view class="tile-img tile-more"><text class="tile-more-txt">···</text></view>
+          <text class="tile-name">查看全部</text>
         </view>
       </view>
 
-      <!-- 空间模块：直属子空间行（点击逐层就地展开） -->
-      <view class="mod">
-        <view class="mod-head">
-          <view class="mod-title-wrap">
-            <text class="mod-title">空间</text>
-            <text class="mod-badge">{{node.children.length}} 个</text>
-          </view>
-          <view class="mod-add" catchtap="onAddSpace">
-            <text class="mod-add-plus">＋</text>
-            <text>添加空间</text>
-          </view>
-        </view>
+      <block wx:if="{{node.children.length}}">
+        <block wx:for="{{node.children}}" wx:key="id" wx:for-item="childNode">
+          <view
+            class="drag-line"
+            wx:if="{{drag && drag.parentId === node.id && drag.index === index}}"
+          ></view>
+          <space-node
+            id="space-{{childNode.id}}"
+            node="{{childNode}}"
+            is-first="{{index === 0}}"
+            items-map="{{itemsMap}}"
+            loading-map="{{loadingMap}}"
+            drag="{{drag}}"
+            highlight-id="{{highlightId}}"
+            focus-id="{{focusId}}"
+          />
+        </block>
+        <view
+          class="drag-line"
+          wx:if="{{drag && drag.parentId === node.id && drag.index >= node.children.length}}"
+        ></view>
+      </block>
 
-        <view class="space-rows" wx:if="{{node.children.length}}">
-          <block wx:for="{{node.children}}" wx:key="id" wx:for-item="childNode">
-            <view class="drag-line" wx:if="{{drag && drag.parentId === node.id && drag.index === index}}"></view>
-            <space-node
-              id="space-{{childNode.id}}"
-              node="{{childNode}}"
-              items-map="{{itemsMap}}"
-              loading-map="{{loadingMap}}"
-              drag="{{drag}}"
-              highlight-id="{{highlightId}}"
-              focus-id="{{focusId}}"
-            />
-          </block>
-          <view class="drag-line" wx:if="{{drag && drag.parentId === node.id && drag.index >= node.children.length}}"></view>
-        </view>
-        <view class="mod-empty" wx:else>
-          暂无子空间
-        </view>
+      <view
+        class="mod-empty"
+        wx:if="{{!loadingMap[node.id] && !(itemsMap[node.id] && itemsMap[node.id].length) && !node.children.length}}"
+      >此空间暂无物品</view>
+
+      <view class="child-actions">
+        <text class="child-act" catchtap="onAddItem">＋ 添加物品</text>
+        <text class="child-act" catchtap="onAddSpace">＋ 添加空间</text>
+        <text class="child-act manage" catchtap="onMore">⋯ 管理</text>
       </view>
     </view>
   </view>

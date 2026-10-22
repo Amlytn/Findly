@@ -59,7 +59,7 @@
                 data-key="{{item.key}}"
                 data-type="{{item.type}}"
               >
-                <image class="icon-img" src="{{item.card}}" mode="aspectFit" />
+                <view class="icon-img-box"><image class="icon-img" src="{{item.card}}" mode="aspectFit" /></view>
                 <text class="icon-label">{{item.label}}</text>
                 <view class="icon-check" wx:if="{{icon === item.key}}"></view>
               </view>

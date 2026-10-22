@@ -166,9 +166,21 @@
   border-color: #12A5A0;
 }
 
-.icon-img {
+.icon-img-box {
   width: 64rpx;
   height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 新版图标画布 116、卡片 96：放大 116/96 让底卡正好填满槽位，余量留给卡片投影 */
+.icon-img {
+  width: 120.833%;
+  height: 120.833%;
+  flex: none;
+  display: block;
 }
 
 .icon-label {
